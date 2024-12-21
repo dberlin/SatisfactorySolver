@@ -1,0 +1,477 @@
+{
+  "Machines": [
+    {
+      "Name": "Smelter",
+      "Tier": "0-2",
+      "AveragePower": "-4",
+      "OverclockPowerExponent": "1321929/1000000",
+      "MaxProductionShards": 1,
+      "ProductionShardMultiplier": "1",
+      "ProductionShardPowerExponent": "2",
+      "Cost": [
+        {"Part": "Iron Rod", "Amount": "5"},
+        {"Part": "Wire", "Amount": "8"}
+      ]
+    },
+    {
+      "Name": "Foundry",
+      "Tier": "3-3",
+      "AveragePower": "-16",
+      "OverclockPowerExponent": "1321929/1000000",
+      "MaxProductionShards": 2,
+      "ProductionShardMultiplier": "1/2",
+      "ProductionShardPowerExponent": "2",
+      "Cost": [
+        {"Part": "Modular Frame", "Amount": "10"},
+        {"Part": "Rotor", "Amount": "10"},
+        {"Part": "Concrete", "Amount": "20"}
+      ]
+    },
+    {
+      "Name": "Geothermal Generator",
+      "MinPower": "100",
+      "AveragePower": "200",
+      "Cost": [
+        {"Part": "Motor", "Amount": "10"},
+        {"Part": "High-Speed Connector", "Amount": "25"},
+        {"Part": "Modular Frame", "Amount": "25"},
+        {"Part": "Copper Sheet", "Amount": "50"},
+        {"Part": "Wire", "Amount": "250"}
+      ]
+    }
+  ],
+  "MultiMachines": [
+    {
+      "Name": "Miner",
+      "ShowPpm": true,
+      "DefaultMax": "60",
+      "Machines": [
+        {
+          "Name": "Miner Mk.1",
+          "PartsRatio": "60",
+          "Default": true
+        },
+        {
+          "Name": "Miner Mk.2",
+          "PartsRatio": "120"
+        },
+        {
+          "Name": "Miner Mk.3",
+          "PartsRatio": "240"
+        }
+      ],
+      "Capacities": [
+        {
+          "Name": "Impure",
+          "PartsRatio": "1/2",
+          "Color": 13775920
+        },
+        {
+          "Name": "Normal",
+          "Default": true
+        },
+        {
+          "Name": "Pure",
+          "PartsRatio": "2",
+          "Color": 8433977
+        }
+      ]
+    },
+    {
+      "Name": "AWESOME Sink",
+      "ShowPpm": true,
+      "Capacities": [
+        {
+          "Name": "Mk.1 Belt",
+          "PartsRatio": "60",
+          "Default": true
+        },
+        {
+          "Name": "Mk.2 Belt",
+          "PartsRatio": "120",
+          "Color": 13775920
+        },
+        {
+          "Name": "Mk.3 Belt",
+          "PartsRatio": "270",
+          "Color": 16311334
+        },
+        {
+          "Name": "Mk.4 Belt",
+          "PartsRatio": "480",
+          "Color": 8433977
+        },
+        {
+          "Name": "Mk.5 Belt",
+          "PartsRatio": "780",
+          "Color": 2504952
+        },
+        {
+          "Name": "Mk.6 Belt",
+          "PartsRatio": "1200",
+          "Color": 12330744
+        }
+      ]
+    },
+    {
+      "Name": "Oil Extractor",
+      "ShowPpm": true,
+      "DefaultMax": "120",
+      "Capacities": [
+        {
+          "Name": "Impure",
+          "PartsRatio": "1/2",
+          "Color": 13775920
+        },
+        {
+          "Name": "Normal",
+          "Default": true
+        },
+        {
+          "Name": "Pure",
+          "PartsRatio": "2",
+          "Color": 8433977
+        }
+      ]
+    },
+    {
+      "Name": "Geothermal Generator",
+      "DefaultMax": "1",
+      "Capacities": [
+        {
+          "Name": "Impure",
+          "PowerRatio": "1/2",
+          "Color": 13775920
+        },
+        {
+          "Name": "Normal",
+          "Default": true
+        },
+        {
+          "Name": "Pure",
+          "PowerRatio": "2",
+          "Color": 8433977
+        }
+      ]
+    },
+    {
+      "Name": "Resource Well Extractor",
+      "ShowPpm": true,
+      "DefaultMax": "60",
+      "Capacities": [
+        {
+          "Name": "Impure",
+          "PartsRatio": "1/2",
+          "Color": 13775920
+        },
+        {
+          "Name": "Normal",
+          "Default": true
+        },
+        {
+          "Name": "Pure",
+          "PartsRatio": "2",
+          "Color": 8433977
+        }
+      ]
+    }
+  ],
+  "Recipes": [
+    {
+      "Name": "Iron Ore",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Iron Ore", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Copper Ore",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Copper Ore", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Limestone",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Limestone", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Coal",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Tier": "3-1",
+      "Parts": [
+        {"Part": "Coal", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Water",
+      "Machine": "Water Extractor",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Water", "Amount": "120"}
+      ]
+    },
+    {
+      "Name": "Well Water",
+      "Machine": "Resource Well Extractor",
+      "BatchTime": "1",
+      "Parts": [
+        {"Part": "Water", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Caterium Ore",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Caterium Ore", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Crude Oil",
+      "Machine": "Oil Extractor",
+      "BatchTime": "1",
+      "Parts": [
+        {"Part": "Crude Oil", "Amount": "2"}
+      ]
+    },
+    {
+      "Name": "Bauxite",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Tier": "7-1",
+      "Parts": [
+        {"Part": "Bauxite", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Sulfur",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Sulfur", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Raw Quartz",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Raw Quartz", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Nitrogen Gas",
+      "Machine": "Resource Well Extractor",
+      "BatchTime": "1",
+      "Parts": [
+        {"Part": "Nitrogen Gas", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Oil Well",
+      "Machine": "Resource Well Extractor",
+      "BatchTime": "1",
+      "Parts": [
+        {"Part": "Crude Oil", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Uranium",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Tier": "8-2",
+      "Parts": [
+        {"Part": "Uranium", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "SAM",
+      "Machine": "Miner",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "SAM", "Amount": "1"}
+      ]
+    },
+    {
+      "Name": "Leaves Biomass Burner",
+      "Machine": "Biomass Burner",
+      "BatchTime": "1/2",
+      "Parts": [
+        {"Part": "Leaves", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Wood Biomass Burner",
+      "Machine": "Biomass Burner",
+      "BatchTime": "10/3",
+      "Parts": [
+        {"Part": "Wood", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Mycelia Biomass Burner",
+      "Machine": "Biomass Burner",
+      "BatchTime": "2/3",
+      "Parts": [
+        {"Part": "Mycelia", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Biomass Burner",
+      "Machine": "Biomass Burner",
+      "BatchTime": "6",
+      "Parts": [
+        {"Part": "Biomass", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Solid Biofuel Biomass Burner",
+      "Machine": "Biomass Burner",
+      "BatchTime": "15",
+      "Parts": [
+        {"Part": "Solid Biofuel", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Packaged Liquid Biofuel Biomass Burner",
+      "Machine": "Biomass Burner",
+      "BatchTime": "25",
+      "Parts": [
+        {"Part": "Packaged Liquid Biofuel", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Coal Generator",
+      "Machine": "Coal-Powered Generator",
+      "BatchTime": "4",
+      "Parts": [
+        {"Part": "Coal", "Amount": "-1"},
+        {"Part": "Water", "Amount": "-3"}
+      ]
+    },
+    {
+      "Name": "Compacted Coal Generator",
+      "Machine": "Coal-Powered Generator",
+      "BatchTime": "42/5",
+      "Parts": [
+        {"Part": "Compacted Coal", "Amount": "-1"},
+        {"Part": "Water", "Amount": "-63/10"}
+      ]
+    },
+    {
+      "Name": "Petroleum Coke Generator",
+      "Machine": "Coal-Powered Generator",
+      "BatchTime": "12/5",
+      "Parts": [
+        {"Part": "Petroleum Coke", "Amount": "-1"},
+        {"Part": "Water", "Amount": "-9/5"}
+      ]
+    },
+    {
+      "Name": "Fuel Generator",
+      "Machine": "Fuel-Powered Generator",
+      "BatchTime": "3",
+      "Parts": [
+        {"Part": "Fuel", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Liquid Biofuel Generator",
+      "Machine": "Fuel-Powered Generator",
+      "BatchTime": "3",
+      "Parts": [
+        {"Part": "Liquid Biofuel", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Turbofuel Generator",
+      "Machine": "Fuel-Powered Generator",
+      "BatchTime": "8",
+      "Parts": [
+        {"Part": "Turbofuel", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Rocket Fuel Generator",
+      "Machine": "Fuel-Powered Generator",
+      "BatchTime": "72/5",
+      "Parts": [
+        {"Part": "Rocket Fuel", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Ionized Fuel Generator",
+      "Machine": "Fuel-Powered Generator",
+      "BatchTime": "20",
+      "Parts": [
+        {"Part": "Ionized Fuel", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "Geothermal Generator",
+      "Machine": "Geothermal Generator",
+      "BatchTime": "0",
+      "Parts": []
+    },
+    {
+      "Name": "Uranium Nuclear Power Plant",
+      "Machine": "Nuclear Power Plant",
+      "BatchTime": "300",
+      "Parts": [
+        {"Part": "Uranium Fuel Rod", "Amount": "-1"},
+        {"Part": "Water", "Amount": "-1200"},
+        {"Part": "Uranium Waste", "Amount": "50"}
+      ]
+    },
+    {
+      "Name": "Resource Well Pressurizer",
+      "Machine": "Resource Well Pressurizer",
+      "BatchTime": "1",
+      "Parts": []
+    },
+    {
+      "Name": "Plutonium Nuclear Power Plant",
+      "Machine": "Nuclear Power Plant",
+      "BatchTime": "600",
+      "Parts": [
+        {"Part": "Plutonium Fuel Rod", "Amount": "-1"},
+        {"Part": "Water", "Amount": "-2400"},
+        {"Part": "Plutonium Waste", "Amount": "10"}
+      ]
+    },
+    {
+      "Name": "Ficsonium Nuclear Power Plant",
+      "Machine": "Nuclear Power Plant",
+      "BatchTime": "60",
+      "Parts": [
+        {"Part": "Ficsonium Fuel Rod", "Amount": "-1"},
+        {"Part": "Water", "Amount": "-240"}
+      ]
+    },
+    {
+      "Name": "Alien Power Augmenter",
+      "Machine": "Alien Power Augmenter",
+      "BatchTime": "12",
+      "Parts": [
+        {"Part": "Alien Power Matrix", "Amount": "-1"}
+      ]
+    },
+    {
+      "Name": "FICSMAS Gift",
+      "Machine": "FICSMAS Gift Tree",
+      "BatchTime": "4",
+      "Parts": [
+        {"Part": "FICSMAS Gift", "Amount": "1"}
+      ],
+      "Ficsmas": true
+    }
+  ]
+}

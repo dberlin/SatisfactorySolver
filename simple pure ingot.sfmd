@@ -1,0 +1,1 @@
+{"Version":"1.0","Zoom":0.9826611277602708,"Data":[{"Name":"Water","X":-456,"Y":121},{"Name":"Pure Iron Ingot","X":-32,"Y":-220,"Inputs":{"Iron Ore":[3],"Water":[0]}},{"Name":"Pure Iron Ingot","X":16,"Y":17,"Inputs":{"Iron Ore":[3],"Water":[0]}},{"Name":"Iron Ore","X":-474,"Y":-192,"Machine":"Miner Mk.3","Max":"780"}]}

@@ -1,0 +1,326 @@
+{
+  "Version": "1.0",
+  "Zoom": 1.0,
+  "Outpost": 0,
+  "Data": [
+    {
+      "Name": "Outpost",
+      "X": -814,
+      "Y": -100,
+      "Inputs": [
+        []
+      ],
+      "Zoom": 1.0,
+      "Title": "Power factory"
+    },
+    {
+      "Name": "Iron Ingot",
+      "X": -426,
+      "Y": 686,
+      "Parent": 0,
+      "Inputs": {
+        "Iron Ore": [
+          2
+        ]
+      }
+    },
+    {
+      "Name": "Iron Ore",
+      "X": -571,
+      "Y": 745,
+      "Parent": 0,
+      "Machine": "Miner Mk.3",
+      "Max": "720"
+    },
+    {
+      "Name": "Coated Iron Plate",
+      "X": -237,
+      "Y": 872,
+      "Parent": 0,
+      "Inputs": {
+        "Iron Ingot": [
+          1
+        ],
+        "Plastic": [
+          19
+        ]
+      }
+    },
+    {
+      "Name": "AWESOME Sink",
+      "X": 131,
+      "Y": -289,
+      "Parent": 0,
+      "Capacity": "Mk.5 Belt",
+      "Inputs": [
+        [
+          [
+            23,
+            "Polymer Resin"
+          ],
+          [
+            12,
+            "Polymer Resin"
+          ]
+        ]
+      ]
+    },
+    {
+      "Name": "Rocket Fuel Generator",
+      "X": 3014,
+      "Y": 673,
+      "Parent": 0,
+      "Max": "432",
+      "Inputs": {
+        "Rocket Fuel": [
+          7,
+          6,
+          9
+        ]
+      }
+    },
+    {
+      "Name": "Rocket Fuel",
+      "X": 2670,
+      "Y": 819,
+      "Parent": 0,
+      "Max": "6",
+      "Inputs": {
+        "Turbofuel": [
+          14,
+          24
+        ],
+        "Nitric Acid": [
+          15
+        ]
+      }
+    },
+    {
+      "Name": "Rocket Fuel",
+      "X": 2159,
+      "Y": -5,
+      "Parent": 0,
+      "Max": "6",
+      "Inputs": {
+        "Turbofuel": [
+          13
+        ],
+        "Nitric Acid": [
+          15
+        ]
+      }
+    },
+    {
+      "Name": "Petroleum Coke",
+      "X": 374,
+      "Y": 526,
+      "Parent": 0,
+      "Inputs": {
+        "Heavy Oil Residue": [
+          23
+        ]
+      }
+    },
+    {
+      "Name": "Rocket Fuel",
+      "X": 2451,
+      "Y": 1389,
+      "Parent": 0,
+      "Inputs": {
+        "Turbofuel": [
+          24,
+          14,
+          13
+        ],
+        "Nitric Acid": [
+          15
+        ]
+      }
+    },
+    {
+      "Name": "Sulfur",
+      "X": 1082,
+      "Y": 735,
+      "Parent": 0,
+      "Machine": "Miner Mk.3",
+      "Max": "600",
+      "ClockSpeed": "250"
+    },
+    {
+      "Name": "Diluted Fuel",
+      "X": 494,
+      "Y": -515,
+      "Parent": 0,
+      "Max": "6",
+      "Inputs": {
+        "Heavy Oil Residue": [
+          19,
+          12
+        ],
+        "Water": [
+          20,
+          18
+        ]
+      }
+    },
+    {
+      "Name": "Heavy Oil Residue",
+      "X": -253,
+      "Y": -579,
+      "Parent": 0,
+      "Max": "15",
+      "Inputs": {
+        "Crude Oil": [
+          21
+        ]
+      }
+    },
+    {
+      "Name": "Turbo Blend Fuel",
+      "X": 1532,
+      "Y": -550,
+      "Parent": 0,
+      "Max": "13 1/3",
+      "Inputs": {
+        "Fuel": [
+          11
+        ],
+        "Heavy Oil Residue": [
+          22
+        ],
+        "Sulfur": [
+          10
+        ],
+        "Petroleum Coke": [
+          8
+        ]
+      }
+    },
+    {
+      "Name": "Turbo Blend Fuel",
+      "X": 1501,
+      "Y": -336,
+      "Parent": 0,
+      "Max": "13 1/3",
+      "Inputs": {
+        "Fuel": [
+          11
+        ],
+        "Heavy Oil Residue": [
+          22
+        ],
+        "Sulfur": [
+          10
+        ],
+        "Petroleum Coke": [
+          8
+        ]
+      }
+    },
+    {
+      "Name": "Nitric Acid",
+      "X": 82,
+      "Y": 839,
+      "Parent": 0,
+      "Max": "20",
+      "Inputs": {
+        "Nitrogen Gas": [
+          16,
+          17
+        ],
+        "Water": [
+          20,
+          18
+        ],
+        "Iron Plate": [
+          3
+        ]
+      }
+    },
+    {
+      "Name": "Nitrogen Gas",
+      "X": -89,
+      "Y": 594,
+      "Parent": 0,
+      "Max": "600"
+    },
+    {
+      "Name": "Nitrogen Gas",
+      "X": -55,
+      "Y": 455,
+      "Parent": 0,
+      "Max": "200"
+    },
+    {
+      "Name": "Water",
+      "X": -878,
+      "Y": 72,
+      "Parent": 0,
+      "Max": "5"
+    },
+    {
+      "Name": "Plastic",
+      "X": -307,
+      "Y": 129,
+      "Parent": 0,
+      "Inputs": {
+        "Crude Oil": [
+          21
+        ]
+      }
+    },
+    {
+      "Name": "Water",
+      "X": -562,
+      "Y": 402,
+      "Parent": 0,
+      "Max": "5"
+    },
+    {
+      "Name": "Crude Oil",
+      "X": -891,
+      "Y": -61,
+      "Parent": 0,
+      "Max": "600"
+    },
+    {
+      "Name": "Heavy Oil Residue",
+      "X": -217,
+      "Y": -197,
+      "Parent": 0,
+      "Inputs": {
+        "Crude Oil": [
+          21
+        ]
+      }
+    },
+    {
+      "Name": "Heavy Oil Residue",
+      "X": -223,
+      "Y": -90,
+      "Parent": 0,
+      "Inputs": {
+        "Crude Oil": [
+          21
+        ]
+      }
+    },
+    {
+      "Name": "Turbofuel",
+      "X": 1544,
+      "Y": -55,
+      "Parent": 0,
+      "Max": "32",
+      "Inputs": {
+        "Fuel": [
+          11
+        ],
+        "Compacted Coal": [
+          7,
+          6,
+          9
+        ]
+      }
+    }
+  ]
+}

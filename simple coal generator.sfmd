@@ -1,0 +1,52 @@
+{
+  "Version": "1.0",
+  "Zoom": 1.0,
+  "Data": [
+    {
+      "Name": "Water",
+      "X": -509,
+      "Y": -172,
+      "Max": "5"
+    },
+    {
+      "Name": "Compacted Coal Generator",
+      "X": -73,
+      "Y": -326,
+      "Inputs": {
+        "Compacted Coal": [
+          3
+        ],
+        "Water": [
+          0
+        ]
+      }
+    },
+    {
+      "Name": "Sulfur",
+      "X": -855,
+      "Y": -266,
+      "Machine": "Miner Mk.3",
+      "Max": "780"
+    },
+    {
+      "Name": "Compacted Coal",
+      "X": -592,
+      "Y": -398,
+      "Inputs": {
+        "Coal": [
+          4
+        ],
+        "Sulfur": [
+          2
+        ]
+      }
+    },
+    {
+      "Name": "Coal",
+      "X": -878,
+      "Y": -457,
+      "Machine": "Miner Mk.3",
+      "Max": "780"
+    }
+  ]
+}
