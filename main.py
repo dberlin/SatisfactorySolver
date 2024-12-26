@@ -62,3 +62,25 @@ results = opt.solve(model)
 # results = solver.solve(model, tee=True, keepfiles=True)
 rich.print(results)  # from IPython.display import display
 model.pprint()
+
+
+# Print the resulting values as two tables
+from rich import table
+from rich import console
+
+input_table = table.Table(title="Node inputs")
+input_table.add_column("Node name", justify="left", no_wrap=True)
+input_table.add_column("Value", justify="left", no_wrap=True)
+for node_input in model.node_inputs:
+    for input_var in model.node_inputs[node_input].values():
+        input_table.add_row(input_var.name, str(input_var.value))
+console = console.Console()
+console.print(input_table)
+
+output_table = table.Table(title="Node outputs")
+output_table.add_column("Node name", justify="left", no_wrap=True)
+output_table.add_column("Value", justify="left", no_wrap=True)
+for node_output in model.node_outputs:
+    for output_var in model.node_outputs[node_output].values():
+        output_table.add_row(output_var.name, str(output_var.value))
+console.print(output_table)
