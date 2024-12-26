@@ -146,8 +146,8 @@ def try_maximize_output_minimize_producers(model, model_data, graph):
             for part_list in edge_by_node_and_part.values():
                 for var_list in part_list.values():
                     prod_exprs.append(pyo.prod(var_list))
-            return sum(prod_exprs) / sum(x for x in producer_output_vars)
-
+            # return sum(prod_exprs) / sum(x for x in producer_output_vars)
+            return sum(prod_exprs)
     return model
 
 
@@ -330,7 +330,7 @@ class FindFractions(ExpressionReplacementVisitor):
         return True, None
 
 
-def defractionize(expr):
+def defractionize(expr: pyo.Expression) -> pyo.Expression:
     result = ReplaceFractions().walk_expression(expr)
     FindFractions().walk_expression(result)
     return result
