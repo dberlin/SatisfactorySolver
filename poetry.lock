@@ -85,6 +85,59 @@ test = ["Pillow", "contourpy[test-no-images]", "matplotlib"]
 test-no-images = ["pytest", "pytest-cov", "pytest-rerunfailures", "pytest-xdist", "wurlitzer"]
 
 [[package]]
+name = "cvc5"
+version = "1.2.0"
+description = "Python bindings for cvc5"
+optional = false
+python-versions = "*"
+files = [
+    {file = "cvc5-1.2.0-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:21a068c5c367e66b9d9cd0d2732815f6fc974c00f6c6beee6e37c28ac7d41db7"},
+    {file = "cvc5-1.2.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:241e92ba7bb932b2151a4dc78a210acb779e2bb421b749e950c32a8da0c6a8e6"},
+    {file = "cvc5-1.2.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:231008caa61b97a5db44bde41473ee7c5df953307fb3788fb177644664735e61"},
+    {file = "cvc5-1.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:027e7d2817806a7f8e74dd1ff7605c2f84637ce180e6a2bdbaee2fd41ed95f63"},
+    {file = "cvc5-1.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:74e67c9e66f54256abec1ff22e70a46b8d8714b5d603a701b6b047801b926b85"},
+    {file = "cvc5-1.2.0-cp311-cp311-macosx_10_13_x86_64.whl", hash = "sha256:1725ccd5a7dcfc48e7d9b6fce8a77921e5f633c494afa2f84187e62f76889140"},
+    {file = "cvc5-1.2.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:72e11459e9ed050aaf4ecb3aae7196523319951dce5d86d869bb0b55cc7f044e"},
+    {file = "cvc5-1.2.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:202fa162c6b7e63ce0ce3d8d178c5dbacc7296f884cb03672daaaeeafa018039"},
+    {file = "cvc5-1.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ee2e2082156d3ce85531b3b1973e660227c06203b443ee0e144ba9a29a438f65"},
+    {file = "cvc5-1.2.0-cp311-cp311-win_amd64.whl", hash = "sha256:8b4040613ecc83cdb33fd0ec789ed0ba10b7d2a7b663425e2e71533476ae8c91"},
+    {file = "cvc5-1.2.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:97dfbd2a110c4e7e1c95867937da0ae303abe275cbb29d941d9c1c0d8ad879e2"},
+    {file = "cvc5-1.2.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:f8db91016601c6c7c90f6fa84bdea917d72227a265cb34823aacb651a1325cbf"},
+    {file = "cvc5-1.2.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7fc405664bb6c6a40f71a81d54426d2fcf0f07a7fd74363ea6eb087ecf495a7b"},
+    {file = "cvc5-1.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:96b8314bbf4e25bda37ca31928e276463996aa0db0954c485fda1051ea5a763d"},
+    {file = "cvc5-1.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:425c19713a9d5a347ae56b42b7b16fad4d64f38168ba0aaee5ec08bf71aaa638"},
+    {file = "cvc5-1.2.0-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:184ff7a8ed438e5702055dad3eb12b1738bb56f7c931a1d33104acf7c4238813"},
+    {file = "cvc5-1.2.0-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3818f0361fe43da4fb75da019f1f7138a1360c267c80fb08a98968727f977406"},
+    {file = "cvc5-1.2.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ff5290186b50d5f07383b3c798e834133ecfd33f8c39877b0b83d83d38dc79c6"},
+    {file = "cvc5-1.2.0-cp37-cp37m-win_amd64.whl", hash = "sha256:6066287e538645c234af24fc73f842a2231a5d0958cb7832345427b3e8915fd6"},
+    {file = "cvc5-1.2.0-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:f0c7a6749c583d112e995e024e1ff0400c6bad6b86f4a8f1c99a2419e2f7029a"},
+    {file = "cvc5-1.2.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:e2d9a4183201bf7007b73758c1dfc69e3cb3b8529e3c0438d50808f39acef716"},
+    {file = "cvc5-1.2.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b8307fbfdd135f9ddf1603283d35fed4ffe699ddde320151bc12b1e544a98399"},
+    {file = "cvc5-1.2.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dc194f62fe640895085c63b31a0a491495e725929c331ae36b60b4e82fec53a4"},
+    {file = "cvc5-1.2.0-cp38-cp38-win_amd64.whl", hash = "sha256:455a45bf55e993e5c0aae57b477d1e62f2608b9db8b37c653e7eb705751b841c"},
+    {file = "cvc5-1.2.0-cp39-cp39-macosx_10_13_x86_64.whl", hash = "sha256:1ad3d9e7fa7ca2c3ab9cae54217b6f913f65ba0e3db942f06485f2a462c31ebc"},
+    {file = "cvc5-1.2.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:41bd4cd40e737756c9c5ffb2c449a213737f30f276341daa09d771d56274f679"},
+    {file = "cvc5-1.2.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0fa77b034e0d73621508dc462a2f0dd8a186d178b1a007862367ce0c394ccf61"},
+    {file = "cvc5-1.2.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ed80103ddb5e577e9369dc08a243c9f7fd8ebe2a1db2bab8f5acb2bea5d43a4b"},
+    {file = "cvc5-1.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:2a84e2050fde57b38be2a9f791ed78ec42b2193d7b9236105ab07ecd12e339d6"},
+    {file = "cvc5-1.2.0-pp310-pypy310_pp73-macosx_10_13_x86_64.whl", hash = "sha256:ea11c7c383196a02c1d8fa21485af6503b8c5af0903727459cea343d2cc2f982"},
+    {file = "cvc5-1.2.0-pp310-pypy310_pp73-macosx_11_0_arm64.whl", hash = "sha256:6ce77ea727a6d1a2f721b157135c881f93884b587ad30d02af5dc2945681cfdc"},
+    {file = "cvc5-1.2.0-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:92933056c71d5e6190befb65864b0563c0b4389ba6226fa5deffd43ec0547b58"},
+    {file = "cvc5-1.2.0-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:26cf7be63d84913d95c8c9bbe731cb97c876e790cf09fc613045c0ee59ee5290"},
+    {file = "cvc5-1.2.0-pp37-pypy37_pp73-macosx_10_13_x86_64.whl", hash = "sha256:ef4e9ec80aa3eefe567c73281fb068c0018381b6d6cbcd99a3f8031c184868b3"},
+    {file = "cvc5-1.2.0-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0109caa48cc05f264f036c17f3d8d3a2c6b1959510dd2922d9fa92eea6d81397"},
+    {file = "cvc5-1.2.0-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5c26f914222f419d6f41693c497362f49844fed2e2e0977aed66152c16317528"},
+    {file = "cvc5-1.2.0-pp38-pypy38_pp73-macosx_10_13_x86_64.whl", hash = "sha256:897155ea186755f0f535ab036dff764ff13346c96e28a7ee5f6c23e617bc28ce"},
+    {file = "cvc5-1.2.0-pp38-pypy38_pp73-macosx_11_0_arm64.whl", hash = "sha256:e97e1e64a0c5c0603d6988343932ac377bd2807e386e9f6511112848adc2511c"},
+    {file = "cvc5-1.2.0-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:635b6e8bdc6c62e833044542362237a1e68ef6a24e0f984db74d0f7021b1e080"},
+    {file = "cvc5-1.2.0-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:534b9348fd620d64c05ea3a1f1890850f7b0a1c192e3cf8f4ebfe079288de988"},
+    {file = "cvc5-1.2.0-pp39-pypy39_pp73-macosx_10_13_x86_64.whl", hash = "sha256:eef97785449613f808974b25d53a45748a8c624e55d263da2efaab129d3bb8fc"},
+    {file = "cvc5-1.2.0-pp39-pypy39_pp73-macosx_11_0_arm64.whl", hash = "sha256:efcb59e407a02328efc14b71d3965f290f919d9c4c999073f4cc60701839c524"},
+    {file = "cvc5-1.2.0-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:fcfe83150acf9d62128ff02fe7f7bdada5a1dff37a522a63bbd851ed87152ec3"},
+    {file = "cvc5-1.2.0-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c3a6b3829755925116ecff8731b305e63b2f73445b192131e648c0da787fa2d9"},
+]
+
+[[package]]
 name = "cycler"
 version = "0.12.1"
 description = "Composable style cycles"
@@ -950,7 +1003,23 @@ files = [
 [package.extras]
 test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 
+[[package]]
+name = "z3-solver"
+version = "4.13.4.0"
+description = "an efficient SMT solver library"
+optional = false
+python-versions = "*"
+files = [
+    {file = "z3_solver-4.13.4.0-py3-none-macosx_13_0_arm64.whl", hash = "sha256:39ba75b867d6afadabc4812b999c9d96656da07d152510452e71ae9374e98926"},
+    {file = "z3_solver-4.13.4.0-py3-none-macosx_13_0_x86_64.whl", hash = "sha256:6f3d3eff878b5b3c0d6e7f4237c869a489288fbdd8a2d878046ce977339a1a7a"},
+    {file = "z3_solver-4.13.4.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2fb8a857adf1064f89581c424fd729ee3e8bad95f4ebf0fb4c1210f65b831f37"},
+    {file = "z3_solver-4.13.4.0-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:f674d758c199006fa0a527bdf78cb31b4ba5baaaef6c6c0fa80fb063d3834a6c"},
+    {file = "z3_solver-4.13.4.0-py3-none-win32.whl", hash = "sha256:d23cb6d7c67ce3a4e57b8715e2be0c0fa350a282e641475e5e559521651471a0"},
+    {file = "z3_solver-4.13.4.0-py3-none-win_amd64.whl", hash = "sha256:fafb65d7bb04db93e4a46f4357042fd53b420b412db66f0a0053612ed15024ca"},
+    {file = "z3_solver-4.13.4.0.tar.gz", hash = "sha256:66944689398d19f831f94524e95e99961d998afa27cfef1918a5a441029ea73f"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "1b8673b1bc9a545cdb8ddbbd54882612ee22925f447eb660f71446f03062bb1c"
+content-hash = "6cf9ad5009851ef423b41b0499d373c112c7ccb50f2735348bf584d07eded544"

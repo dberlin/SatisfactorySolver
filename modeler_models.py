@@ -163,15 +163,17 @@ class AllDataModel(BaseModel):
     Parts: list[PartModel]
     Recipes: list[RecipeModel]
 
+
 class ByNameRegistry[T]:
     def __init__(self):
         self._by_name = {}
-        
+
     def add(self, name: str, model: T):
         self._by_name[name] = model
 
     def get(self, name: str) -> T:
         return self._by_name.get(name)
+
 
 MachineByName = ByNameRegistry[MachineModel]()
 MultiMachineByName = ByNameRegistry[MultiMachineModel]()

@@ -18,6 +18,8 @@ matplotlib = "^3.10.0"
 setuptools = "^75.6.0"
 wheel = "^0.45.1"
 pybind11 = "^2.13.6"
+z3-solver = "^4.13.4.0"
+cvc5 = "^1.2.0"
 
 
 [build-system]

@@ -6,6 +6,7 @@ from fractions import Fraction
 def rich_fraction_helper(value: Fraction) -> str:
     return format(value)
 
+
 def rich_decimal_helper(value: Decimal) -> str:
     as_ratio = value.as_integer_ratio()
     if as_ratio[1] == 1 or as_ratio[1] % 10 == 0:
@@ -24,6 +25,7 @@ def validate_fraction_helper(possible_fraction_str: str) -> Fraction | None:
     # the fractions.  So 13 1/3 is split to [13, 1/3], then converted to a list of fractions,
     # then the fractions are added together
     return sum(map(fractions.Fraction, split_val))
+
 
 def validate_decimal_helper(possible_fraction_str: str) -> Decimal | None:
     possible_fraction = possible_fraction_str.split('/')
