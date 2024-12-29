@@ -10,17 +10,18 @@ from satisfactorysolver.solver_model import SolverModel
 
 
 class CVC5Model(SolverModel):
-    def __init__(self, model_data, use_penalties=False):
+    def __init__(self, model_data, condition):
         super().__init__(model_data)
         self.count = itertools.count()
         # self.cvc5_model = cvc5.SolverFor(logic="QF_NRA")
         self.solver_model = cvc5.Solver()
+        self.solver_model.setOption("produce-models", "true")
         # self.cvc5_model.setOption("output", "post-asserts")
         # self.cvc5_model.setOption("verbosity", "5")
         # self.cvc5_model.setOption("stats-every-query", "true")
         self.objective_var = self.create_real_var(name="Objective variable")
         self.g = self.build_model()
-        self.maximize_output_minimize_producers_soft(use_penalties)
+        self.maximize_output_minimize_producers(condition)
 
     def create_real_var(self, name):
         new_var = cvc5.Real(name)
@@ -34,7 +35,7 @@ class CVC5Model(SolverModel):
         self.solver_model.add(-(a - b) <= tempvar)
         return tempvar  # return cvc5.If(a - b >= 0, a - b, b - a)
 
-    def maximize_output_minimize_producers_soft(self, use_penalties):
+    def maximize_output_minimize_producers(self, condition):
         _, _, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs, self.model_data.Nodes)
         sum_exprs = []
         penalty_exprs = []
@@ -46,14 +47,15 @@ class CVC5Model(SolverModel):
         for part_list in edge_by_node_and_part.values():
             for var_list in part_list.values():
                 sum_exprs.append(reduce(operator.add, var_list))
-            if use_penalties:
+            if condition == 'balanced':
                 # Penalize non-equal outputs
                 for var_list in part_list.values():
                     for pair in itertools.combinations(var_list, 2):
                         penalty_exprs.append(self.absolute_diff(pair[0], pair[1]))
-        # self.cvc5_model.add(self.objective_var == sum(sum_exprs) - sum(penalty_exprs))
-        self.solver_model.add(self.objective_var == sum(sum_exprs))
-        # Don't let objective fall to zero or else the soft constraint is trivially satisfiable
+            else:
+                penalty_exprs = [0]
+        self.solver_model.add(self.objective_var == sum(sum_exprs) - sum(penalty_exprs))
+        # Don't let objective fall to zero or else most constranits are satisfiable
         self.solver_model.add(self.objective_var > 0)
 
     def build_model(self):
