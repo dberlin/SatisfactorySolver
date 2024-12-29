@@ -76,14 +76,16 @@ if args.solver == 'cvc5':
     from satisfactorysolver.cvc5_model import CVC5Model
 
 
-    # This currently requires using python -O because we fail the context checks in cvc5 but not z3. This is related
-    # to the fact that we don't refresh the list of variables in between solves which is fine for z3, but makes the
-    # cvc5 pythonic interface unhappy.
-    # Doing so is incredibly annoying. Just turn on -O till they figure this out.
     def cvc5_all_smt(s, initial_terms):
         def block_term(s, m, terms, i):
             val = m[terms[i]]
             t = terms[i]
+            # Ensure both pieces are in the same context.
+            # CVC5 tries to emulate what it thinks z3 does with contexts, but gets it wrong.
+            # CVC5 does not care at all about contexts itself, so just put them in the same context
+            # to avoid the false mismatch issue.
+            t.ctx = cvc5.pythonic.main_ctx()
+            val.ctx = cvc5.pythonic.main_ctx()
             # Because CVC5 and Z3 are infinite precision, we have to use some tolerance on the variables Otherwise it
             # will enumerate an infinite number of models that have epsilon differences in practice
             s.add(cvc5.pythonic.Or(cvc5.pythonic.And(t > val, t - val > 1), cvc5.pythonic.And(t <= val, val - t > 1)))
@@ -127,12 +129,11 @@ if args.solver == 'cvc5':
         model_result = model.solver_model.model()
         # Fix the objective value at the optimal one
         obj_result = model_result[model.objective_var]
-        model.solver_model.add(model.objective_var == Fraction(obj_result.numerator(), obj_result.denominator()))
+
+
         # Fix the objective value at the optimal one
-        model.solver_model.add(model.objective_var == model_result[model.objective_var])
+        model.solver_model.add(model.objective_var == Fraction(obj_result.numerator(), obj_result.denominator()))
         logging.info(f"Enumerating all optimal solutions")
-        if __debug__:
-            logger.critical("Debugging is on, so this will probably crash, see the comment about -O above")
         for m in cvc5_all_smt(model.solver_model, model.edge_vars):
             model.print_inputs_outputs()
     else:
