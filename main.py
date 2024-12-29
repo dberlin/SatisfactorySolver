@@ -8,7 +8,7 @@ from fractions import Fraction
 import rich.logging
 from deepmerge import always_merger
 
-from modeler_models import AllDataModel, ModelerFileModel
+from satisfactorysolver.modeler_models import AllDataModel, ModelerFileModel
 
 logging.basicConfig(level=logging.INFO, handlers=[rich.logging.RichHandler(rich_tracebacks=True)],)
 logger = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ def find_objective_max(model, objective_var, sat_val):
 
 if args.solver == 'cvc5':
     import cvc5.pythonic
-    from cvc5_model import CVC5Model
+    from satisfactorysolver.cvc5_model import CVC5Model
 
 
     # This currently requires using python -O because we fail the context checks in cvc5 but not z3. This is related
@@ -127,7 +127,7 @@ if args.solver == 'cvc5':
         rich.print(f"No solution found, status: {status}")
 if args.solver == 'z3':
     import z3
-    from z3_model import Z3Model
+    from satisfactorysolver.z3_model import Z3Model
 
     USE_OPTIMIZER = False
     model = Z3Model(model_data, USE_OPTIMIZER)
@@ -179,7 +179,7 @@ if args.solver == 'z3':
     else:
         rich.print(f"No solution found, status: {status}")
 if args.solver == 'pyomo':
-    from pyomo_model import PyomoModel
+    from satisfactorysolver.pyomo_model import PyomoModel
     from pyomo.contrib import appsi
 
     model = PyomoModel(model_data)

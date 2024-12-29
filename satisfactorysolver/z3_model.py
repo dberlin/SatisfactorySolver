@@ -3,8 +3,8 @@ from collections import defaultdict
 
 import z3
 
-from solver_helpers import collect_vars
-from solver_model import SolverModel
+from satisfactorysolver.solver_helpers import collect_vars
+from satisfactorysolver.solver_model import SolverModel
 
 
 class Z3Model(SolverModel):

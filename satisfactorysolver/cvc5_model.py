@@ -5,8 +5,8 @@ from functools import reduce
 
 from cvc5 import pythonic as cvc5
 
-from solver_helpers import collect_vars
-from solver_model import SolverModel
+from satisfactorysolver.solver_helpers import collect_vars
+from satisfactorysolver.solver_model import SolverModel
 
 
 class CVC5Model(SolverModel):

@@ -5,7 +5,7 @@ from typing import Optional, Self
 
 from pydantic import BaseModel, model_validator, field_validator, computed_field, Field
 
-from helpers import validate_fraction_helper, rich_fraction_helper
+from satisfactorysolver.helpers import validate_fraction_helper, rich_fraction_helper
 
 
 class MachineModel(BaseModel):

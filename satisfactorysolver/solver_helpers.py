@@ -1,4 +1,4 @@
-from modeler_models import ModelerNodeModel
+from satisfactorysolver.modeler_models import ModelerNodeModel
 
 
 def collect_vars(node_inputs, node_outputs, nodes):

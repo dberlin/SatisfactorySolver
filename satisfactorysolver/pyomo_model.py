@@ -7,7 +7,7 @@ from pyomo import environ as pyo
 from pyomo.common.numeric_types import nonpyomo_leaf_types
 from pyomo.core.expr import ExpressionReplacementVisitor
 
-from solver_helpers import collect_vars, ResourceLimits
+from satisfactorysolver.solver_helpers import collect_vars, ResourceLimits
 
 
 class PyomoModel:
