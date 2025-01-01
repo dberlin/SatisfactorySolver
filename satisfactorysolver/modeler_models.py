@@ -5,7 +5,7 @@ from typing import Optional, Self
 
 from pydantic import BaseModel, model_validator, field_validator, computed_field, Field
 
-from satisfactorysolver.helpers import validate_fraction_helper, rich_fraction_helper
+from satisfactorymodeler.helpers import validate_fraction_helper, rich_fraction_helper
 
 
 class MachineModel(BaseModel):
@@ -18,6 +18,12 @@ class MachineModel(BaseModel):
     MaxProductionShards: Optional[int] = None
     ShowPpm: Optional[bool] = False
     DefaultMax: Optional[int] = None
+
+    def __eq__(self, other):
+        return self.Name == other.Name
+
+    def __hash__(self):
+        return hash(self.Name)
 
     @model_validator(mode='after')
     def index_name(self) -> Self:
@@ -36,6 +42,12 @@ class MultiMachineMachineModel(BaseModel):
     Default: Optional[bool] = False
     ShowPpm: Optional[bool] = False
     DefaultMax: Optional[int] = None
+
+    def __eq__(self, other):
+        return self.Name == other.Name
+
+    def __hash__(self):
+        return hash(self.Name)
 
     @field_validator('PartsRatio', mode='before')
     @classmethod
@@ -70,8 +82,14 @@ class MultiMachineModel(BaseModel):
     Name: str
     ShowPpm: Optional[bool] = False
     DefaultMax: Optional[int] = None
-    Machines: Optional[list[MultiMachineMachineModel]] = None
+    Machines: Optional[set[MultiMachineMachineModel]] = None
     Capacities: list[MultiMachineCapacityModel]
+
+    def __eq__(self, other):
+        return self.Name == other.Name
+
+    def __hash__(self):
+        return hash(self.Name)
 
     @model_validator(mode='after')
     def index_name(self) -> Self:
@@ -83,6 +101,12 @@ class PartModel(BaseModel):
     Name: str
     Tier: Optional[str] = None
     SinkPoints: Optional[int] = None
+
+    def __eq__(self, other):
+        return self.Name == other.Name
+
+    def __hash__(self):
+        return hash(self.Name)
 
     @model_validator(mode='after')
     def index_name(self) -> Self:
@@ -121,6 +145,12 @@ class RecipeModel(BaseModel):
     Alternate: Optional[bool] = False
     MinPower: Optional[int] = None
 
+    def __eq__(self, other):
+        return self.Name == other.Name
+
+    def __hash__(self):
+        return hash(self.Name)
+
     @field_validator('Machine', mode='before')
     @classmethod
     def validate_machine(cls, machine_name: str) -> MachineModel | MultiMachineModel:
@@ -158,10 +188,10 @@ class RecipeModel(BaseModel):
 
 
 class AllDataModel(BaseModel):
-    Machines: list[MachineModel]
-    MultiMachines: list[MultiMachineModel]
-    Parts: list[PartModel]
-    Recipes: list[RecipeModel]
+    Machines: set[MachineModel]
+    MultiMachines: set[MultiMachineModel]
+    Parts: set[PartModel]
+    Recipes: set[RecipeModel]
 
 
 class ByNameRegistry[T]:
