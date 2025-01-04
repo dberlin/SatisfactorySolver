@@ -12,6 +12,7 @@ from satisfactorysolver.solver_model import SolverModel
 class CVC5Model(SolverModel):
     def __init__(self, model_data, condition):
         super().__init__(model_data)
+        self.condition = condition
         self.count = itertools.count()
         # self.cvc5_model = cvc5.SolverFor(logic="QF_NRA")
         self.solver_model = cvc5.Solver()
@@ -21,7 +22,7 @@ class CVC5Model(SolverModel):
         # self.cvc5_model.setOption("stats-every-query", "true")
         self.objective_var = self.create_real_var(name="Objective variable")
         self.g = self.build_model()
-        self.maximize_output_minimize_producers(condition)
+        self.maximize_output_minimize_producers()
 
     def create_real_var(self, name):
         new_var = cvc5.Real(name)
@@ -35,7 +36,7 @@ class CVC5Model(SolverModel):
         self.solver_model.add(-(a - b) <= tempvar)
         return tempvar  # return cvc5.If(a - b >= 0, a - b, b - a)
 
-    def maximize_output_minimize_producers(self, condition):
+    def maximize_output_minimize_producers(self):
         _, _, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs, self.model_data.Nodes)
         sum_exprs = []
         penalty_exprs = []
@@ -47,7 +48,7 @@ class CVC5Model(SolverModel):
         for part_list in edge_by_node_and_part.values():
             for var_list in part_list.values():
                 sum_exprs.append(reduce(operator.add, var_list))
-            if condition == 'balanced':
+            if self.condition == 'balanced':
                 # Penalize non-equal outputs
                 for var_list in part_list.values():
                     for pair in itertools.combinations(var_list, 2):
@@ -70,4 +71,9 @@ class CVC5Model(SolverModel):
             self.constrain_output_amount_to_input_amount(node, node.Recipe)
             self.constrain_io_to_same_batch_count(node, node.Recipe)
             self.constrain_output_to_node_max(node, node.Recipe)
+            if self.condition == 'practical':
+                self.constraint_input_to_practical_division(node, node.Recipe)
         return g
+
+    def ToInt(self, expr):
+        return cvc5.ToInt(expr)

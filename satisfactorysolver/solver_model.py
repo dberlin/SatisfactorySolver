@@ -169,6 +169,26 @@ class SolverModel(ABC):
                 output_rate_per_minute = abs(output_part.Amount) * batches_per_minute
                 self.solver_model.add(output_var <= ((input_var / input_rate_per_minute) * output_rate_per_minute))
 
+    def constraint_input_to_practical_division(self, node, recipe):
+        """
+        Constrain the input to be a reasonable division of batch sizes.
+        While all values are possible through clocking/etc the user
+        may not want to see solutions that are trivial variants (119/1 splits, etc.)
+        :param node: Modeler node, this is usually representing a machine.
+        :param recipe: Recipe being used.
+        :return: None
+        """
+        for part in recipe.Inputs:
+            input_var = self.node_inputs[node.Id][part.Part.Name]
+            amount_needed_per_batch = abs(part.Amount)
+            expr = input_var / float(amount_needed_per_batch)
+            self.solver_model.add((expr - self.ToInt(expr)) == 0)
+        for part in recipe.Outputs:
+            output_var = self.node_outputs[node.Id][part.Part.Name]
+            amount_made_per_batch = abs(part.Amount)
+            expr = output_var / float(amount_made_per_batch)
+            self.solver_model.add((expr - self.ToInt(expr)) == 0)
+
     def constrain_io_to_same_batch_count(self, node, recipe):
         """
         Constrains the input and output flow of a node to ensure that the number of
@@ -211,3 +231,7 @@ class SolverModel(ABC):
             batches_per_minute = 60.0 / recipe.BatchTime
             output_max = (node_max if in_ppm else node_max * abs(part.Amount) * batches_per_minute)
             self.solver_model.add(output_var <= float(output_max))
+
+    @abstractmethod
+    def ToInt(self, expr):
+        pass

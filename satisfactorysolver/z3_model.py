@@ -13,13 +13,14 @@ class Z3Model(SolverModel):
     def __init__(self, model_data, condition):
         super().__init__(model_data)
         self.count = itertools.count()
+        self.condition = condition
         if condition == 'balanced':
             self.solver_model = z3.Optimize()
         else:
             self.solver_model = z3.Solver()
         self.objective_var = self.create_real_var(name="Objective variable")
         self.g = self.build_model()
-        self.maximize_output_minimize_producers_soft(condition)
+        self.maximize_output_minimize_producers_soft()
 
     def create_real_var(self, name):
         new_var = z3.Real(name)
@@ -36,7 +37,7 @@ class Z3Model(SolverModel):
             constr = z3.And(constr, first == x)
         return constr
 
-    def maximize_output_minimize_producers_soft(self, condition):
+    def maximize_output_minimize_producers_soft(self):
         _, _, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs, self.model_data.Nodes)
         prod_exprs = []
         edge_by_node_and_part = {graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)}
@@ -46,7 +47,7 @@ class Z3Model(SolverModel):
             edge_by_node_and_part[edge[0]][part_name].append(edge_var)
         for part_list in edge_by_node_and_part.values():
             for var_list in part_list.values():
-                if condition == 'balanced':
+                if self.condition == 'balanced':
                     all_equal = self.z3_equals(var_list)
                     if all_equal is not None:
                         self.solver_model.add_soft(all_equal)
@@ -54,7 +55,7 @@ class Z3Model(SolverModel):
         self.solver_model.add(self.objective_var == sum(prod_exprs))
         # Don't let objective fall to zero or else the soft constraint is trivially satisfiable
         self.solver_model.add(self.objective_var > 0)
-        if condition == 'balanced':
+        if self.condition == 'balanced':
             self.solver_model.maximize(self.objective_var)
 
     def build_model(self):
@@ -69,6 +70,8 @@ class Z3Model(SolverModel):
             self.constrain_output_amount_to_input_amount(node, node.Recipe)
             self.constrain_io_to_same_batch_count(node, node.Recipe)
             self.constrain_output_to_node_max(node, node.Recipe)
+            if self.condition == "practical":
+                self.constraint_input_to_practical_division(node, node.Recipe)
         return g
 
     def absolute_diff(self, a, b):
@@ -77,3 +80,6 @@ class Z3Model(SolverModel):
         self.solver_model.add((a - b) <= tempvar)
         self.solver_model.add(-(a - b) <= tempvar)
         return tempvar
+
+    def ToInt(self, expr):
+        return z3.ToInt(expr)
