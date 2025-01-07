@@ -160,13 +160,13 @@ class SolverModel(ABC):
             not return any value.
         :rtype: None
         """
-        for input_part in recipe.Inputs:
-            input_var = self.node_inputs[node.Id][input_part.Part.Name]
+        for (input_part, input_part_amount) in recipe.Inputs:
+            input_var = self.node_inputs[node.Id][input_part.Name]
             batches_per_minute = 60.0 / recipe.BatchTime
-            input_rate_per_minute = abs(input_part.Amount) * batches_per_minute
-            for output_part in recipe.Outputs:
-                output_var = self.node_outputs[node.Id][output_part.Part.Name]
-                output_rate_per_minute = abs(output_part.Amount) * batches_per_minute
+            input_rate_per_minute = abs(input_part_amount) * batches_per_minute
+            for (output_part, output_part_amount) in recipe.Outputs:
+                output_var = self.node_outputs[node.Id][output_part.Name]
+                output_rate_per_minute = abs(output_part_amount) * batches_per_minute
                 self.solver_model.add(output_var <= ((input_var / input_rate_per_minute) * output_rate_per_minute))
 
     def constraint_input_to_practical_division(self, node, recipe):
@@ -178,14 +178,14 @@ class SolverModel(ABC):
         :param recipe: Recipe being used.
         :return: None
         """
-        for part in recipe.Inputs:
-            input_var = self.node_inputs[node.Id][part.Part.Name]
-            amount_needed_per_batch = abs(part.Amount)
+        for (part, amount) in recipe.Inputs:
+            input_var = self.node_inputs[node.Id][part.Name]
+            amount_needed_per_batch = abs(amount)
             expr = input_var / float(amount_needed_per_batch)
             self.solver_model.add((expr - self.ToInt(expr)) == 0)
-        for part in recipe.Outputs:
-            output_var = self.node_outputs[node.Id][part.Part.Name]
-            amount_made_per_batch = abs(part.Amount)
+        for (part, amount) in recipe.Outputs:
+            output_var = self.node_outputs[node.Id][part.Name]
+            amount_made_per_batch = abs(amount)
             expr = output_var / float(amount_made_per_batch)
             self.solver_model.add((expr - self.ToInt(expr)) == 0)
 
@@ -201,13 +201,13 @@ class SolverModel(ABC):
         :return: None
         """
         num_batch_per_min_exprs = []
-        for part in recipe.Inputs:
-            input_var = self.node_inputs[node.Id][part.Part.Name]
-            amount_needed_per_batch = abs(part.Amount)
+        for (part, amount) in recipe.Inputs:
+            input_var = self.node_inputs[node.Id][part.Name]
+            amount_needed_per_batch = abs(amount)
             num_batch_per_min_exprs.append(input_var / float(amount_needed_per_batch))
-        for part in recipe.Outputs:
-            output_var = self.node_outputs[node.Id][part.Part.Name]
-            amount_made_per_batch = abs(part.Amount)
+        for (part, amount) in recipe.Outputs:
+            output_var = self.node_outputs[node.Id][part.Name]
+            amount_made_per_batch = abs(amount)
             num_batch_per_min_exprs.append(output_var / float(amount_made_per_batch))
         if len(num_batch_per_min_exprs) > 1:
             first, rest = num_batch_per_min_exprs[0], num_batch_per_min_exprs[1:]
@@ -226,10 +226,10 @@ class SolverModel(ABC):
         if node_max is None:
             return
         in_ppm = recipe.Machine.ShowPpm if recipe.Machine else False
-        for part in recipe.Outputs:
-            output_var = self.node_outputs[node.Id][part.Part.Name]
+        for (part, amount) in recipe.Outputs:
+            output_var = self.node_outputs[node.Id][part.Name]
             batches_per_minute = 60.0 / recipe.BatchTime
-            output_max = (node_max if in_ppm else node_max * abs(part.Amount) * batches_per_minute)
+            output_max = (node_max if in_ppm else node_max * abs(amount) * batches_per_minute)
             self.solver_model.add(output_var <= float(output_max))
 
     @abstractmethod
