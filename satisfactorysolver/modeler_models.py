@@ -135,6 +135,9 @@ class RecipePartModel(BaseModel):
         yield self.Part.Name
         yield rich_fraction_helper(self.Amount)
 
+    def __iter__(self):
+        return iter((self.Part, self.Amount))
+
 
 class RecipeModel(BaseModel):
     Name: str
