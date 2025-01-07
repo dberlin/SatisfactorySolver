@@ -4,7 +4,7 @@ from collections import defaultdict
 import z3
 
 from satisfactorysolver.solver_helpers import collect_vars
-from satisfactorysolver.solver_model import SolverModel
+from satisfactorysolver.smt_model import SolverModel
 
 
 class Z3Model(SolverModel):
@@ -20,7 +20,7 @@ class Z3Model(SolverModel):
             self.solver_model = z3.Solver()
         self.objective_var = self.create_real_var(name="Objective variable")
         self.g = self.build_model()
-        self.maximize_output_minimize_producers_soft()
+        self.maximize_output_soft()
 
     def create_real_var(self, name):
         new_var = z3.Real(name)
@@ -37,7 +37,7 @@ class Z3Model(SolverModel):
             constr = z3.And(constr, first == x)
         return constr
 
-    def maximize_output_minimize_producers_soft(self):
+    def maximize_output_soft(self):
         _, _, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs, self.model_data.Nodes)
         prod_exprs = []
         edge_by_node_and_part = {graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)}

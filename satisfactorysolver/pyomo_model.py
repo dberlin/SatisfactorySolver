@@ -11,11 +11,12 @@ from satisfactorysolver.solver_helpers import collect_vars, ResourceLimits
 
 
 class PyomoModel:
-    def __init__(self, model_data):
+    def __init__(self, model_data, condition):
         self.model = pyo.ConcreteModel()
         self.node_inputs = {}
         self.node_outputs = {}
         self.model_data = model_data
+        self.condition = condition
         self.g = None
         self.build_model()
 
@@ -39,10 +40,9 @@ class PyomoModel:
             self.constrain_io_to_same_batch_count(node, recipe)
 
             self.constrain_output_to_node_max(node, recipe)
-            self.connect_unconnected_resources(node, recipe)
 
         # model = try_maximize_input_minimize_producers(model, model_data, g)
-        self.try_maximize_output_minimize_producers()
+        self.try_maximize_output()
 
     def calculate_sum_of_differences(self):
         difference_exprs = []
@@ -59,51 +59,54 @@ class PyomoModel:
                 if len(var_list) <= 1:
                     continue
                 src_var_name = src_var_by_part[part_name].name
-                # normally we would generate the sum of absolute differences between the edges here
-                # You can do that if you want to use a non-linear solver, and ignore all of this
-                # In fact, you  can just use product of outputs instead of sum below, and the product will be maximized by making the outputs
-                # as even as possible (there is a quadratic relationship between the distance of two numbers and their product.
-                # So for an output of say 780 split two ways, 390*390 is greater than the product of any other valid numbers)
+                # normally we would generate the straight sum of absolute differences between the edges here. You can
+                # do that if you want to use a non-linear solver, and ignore all of this.  In fact, you  can just use
+                # product of outputs as you can see in the non-linear formulation, and the product will be maximized
+                # by making the outputs as even as possible - there is a quadratic relationship between the distance
+                # of two numbers and their product. So for an output of say 780 split two ways, 390*390 is greater
+                # than the product of any other valid numbers.
                 #
-                # However, absolute value is non-linear on its own.
-                # But we can convert it into a variable plus constraints that give us the same thing and are linear
-                # This works by converting abs(X) into a variable X' and the constraints
-                # X <= X'
-                # -X <= X'
-                # If X > 0, then -X <= X' is always true. Because we use X' in the subtraction below, we will find a value for X' that is as small as possible
-                # while still meeting the "X <= X'" constraint.  This will make it have the value of X
-                # If X < 0, then the opposite holds.
-                # if X == 0, both constraints are satisfied already, and making X as small as possible will ensure it stays at zero.
-                # so if you imagine a=10, b=5
-                # we want to simulate abs(10-5)
-                # -(10-5) <= X' (second constraint) is already true, as it's -5, and remain true for any positive value of X'
-                # (10-5) <= X' (first constraint) will become true when X' >=5, and optimal at exactly 5.
-                # if you imagine abs(5-10)
-                # (5-10) <= X' (first constraint) is always true, as it's -5, and will remain true for any positive value of X'
-                # -(5-10) <= X' (second constraint) will become true when X' >= 5, and optimal at exactly 5
-
+                # For linear formulations, it is trickier - because even if you use sum of differences, absolute
+                # value is non-linear on its own. But we can convert it into a variable plus constraints that give us
+                # the same thing and are linear.
+                #
                 for (current_var, other_var) in itertools.combinations(var_list, 2):
-                    abs_diff_helper = pyo.Var(domain=pyo.NonNegativeReals,
-                                              name=f"edge abs helper for source {src_var_name} edge {current_var.name} + {other_var.name}")
-                    self.model.add_component(abs_diff_helper.name, abs_diff_helper)
-                    diff_expr = other_var - current_var
-                    abs_diff_helper_constraint_positive = pyo.Constraint(expr=diff_expr <= abs_diff_helper)
-                    abs_diff_helper_constraint_negative = pyo.Constraint(expr=-diff_expr <= abs_diff_helper)
-                    self.model.add_component(
-                        f"edge abs helper for source {src_var_name}  edge {current_var.name} + {other_var.name}",
-                        abs_diff_helper_constraint_positive)
-                    self.model.add_component(
-                        f"-edge abs helper for source {src_var_name}  edge {current_var.name} + {other_var.name}",
-                        abs_diff_helper_constraint_negative)
+                    abs_diff_helper = self.linear_absolute_diff(current_var, other_var, f"edge abs helper for source {src_var_name} edge {current_var.name} + {other_var.name}")
                     difference_exprs.append(abs_diff_helper)
         sum_of_differences = sum(difference_exprs)
         return sum_of_differences
 
-    def try_maximize_output_minimize_producers(self):
+    def linear_absolute_diff(self, a, b, name):
+        """"
+        This works by converting abs(X) into a variable X' and the constraints
+        X <= X'
+        -X <= X'
+        If X > 0, then -X <= X' is always true. Because we use X' in the subtraction below, we will find a value for X' that is as small as possible
+        while still meeting the "X <= X'" constraint.  This will make it have the value of X
+        If X < 0, then the opposite holds.
+        if X == 0, both constraints are satisfied already, and making X as small as possible will ensure it stays at zero.
+        so if you imagine a=10, b=5
+        we want to simulate abs(10-5)
+        -(10-5) <= X' (second constraint) is already true, as it's -5, and remain true for any positive value of X'
+        (10-5) <= X' (first constraint) will become true when X' >=5, and optimal at exactly 5.
+        if you imagine abs(5-10)
+        (5-10) <= X' (first constraint) is always true, as it's -5, and will remain true for any positive value of X'
+        -(5-10) <= X' (second constraint) will become true when X' >= 5, and optimal at exactly 5
+        """
+        abs_diff_var = pyo.Var(domain=pyo.NonNegativeReals, name=name)
+        self.model.add_component(name, abs_diff_var)
+        diff_expr= a - b
+        positive_constraint = pyo.Constraint(expr=diff_expr <= abs_diff_var)
+        negative_constraint = pyo.Constraint(expr=-diff_expr <= abs_diff_var)
+        self.model.add_component(name, positive_constraint)
+        self.model.add_component(f"{-name}", negative_constraint)
+        return abs_diff_var
+    
+    def try_maximize_output(self):
         USE_LINEAR_FORMULATION = False
 
         @self.model.Objective(sense=pyo.maximize)
-        def maximize_output_with_minimum_resource_use(m):
+        def maximize_output(m):
             # Maximize the inputs while minimizing produced resources
             # We do not try to maximize sink nodes since they are unconstrained
             all_input_vars, all_output_vars, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs,
@@ -111,7 +114,6 @@ class PyomoModel:
 
             if USE_LINEAR_FORMULATION:
                 sum_of_differences = self.calculate_sum_of_differences()
-
                 return sum(x for x in all_output_vars) - sum_of_differences - sum(x for x in producer_output_vars)
             else:
                 # Sort edges by node and part
@@ -123,10 +125,11 @@ class PyomoModel:
                     part_name = edge[2]["part_name"]
                     edge_var = edge[2]["edge_var"]
                     edge_by_node_and_part[edge[0]][part_name].append(edge_var)
+                # Multiply edges to generate optimality with balance (non-linear)
                 for part_list in edge_by_node_and_part.values():
                     for var_list in part_list.values():
                         prod_exprs.append(pyo.prod(var_list))
-                # return sum(prod_exprs) / sum(x for x in producer_output_vars)
+
                 return sum(prod_exprs)
 
     def try_maximize_input_minimize_producers(self):
@@ -141,7 +144,6 @@ class PyomoModel:
 
             if USE_LINEAR_FORMULATION:
                 sum_of_differences = self.calculate_sum_of_differences()
-
                 return sum(x for x in all_input_vars) - sum_of_differences - sum(x for x in producer_output_vars)
             else:
                 return pyo.prod(x for x in all_input_vars) / pyo.prod(x for x in producer_output_vars)
@@ -286,15 +288,6 @@ class PyomoModel:
                     f"Node {node.Id}.{node.Name} output constraint for resource {node.Outputs[0].Part.Name}",
                     constraint)
 
-    # The modeler allows for unconnected inputs and outputs
-    # If you want it to always produce results,
-    # we need to connect unconnected inputs to infinite resources,
-    # and unconnected outputs to an infinite sink.
-    # Otherwise unconnected nodes will be zero.
-    # TODO(actually do this)
-    def connect_unconnected_resources(self, node, recipe):
-        pass
-
     def pprint(self):
         self.model.pprint()
 
@@ -320,12 +313,13 @@ class PyomoModel:
 
 
 class ReplaceFractions(ExpressionReplacementVisitor):
+    """Replace fractions that occur in expressions with their float value"""
     def __init__(self):
         super().__init__()
 
     def beforeChild(self, node, child, child_idx):
         if isinstance(child, fractions.Fraction):
-            return False, float(child)  # Decimal(child.numerator) / Decimal(child.denominator))
+            return False, float(child)
         if type(child) in nonpyomo_leaf_types or not child.is_expression_type():
             return False, child
         return True, None

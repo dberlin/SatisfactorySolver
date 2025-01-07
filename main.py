@@ -191,7 +191,7 @@ if args.solver == 'pyomo':
     from satisfactorysolver.pyomo_model import PyomoModel
     from pyomo.contrib import appsi
 
-    model = PyomoModel(model_data)
+    model = PyomoModel(model_data, args.condition)
     if logger.level <= logging.DEBUG:
         model.pprint()
     # Debugging example

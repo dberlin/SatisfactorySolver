@@ -6,7 +6,7 @@ from functools import reduce
 from cvc5 import pythonic as cvc5
 
 from satisfactorysolver.solver_helpers import collect_vars
-from satisfactorysolver.solver_model import SolverModel
+from satisfactorysolver.smt_model import SolverModel
 
 
 class CVC5Model(SolverModel):
@@ -22,7 +22,7 @@ class CVC5Model(SolverModel):
         # self.cvc5_model.setOption("stats-every-query", "true")
         self.objective_var = self.create_real_var(name="Objective variable")
         self.g = self.build_model()
-        self.maximize_output_minimize_producers()
+        self.try_maximize_output()
 
     def create_real_var(self, name):
         new_var = cvc5.Real(name)
@@ -36,7 +36,7 @@ class CVC5Model(SolverModel):
         self.solver_model.add(-(a - b) <= tempvar)
         return tempvar  # return cvc5.If(a - b >= 0, a - b, b - a)
 
-    def maximize_output_minimize_producers(self):
+    def try_maximize_output(self):
         _, _, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs, self.model_data.Nodes)
         sum_exprs = []
         penalty_exprs = []
@@ -56,7 +56,7 @@ class CVC5Model(SolverModel):
             else:
                 penalty_exprs = [0]
         self.solver_model.add(self.objective_var == sum(sum_exprs) - sum(penalty_exprs))
-        # Don't let objective fall to zero or else most constranits are satisfiable
+        # Don't let objective fall to zero or else most constraints are satisfiable at 0
         self.solver_model.add(self.objective_var > 0)
 
     def build_model(self):
