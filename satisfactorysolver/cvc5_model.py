@@ -44,6 +44,7 @@ class CVC5Model(SolverModel):
         # self.cvc5_model = cvc5.SolverFor(logic="QF_NRA")
         self.solver_model = cvc5.Solver()
         self.solver_model.setOption("produce-models", "true")
+        # self.solver_model.setOption("produce-proofs", "true")
         # self.cvc5_model.setOption("output", "post-asserts")
         # self.cvc5_model.setOption("verbosity", "5")
         # self.cvc5_model.setOption("stats-every-query", "true")

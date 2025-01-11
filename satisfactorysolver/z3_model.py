@@ -46,8 +46,9 @@ class Z3Model(SolverModel):
         else:
             self.solver_model = z3.Solver()
         self.objective_var = self.create_real_var(name="Objective variable")
+        self.penalty_var = self.create_real_var(name="Penalty variable")
         self.g = self.build_model()
-        self.maximize_output_soft()
+        self.maximize_output()
 
     def create_real_var(self, name):
         new_var = z3.Real(name)
@@ -64,26 +65,28 @@ class Z3Model(SolverModel):
             constr = z3.And(constr, first == x)
         return constr
 
-    def maximize_output_soft(self):
-        _, _, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs, self.model_data.Nodes)
+    def maximize_output(self):
         prod_exprs = []
+        penalty_exprs = []
         edge_by_node_and_part = {graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)}
         for edge in self.g.out_edges(data=True):
             part_name = edge[2]["part_name"]
             edge_var = edge[2]["edge_var"]
             edge_by_node_and_part[edge[0]][part_name].append(edge_var)
         for part_list in edge_by_node_and_part.values():
+            # Penalize non-equal outputs
             for var_list in part_list.values():
-                if self.condition == 'balanced':
-                    all_equal = self.z3_equals(var_list)
-                    if all_equal is not None:
-                        self.solver_model.add_soft(all_equal)
+                for pair in itertools.combinations(var_list, 2):
+                    penalty_exprs.append(self.absolute_diff(pair[0], pair[1]))
                 prod_exprs.extend(var_list)
         self.solver_model.add(self.objective_var == sum(prod_exprs))
+        self.solver_model.add(self.penalty_var == sum(penalty_exprs))
+
         # Don't let objective fall to zero or else the soft constraint is trivially satisfiable
         self.solver_model.add(self.objective_var > 0)
         if self.condition == 'balanced':
             self.solver_model.maximize(self.objective_var)
+            self.solver_model.minimize(self.penalty_var)
 
     def build_model(self):
         self.create_modeler_node_outputs()
