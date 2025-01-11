@@ -25,7 +25,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+import itertools
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from fractions import Fraction
@@ -55,12 +55,18 @@ class SolverModel(ABC):
     :ivar model_data: Reference to the modeler file data containing
     :ivar edge_vars: List of solver variables representing values carried by edges between nodes in the graph.
     """
+
     def __init__(self, model_data):
         self.node_inputs = {}
         self.node_outputs = {}
         self.solver_model = None
         self.model_data = model_data
         self.edge_vars = []
+        self.count = itertools.count()
+
+    @abstractmethod
+    def add_constraint_to_model(self, constraint, name=""):
+        pass
 
     @abstractmethod
     def create_real_var(self, name):
@@ -74,7 +80,7 @@ class SolverModel(ABC):
         generated_table.add_column("Float Value", justify="left", no_wrap=True)
         generated_table.add_column("True Value", justify="left", no_wrap=True)
         for node, variables in data.items():
-          for var in variables.values():
+            for var in variables.values():
                 result = model_result[var]
                 fraction = Fraction(str(result))
                 generated_table.add_row(str(var), str(float(fraction)), str(result))
@@ -131,12 +137,12 @@ class SolverModel(ABC):
             for (_, _, edge_data) in g.in_edges(node.Id, data=True):
                 in_edge_vars_by_part[edge_data["part_name"]].append(edge_data["edge_var"])
             for part_name, var_list in in_edge_vars_by_part.items():
-                self.solver_model.add(sum(var_list) == self.node_inputs[node.Id][part_name])
+                self.add_constraint_to_model(sum(var_list) == self.node_inputs[node.Id][part_name])
             out_edge_vars_by_part = defaultdict(list)
             for (_, _, edge_data) in g.out_edges(node.Id, data=True):
                 out_edge_vars_by_part[edge_data["part_name"]].append(edge_data["edge_var"])
             for part_name, var_list in out_edge_vars_by_part.items():
-                self.solver_model.add(sum(var_list) == self.node_outputs[node.Id][part_name])
+                self.add_constraint_to_model(sum(var_list) == self.node_outputs[node.Id][part_name])
 
     def create_produced_resource_constraints(self):
         """
@@ -150,7 +156,7 @@ class SolverModel(ABC):
         for node in self.model_data.Nodes:
             if len(node.Inputs) == 0 and len(node.Outputs) == 1:
                 limit = ResourceLimits.get_limit_for_node(node)
-                self.solver_model.add(self.node_outputs[node.Id][node.Outputs[0].Part.Name] <= limit)
+                self.add_constraint_to_model(self.node_outputs[node.Id][node.Outputs[0].Part.Name] <= limit)
 
     # Eh, this might be too clever
     def _create_node_map_helper(self, nodes, attribute_name, kind_prefix, special_case=None):
@@ -172,7 +178,7 @@ class SolverModel(ABC):
 
     def create_modeler_node_inputs(self):
         self._create_node_map_helper(self.model_data.Nodes, attribute_name="Inputs", kind_prefix="Input",
-            special_case={"name": "AWESOME Sink", "prefix": "SinkInput"})
+                                     special_case={"name": "AWESOME Sink", "prefix": "SinkInput"})
 
     def create_modeler_node_outputs(self):
         self._create_node_map_helper(self.model_data.Nodes, attribute_name="Outputs", kind_prefix="Output")
@@ -195,27 +201,8 @@ class SolverModel(ABC):
             for (output_part, output_part_amount) in recipe.Outputs:
                 output_var = self.node_outputs[node.Id][output_part.Name]
                 output_rate_per_minute = abs(output_part_amount) * batches_per_minute
-                self.solver_model.add(output_var <= ((input_var / input_rate_per_minute) * output_rate_per_minute))
-
-    def constraint_input_to_practical_division(self, node, recipe):
-        """
-        Constrain the input to be a reasonable division of batch sizes.
-        While all values are possible through clocking/etc the user
-        may not want to see solutions that are trivial variants (119/1 splits, etc.)
-        :param node: Modeler node, this is usually representing a machine.
-        :param recipe: Recipe being used.
-        :return: None
-        """
-        for (part, amount) in recipe.Inputs:
-            input_var = self.node_inputs[node.Id][part.Name]
-            amount_needed_per_batch = abs(amount)
-            expr = input_var / float(amount_needed_per_batch)
-            self.solver_model.add((expr - self.ToInt(expr)) == 0)
-        for (part, amount) in recipe.Outputs:
-            output_var = self.node_outputs[node.Id][part.Name]
-            amount_made_per_batch = abs(amount)
-            expr = output_var / float(amount_made_per_batch)
-            self.solver_model.add((expr - self.ToInt(expr)) == 0)
+                self.add_constraint_to_model(
+                    output_var <= ((input_var / input_rate_per_minute) * output_rate_per_minute))
 
     def constrain_io_to_same_batch_count(self, node, recipe):
         """
@@ -240,7 +227,7 @@ class SolverModel(ABC):
         if len(num_batch_per_min_exprs) > 1:
             first, rest = num_batch_per_min_exprs[0], num_batch_per_min_exprs[1:]
             for expr in rest:
-                self.solver_model.add(expr == first)
+                self.add_constraint_to_model(expr == first)
 
     def constrain_output_to_node_max(self, node, recipe):
         """
@@ -258,8 +245,11 @@ class SolverModel(ABC):
             output_var = self.node_outputs[node.Id][part.Name]
             batches_per_minute = 60.0 / recipe.BatchTime
             output_max = (node_max if in_ppm else node_max * abs(amount) * batches_per_minute)
-            self.solver_model.add(output_var <= float(output_max))
+            self.add_constraint_to_model(output_var <= float(output_max))
 
-    @abstractmethod
-    def ToInt(self, expr):
-        pass
+    def absolute_diff(self, a, b):
+        # This is faster than using if clauses
+        tempvar = self.create_real_var(name=f"tempvar {next(self.count)} for absolute difference")
+        self.add_constraint_to_model((a - b) <= tempvar)
+        self.add_constraint_to_model(-(a - b) <= tempvar)
+        return tempvar

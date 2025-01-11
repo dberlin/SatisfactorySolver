@@ -33,14 +33,17 @@ from functools import reduce
 from cvc5 import pythonic as cvc5
 
 from satisfactorysolver.solver_helpers import collect_vars
-from satisfactorysolver.smt_model import SolverModel
+from satisfactorysolver.solver_model import SolverModel
 
 
 class CVC5Model(SolverModel):
+    def add_constraint_to_model(self, constraint, name=""):
+        self.solver_model.add(constraint)
+        return constraint
+
     def __init__(self, model_data, condition):
         super().__init__(model_data)
         self.condition = condition
-        self.count = itertools.count()
         # self.cvc5_model = cvc5.SolverFor(logic="QF_NRA")
         self.solver_model = cvc5.Solver()
         self.solver_model.setOption("produce-models", "true")
@@ -54,14 +57,14 @@ class CVC5Model(SolverModel):
 
     def create_real_var(self, name):
         new_var = cvc5.Real(name)
-        self.solver_model.add(new_var >= 0)
+        self.add_constraint_to_model(new_var >= 0)
         return new_var
 
     def absolute_diff(self, a, b):
         # This is faster than using if clauses
         tempvar = self.create_real_var(name=f"tempvar {next(self.count)} for absolute difference")
-        self.solver_model.add((a - b) <= tempvar)
-        self.solver_model.add(-(a - b) <= tempvar)
+        self.add_constraint_to_model((a - b) <= tempvar)
+        self.add_constraint_to_model(-(a - b) <= tempvar)
         return tempvar  # return cvc5.If(a - b >= 0, a - b, b - a)
 
     def try_maximize_output(self):
@@ -83,9 +86,9 @@ class CVC5Model(SolverModel):
                         penalty_exprs.append(self.absolute_diff(pair[0], pair[1]))
             else:
                 penalty_exprs = [0]
-        self.solver_model.add(self.objective_var == sum(sum_exprs) - sum(penalty_exprs))
+        self.add_constraint_to_model(self.objective_var == sum(sum_exprs) - sum(penalty_exprs))
         # Don't let objective fall to zero or else most constraints are satisfiable at 0
-        self.solver_model.add(self.objective_var > 0)
+        self.add_constraint_to_model(self.objective_var > 0)
 
     def build_model(self):
         self.create_modeler_node_outputs()
@@ -99,9 +102,4 @@ class CVC5Model(SolverModel):
             self.constrain_output_amount_to_input_amount(node, node.Recipe)
             self.constrain_io_to_same_batch_count(node, node.Recipe)
             self.constrain_output_to_node_max(node, node.Recipe)
-            if self.condition == 'practical':
-                self.constraint_input_to_practical_division(node, node.Recipe)
         return g
-
-    def ToInt(self, expr):
-        return cvc5.ToInt(expr)

@@ -30,16 +30,18 @@ from collections import defaultdict
 
 import z3
 
-from satisfactorysolver.solver_helpers import collect_vars
-from satisfactorysolver.smt_model import SolverModel
+from satisfactorysolver.solver_model import SolverModel
 
 
 class Z3Model(SolverModel):
+    def add_constraint_to_model(self, constraint, name=""):
+        self.solver_model.add(constraint)
+        return constraint
+
     solver_model: z3.Optimize | z3.Solver
 
     def __init__(self, model_data, condition):
         super().__init__(model_data)
-        self.count = itertools.count()
         self.condition = condition
         if condition == 'balanced':
             self.solver_model = z3.Optimize()
@@ -52,7 +54,7 @@ class Z3Model(SolverModel):
 
     def create_real_var(self, name):
         new_var = z3.Real(name)
-        self.solver_model.add(new_var >= 0)
+        self.add_constraint_to_model(new_var >= 0)
         return new_var
 
     @staticmethod
@@ -79,11 +81,11 @@ class Z3Model(SolverModel):
                 for pair in itertools.combinations(var_list, 2):
                     penalty_exprs.append(self.absolute_diff(pair[0], pair[1]))
                 prod_exprs.extend(var_list)
-        self.solver_model.add(self.objective_var == sum(prod_exprs))
-        self.solver_model.add(self.penalty_var == sum(penalty_exprs))
+        self.add_constraint_to_model(self.objective_var == sum(prod_exprs))
+        self.add_constraint_to_model(self.penalty_var == sum(penalty_exprs))
 
-        # Don't let objective fall to zero or else the soft constraint is trivially satisfiable
-        self.solver_model.add(self.objective_var > 0)
+        # Don't let objective fall to zero or else the other constraints are trivially satisfiable
+        self.add_constraint_to_model(self.objective_var > 0)
         if self.condition == 'balanced':
             self.solver_model.maximize(self.objective_var)
             self.solver_model.minimize(self.penalty_var)
@@ -100,16 +102,4 @@ class Z3Model(SolverModel):
             self.constrain_output_amount_to_input_amount(node, node.Recipe)
             self.constrain_io_to_same_batch_count(node, node.Recipe)
             self.constrain_output_to_node_max(node, node.Recipe)
-            if self.condition == "practical":
-                self.constraint_input_to_practical_division(node, node.Recipe)
         return g
-
-    def absolute_diff(self, a, b):
-        # This is faster than using if clauses
-        tempvar = self.create_real_var(name=f"tempvar {next(self.count)} for absolute difference")
-        self.solver_model.add((a - b) <= tempvar)
-        self.solver_model.add(-(a - b) <= tempvar)
-        return tempvar
-
-    def ToInt(self, expr):
-        return z3.ToInt(expr)
