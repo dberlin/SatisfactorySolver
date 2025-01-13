@@ -63,6 +63,13 @@ class ResourceLimits:
     Nitrogen = 12000
     SAM = 10200
 
+    @staticmethod
+    def get_resource_names():
+        return [
+            "Bauxite", "Caterium Ore", "Coal", "Copper Ore", "Crude Oil", "Iron Ore", "Limestone", "Nitrogen Gas",
+            "Raw Quartz", "SAM", "Sulfur", "Uranium", "Water",
+        ]
+
     # Water is unlimited
     @classmethod
     def get_limit_for_node(cls, node: ModelerNodeModel):
@@ -75,8 +82,6 @@ class ResourceLimits:
                 return cls.Copper
             case "Nitrogen Gas":
                 return cls.Nitrogen
-            case "Uranium Ore":
-                return cls.Uranium
             case "Crude Oil":
                 return cls.CrudeOil
             case "Sulfur":
