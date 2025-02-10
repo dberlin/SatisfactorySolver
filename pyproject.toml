@@ -1,26 +1,27 @@
-[tool.poetry]
+[tool.pdm.build]
+includes = []
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[project]
+authors = [{ name = "Daniel Berlin", email = "dberlin@dberlin.org" }]
+requires-python = "<4.0,>=3.12"
+dependencies = [
+  "pyomo<7.0.0,>=6.8.2",
+  "rich<14.0.0,>=13.9.4",
+  "highspy<2.0.0,>=1.9.0",
+  "pydantic<3.0.0,>=2.10.4",
+  "deepmerge<3.0,>=2.0",
+  "networkx<4.0.0,>=3.4.2",
+  "matplotlib<4.0.0,>=3.10.0",
+  "setuptools<76.0.0,>=75.6.0",
+  "wheel<1.0.0,>=0.45.1",
+  "z3-solver<5.0.0.0,>=4.13.4.0",
+  "cvc5<2.0.0,>=1.2.0",
+  "pytest<9.0.0,>=8.3.4",
+]
 name = "satisfactorysolver"
 version = "0.1.0"
 description = ""
-authors = ["Daniel Berlin <dberlin@dberlin.org>"]
-
-[tool.poetry.dependencies]
-python = "^3.12"
-pyomo = "^6.8.2"
-rich = "^13.9.4"
-highspy = "^1.9.0"
-pydantic = "^2.10.4"
-deepmerge = "^2.0"
-networkx = "^3.4.2"
-matplotlib = "^3.10.0"
-setuptools = "^75.6.0"
-wheel = "^0.45.1"
-pybind11 = "^2.13.6"
-z3-solver = "^4.13.4.0"
-cvc5 = "^1.2.0"
-pytest = "^8.3.4"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
