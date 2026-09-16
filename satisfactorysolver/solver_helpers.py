@@ -34,7 +34,9 @@ def collect_vars(node_inputs, node_outputs, nodes):
     all_output_vars = []
     producer_output_vars = []
     # all_output_vars
-    for (node_output_dict, node_input_dict, node) in zip(node_outputs.values(), node_inputs.values(), nodes):
+    for node_output_dict, node_input_dict, node in zip(
+        node_outputs.values(), node_inputs.values(), nodes
+    ):
         if node.Name == "AWESOME Sink":
             continue
         is_producer = len(node_input_dict) == 0 and len(node_output_dict) == 1
@@ -48,6 +50,7 @@ def collect_vars(node_inputs, node_outputs, nodes):
 
 # These are the 1.0 resource limits, which we use to bound the producers of various sorts,
 # even in the presence of no other limits.
+
 
 class ResourceLimits:
     Iron = 92100
@@ -66,8 +69,19 @@ class ResourceLimits:
     @staticmethod
     def get_resource_names():
         return [
-            "Bauxite", "Caterium Ore", "Coal", "Copper Ore", "Crude Oil", "Iron Ore", "Limestone", "Nitrogen Gas",
-            "Raw Quartz", "SAM", "Sulfur", "Uranium", "Water",
+            "Bauxite",
+            "Caterium Ore",
+            "Coal",
+            "Copper Ore",
+            "Crude Oil",
+            "Iron Ore",
+            "Limestone",
+            "Nitrogen Gas",
+            "Raw Quartz",
+            "SAM",
+            "Sulfur",
+            "Uranium",
+            "Water",
         ]
 
     # Water is unlimited
@@ -99,5 +113,7 @@ class ResourceLimits:
             case "Uranium":
                 return cls.Uranium
             case "Water":
-                return 2 ** 32
-        raise ValueError(f"Could not find resource limit for part {node.Outputs[0].Part.Name}")
+                return 2**32
+        raise ValueError(
+            f"Could not find resource limit for part {node.Outputs[0].Part.Name}"
+        )

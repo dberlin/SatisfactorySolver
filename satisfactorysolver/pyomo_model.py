@@ -89,7 +89,10 @@ class PyomoModel(SolverModel):
                 self.penalty_var = self.create_real_var(name="Penalty variable")
                 prod_exprs = []
                 penalty_exprs = []
-                edge_by_node_and_part = {graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)}
+                edge_by_node_and_part = {
+                    graph_node[0]: defaultdict(list)
+                    for graph_node in self.g.nodes(data=True)
+                }
                 for edge in self.g.out_edges(data=True):
                     part_name = edge[2]["part_name"]
                     edge_var = edge[2]["edge_var"]
@@ -105,7 +108,7 @@ class PyomoModel(SolverModel):
 
                 # Don't let objective fall to zero or else the  constraints are trivially satisfiable
                 self.add_constraint_to_model(self.objective_var >= 0.01)
-                if self.condition == 'balanced':
+                if self.condition == "balanced":
                     self.solver_model.maximize(self.objective_var)
                     self.solver_model.minimize(self.penalty_var)
             else:
@@ -132,6 +135,7 @@ class PyomoModel(SolverModel):
         # Print the resulting values as two tables
         from rich import table
         from rich import console
+
         input_table = table.Table(title="Node inputs")
         input_table.add_column("Node name", justify="left", no_wrap=True)
         input_table.add_column("Value", justify="left", no_wrap=True)

@@ -55,7 +55,7 @@ def validate_fraction_helper(possible_fraction_str: str) -> Fraction | None:
 
 
 def validate_decimal_helper(possible_fraction_str: str) -> Decimal | None:
-    possible_fraction = possible_fraction_str.split('/')
+    possible_fraction = possible_fraction_str.split("/")
     if len(possible_fraction) == 1:
         return Decimal(possible_fraction[0])
     elif len(possible_fraction) == 2:

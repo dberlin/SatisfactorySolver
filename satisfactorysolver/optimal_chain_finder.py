@@ -52,7 +52,9 @@ class OptimalChainFinder[VarType](ABC):
         self.calculate_resource_weights()
         self.calculate_resources_scaled()
         self.calculate_item_use(all_items)
-        self.add_optimization_constraints([output for (output, amount) in outputs.items() if amount == -1])
+        self.add_optimization_constraints(
+            [output for (output, amount) in outputs.items() if amount == -1]
+        )
 
     @abstractmethod
     def solve(self):
@@ -74,21 +76,23 @@ class OptimalChainFinder[VarType](ABC):
             # If you want to keep converters but ignore recipes that are just misnamed producers
             # if len(recipe.Inputs) == 0 and len(recipe.Outputs) == 1 and recipe.Outputs[0].Part.Name in self.resources:
             #     continue
-            for (part, amount) in recipe.Inputs:
+            for part, amount in recipe.Inputs:
                 self.ingredients.add(part.Name)
-            for (part, amount) in recipe.Outputs:
+            for part, amount in recipe.Outputs:
                 self.products.add(part.Name)
             self.recipes.add(recipe.Name)
 
     def fix_input_amounts(self, all_items, inputs):
         for item in all_items:
             if item in inputs.keys():
-                self.add_constraint_to_model(self.user_given_inputs[item] == inputs[item])
+                self.add_constraint_to_model(
+                    self.user_given_inputs[item] == inputs[item]
+                )
             else:
                 self.add_constraint_to_model(self.user_given_inputs[item] == 0)
 
     def fix_output_amounts(self, outputs):
-        for (item, amount) in outputs.items():
+        for item, amount in outputs.items():
             self.add_constraint_to_model(self.user_given_outputs[item] == outputs[item])
 
     def construct_input_items(self, all_items):
@@ -108,7 +112,7 @@ class OptimalChainFinder[VarType](ABC):
             self.num_recipes[recipe] = self.create_real_var(name=f"Recipe {recipe}")
 
     def add_related_constraints(self, items, user_given_io, recipes_mapping, kind):
-        """ All the input/output constraints are of the same form, placing some sum relationship on the intermediate
+        """All the input/output constraints are of the same form, placing some sum relationship on the intermediate
         variables.
 
         IE sum(all inputs needing an intermediate) == intermediate value
@@ -135,21 +139,28 @@ class OptimalChainFinder[VarType](ABC):
             self.add_constraint_to_model(sum(exprs) == self.intermediates[item])
 
     def add_product_constraints(self):
-        self.add_related_constraints(self.products, self.user_given_inputs, self.recipes_by_output, "Outputs")
+        self.add_related_constraints(
+            self.products, self.user_given_inputs, self.recipes_by_output, "Outputs"
+        )
 
     def add_ingredient_constraints(self, all_items):
-        self.add_related_constraints(all_items, self.user_given_outputs, self.recipes_by_input, "Inputs")
+        self.add_related_constraints(
+            all_items, self.user_given_outputs, self.recipes_by_input, "Inputs"
+        )
 
     @staticmethod
     def get_amount_for_item(recipe_parts, item):
-        for (part, amount) in recipe_parts:
+        for part, amount in recipe_parts:
             if part.Name == item:
                 return abs(amount)
         raise KeyError(f"Item {item} not found in recipe parts {recipe_parts}")
 
     def add_resource_constraints(self):
         for resource in self.resources:
-            self.add_constraint_to_model(self.intermediates[resource] <= ResourceLimits.get_limit_for_node(resource))
+            self.add_constraint_to_model(
+                self.intermediates[resource]
+                <= ResourceLimits.get_limit_for_node(resource)
+            )
 
     def calculate_resource_weights(self):
         filtered_limits = {}
@@ -158,10 +169,15 @@ class OptimalChainFinder[VarType](ABC):
                 filtered_limits[resource] = ResourceLimits.get_limit_for_node(resource)
         avg_limit = sum(filtered_limits.values()) / len(filtered_limits)
         for resource in self.resources:
-            self.resource_weights[resource] = avg_limit / ResourceLimits.get_limit_for_node(resource)
+            self.resource_weights[resource] = (
+                avg_limit / ResourceLimits.get_limit_for_node(resource)
+            )
 
     def calculate_resources_scaled(self):
-        expr = sum(self.resource_weights[resource] * self.intermediates[resource] for resource in self.resource_weights)
+        expr = sum(
+            self.resource_weights[resource] * self.intermediates[resource]
+            for resource in self.resource_weights
+        )
         self.add_constraint_to_model(expr == self.resources_scaled)
 
     def calculate_item_use(self, all_items):
@@ -183,11 +199,15 @@ class OptimalChainFinder[VarType](ABC):
             var = value_dict[key]
             result = model_result(var)
             if result is None:
-                logging.critical(f"Var {var} has a None result. This should not happen.")
+                logging.critical(
+                    f"Var {var} has a None result. This should not happen."
+                )
                 continue
             if self.get_fraction_from_val(result) > 0.001:
                 fraction = self.get_fraction_from_val(result)
-                generated_table.add_row(str(var), str(round(float(fraction), 2)), str(result))
+                generated_table.add_row(
+                    str(var), str(round(float(fraction), 2)), str(result)
+                )
         return generated_table
 
     def print_inputs_outputs(self):
@@ -195,16 +215,24 @@ class OptimalChainFinder[VarType](ABC):
         model_result = self.get_model_result_by_var
         rich_console = console.Console()
         # Create and print Inputs table
-        input_table = self._create_and_populate_table("Inputs", "user_given_inputs", model_result)
+        input_table = self._create_and_populate_table(
+            "Inputs", "user_given_inputs", model_result
+        )
         rich_console.print(input_table)
         # Create and print Outputs table
-        output_table = self._create_and_populate_table("Outputs", "user_given_outputs", model_result)
+        output_table = self._create_and_populate_table(
+            "Outputs", "user_given_outputs", model_result
+        )
         rich_console.print(output_table)
         # Create and print Intermediates table
-        intermediates_table = self._create_and_populate_table("Intermediates", "intermediates", model_result)
+        intermediates_table = self._create_and_populate_table(
+            "Intermediates", "intermediates", model_result
+        )
         rich_console.print(intermediates_table)
         # Create and print Num Recipes table
-        num_recipes_table = self._create_and_populate_table("Num recipes", "num_recipes", model_result)
+        num_recipes_table = self._create_and_populate_table(
+            "Num recipes", "num_recipes", model_result
+        )
         rich_console.print(num_recipes_table)
 
     @abstractmethod
@@ -213,10 +241,10 @@ class OptimalChainFinder[VarType](ABC):
 
     def construct_possibly_used_recipes(self, outputs):
         """
-            Generate the set of recipes that could possibly be used in making our outputs.
-            This is generated by walking the graph, queueing recipes that produce the current
-            recipe's inputs, iteratively, until every recipe that is part of any chain
-            that can lead to our outputs is added.
+        Generate the set of recipes that could possibly be used in making our outputs.
+        This is generated by walking the graph, queueing recipes that produce the current
+        recipe's inputs, iteratively, until every recipe that is part of any chain
+        that can lead to our outputs is added.
         """
 
         # Networkx does not have multi-source BFS or DFS, and it seems silly to convert the recipe data to a graph just
@@ -227,7 +255,7 @@ class OptimalChainFinder[VarType](ABC):
         # We need the full recipes by output to start out here, and will overwrite it
         # later with the minimized set.
         for recipe in self.recipe_data:
-            for (part, amount) in recipe.Outputs:
+            for part, amount in recipe.Outputs:
                 self.recipes_by_output[part.Name].add(recipe)
 
         # Seed the queue with recipes that can output our outputs
@@ -244,7 +272,7 @@ class OptimalChainFinder[VarType](ABC):
             # Add them to the queue
             recipe = node_queue.popleft()
             recipe_set.add(recipe)
-            for (part, amount) in recipe.Inputs:
+            for part, amount in recipe.Inputs:
                 for can_produce_input in self.recipes_by_output[part.Name]:
                     if can_produce_input not in visited:
                         node_queue.append(can_produce_input)
@@ -256,8 +284,8 @@ class OptimalChainFinder[VarType](ABC):
         for recipe in self.recipe_data:
             if recipe not in recipe_set:
                 continue
-            for (part, amount) in recipe.Outputs:
+            for part, amount in recipe.Outputs:
                 self.recipes_by_output[part.Name].add(recipe)
-            for (part, amount) in recipe.Inputs:
+            for part, amount in recipe.Inputs:
                 self.recipes_by_input[part.Name].add(recipe)
         return recipe_set

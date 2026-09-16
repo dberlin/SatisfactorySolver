@@ -25,3 +25,8 @@ dependencies = [
 name = "satisfactorysolver"
 version = "0.1.0"
 description = ""
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.8",
+]

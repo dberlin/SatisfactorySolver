@@ -38,7 +38,10 @@ from deepmerge import always_merger
 
 from satisfactorysolver.modeler_models import AllDataModel, ModelerFileModel
 
-logging.basicConfig(level=logging.INFO, handlers=[rich.logging.RichHandler(rich_tracebacks=True)], )
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[rich.logging.RichHandler(rich_tracebacks=True)],
+)
 logger = logging.getLogger(__name__)
 
 
@@ -54,23 +57,35 @@ def load_model_file(name):
     return ModelerFileModel.model_validate(model_data)
 
 
-parser = argparse.ArgumentParser(prog='Satisfactory Model Solver')
-parser.add_argument('-v', '--verbose', action='count', help='Increase verbosity', default=0)
-parser.add_argument('-s', '--solver', choices=['z3', 'pyomo', 'cvc5'], default='z3',
-                    help='Which solver to use. Default is z3.')
-parser.add_argument('-c', '--condition', choices=['optimal', 'balanced', 'practical'], default='balanced',
-                    help="Which condition to try to optimize for."
-                         ""
-                         "Optimal means any solution that maximizes output, whether practical to achieve in the game "
-                         "or stable or not."
-                         ""
-                         "Balanced means any optimal solution that balances outputs from a single source to multiple "
-                         "sinks, to the degree it does not destroy optimality.  This is easier achieve in game,"
-                         "as it matches how splitters and mergers function."
-                         ""
-                         "Practical means any optimal solution that does not involve splitting inputs and outputs "
-                         "into smaller than eighths.")
-parser.add_argument('filename')
+parser = argparse.ArgumentParser(prog="Satisfactory Model Solver")
+parser.add_argument(
+    "-v", "--verbose", action="count", help="Increase verbosity", default=0
+)
+parser.add_argument(
+    "-s",
+    "--solver",
+    choices=["z3", "pyomo", "cvc5"],
+    default="z3",
+    help="Which solver to use. Default is z3.",
+)
+parser.add_argument(
+    "-c",
+    "--condition",
+    choices=["optimal", "balanced", "practical"],
+    default="balanced",
+    help="Which condition to try to optimize for."
+    ""
+    "Optimal means any solution that maximizes output, whether practical to achieve in the game "
+    "or stable or not."
+    ""
+    "Balanced means any optimal solution that balances outputs from a single source to multiple "
+    "sinks, to the degree it does not destroy optimality.  This is easier achieve in game,"
+    "as it matches how splitters and mergers function."
+    ""
+    "Practical means any optimal solution that does not involve splitting inputs and outputs "
+    "into smaller than eighths.",
+)
+parser.add_argument("filename")
 args = parser.parse_args()
 game_data = load_game_data()
 logger.setLevel(logging.INFO - (args.verbose * 10))
@@ -78,7 +93,7 @@ model_data = load_model_file(args.filename)
 
 
 def find_objective_max(model, objective_var, sat_val):
-    low, high = 0, 2 ** 32
+    low, high = 0, 2**32
     last_sat_val = None
     while not math.isclose(low, high, abs_tol=0.001) and low < high:
         mid = (low + high) / 2
@@ -98,10 +113,9 @@ def find_objective_max(model, objective_var, sat_val):
     return status, last_sat_val
 
 
-if args.solver == 'cvc5':
+if args.solver == "cvc5":
     import cvc5.pythonic
     from satisfactorysolver.cvc5_model import CVC5Model
-
 
     def cvc5_all_smt(s, initial_terms):
         def block_term(s, m, terms, i):
@@ -115,7 +129,12 @@ if args.solver == 'cvc5':
             val.ctx = cvc5.pythonic.main_ctx()
             # Because CVC5 and Z3 are infinite precision, we have to use some tolerance on the variables Otherwise it
             # will enumerate an infinite number of models that have epsilon differences in practice
-            s.add(cvc5.pythonic.Or(cvc5.pythonic.And(t > val, t - val > 1), cvc5.pythonic.And(t <= val, val - t > 1)))
+            s.add(
+                cvc5.pythonic.Or(
+                    cvc5.pythonic.And(t > val, t - val > 1),
+                    cvc5.pythonic.And(t <= val, val - t > 1),
+                )
+            )
 
         def fix_term(s, m, terms, i):
             res = m[terms[i]]
@@ -136,18 +155,19 @@ if args.solver == 'cvc5':
 
         yield from all_smt_rec(list(initial_terms))
 
-
     model = CVC5Model(model_data, args.condition)
 
-    logger.debug('=====')
+    logger.debug("=====")
     logger.debug(model.solver_model)
-    logger.debug('=====')
+    logger.debug("=====")
     status = model.solver_model.check()
     obj_var_idx = 0
 
     # If the model is satisfiable, binary search for the max objective var
     if status == cvc5.pythonic.sat:
-        last_status, last_sat_val = find_objective_max(model.solver_model, model.objective_var, cvc5.pythonic.sat)
+        last_status, last_sat_val = find_objective_max(
+            model.solver_model, model.objective_var, cvc5.pythonic.sat
+        )
         # Model can be popped to last sat point if necessary
         if last_status != cvc5.pythonic.sat:
             model.solver_model.pop()
@@ -157,20 +177,21 @@ if args.solver == 'cvc5':
         # Fix the objective value at the optimal one
         obj_result = model_result[model.objective_var]
 
-
         # Fix the objective value at the optimal one
-        model.solver_model.add(model.objective_var == Fraction(obj_result.numerator(), obj_result.denominator()))
+        model.solver_model.add(
+            model.objective_var
+            == Fraction(obj_result.numerator(), obj_result.denominator())
+        )
         logging.info(f"Enumerating all optimal solutions")
         for m in cvc5_all_smt(model.solver_model, model.edge_vars):
             model.print_inputs_outputs()
     else:
         logging.error(f"No solution found, status: {status}")
-if args.solver == 'z3':
+if args.solver == "z3":
     import z3
     from satisfactorysolver.z3_model import Z3Model
 
     model = Z3Model(model_data, args.condition)
-
 
     def z3_all_smt(s, initial_terms):
         def block_term(s, m, t):
@@ -195,26 +216,29 @@ if args.solver == 'z3':
 
         yield from all_smt_rec(list(initial_terms))
 
-
     status = model.solver_model.check()
     if status == z3.sat:
-        if args.condition == 'balanced':
+        if args.condition == "balanced":
             model.print_inputs_outputs()
         else:
             model_result = model.solver_model.model()
-            last_status, last_sat_val = find_objective_max(model.solver_model, model.objective_var, z3.sat)
+            last_status, last_sat_val = find_objective_max(
+                model.solver_model, model.objective_var, z3.sat
+            )
             if last_status != z3.sat:
                 model.solver_model.pop()
             model.solver_model.check()
             model_result = model.solver_model.model()
             # Fix the objective value at the optimal one
-            model.solver_model.add(model.objective_var == model_result[model.objective_var])
+            model.solver_model.add(
+                model.objective_var == model_result[model.objective_var]
+            )
             logging.info(f"Enumerating all optimal solutions")
             for m in z3_all_smt(model.solver_model, model.edge_vars):
                 model.print_inputs_outputs()
     else:
         logging.error(f"No solution found, status: {status}")
-if args.solver == 'pyomo':
+if args.solver == "pyomo":
     from satisfactorysolver.pyomo_model import PyomoModel
     from pyomo.contrib import appsi
 

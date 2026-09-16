@@ -52,12 +52,14 @@ class MachineModel(BaseModel):
     def __hash__(self):
         return hash(self.Name)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def index_name(self) -> Self:
         MachineByName.add(self.Name, self)
         return self
 
-    @field_validator('OverclockPowerExponent', 'ProductionShardMultiplier', mode='before')
+    @field_validator(
+        "OverclockPowerExponent", "ProductionShardMultiplier", mode="before"
+    )
     @classmethod
     def validate_exponent(cls, exponent: str) -> Fraction | None:
         return validate_fraction_helper(exponent)
@@ -76,12 +78,12 @@ class MultiMachineMachineModel(BaseModel):
     def __hash__(self):
         return hash(self.Name)
 
-    @field_validator('PartsRatio', mode='before')
+    @field_validator("PartsRatio", mode="before")
     @classmethod
     def validate_exponent(cls, exponent: str) -> Fraction | None:
         return validate_fraction_helper(exponent)
 
-    @field_validator('Name', mode='after')
+    @field_validator("Name", mode="after")
     @classmethod
     def validate_name(cls, name: str) -> str:
         if MachineByName.get(name) is None:
@@ -99,7 +101,7 @@ class MultiMachineCapacityModel(BaseModel):
     PartsRatio: Optional[Fraction] = 1
     Default: Optional[bool] = False
 
-    @field_validator('PartsRatio', mode='before')
+    @field_validator("PartsRatio", mode="before")
     @classmethod
     def validate_exponent(cls, exponent: str) -> Fraction | None:
         return validate_fraction_helper(exponent)
@@ -118,7 +120,7 @@ class MultiMachineModel(BaseModel):
     def __hash__(self):
         return hash(self.Name)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def index_name(self) -> Self:
         MultiMachineByName.add(self.Name, self)
         return self
@@ -135,7 +137,7 @@ class PartModel(BaseModel):
     def __hash__(self):
         return hash(self.Name)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def index_name(self) -> Self:
         PartByName.add(self.Name, self)
         return self
@@ -145,7 +147,7 @@ class RecipePartModel(BaseModel):
     Part: PartModel
     Amount: Fraction
 
-    @field_validator('Part', mode='before')
+    @field_validator("Part", mode="before")
     @classmethod
     def validate_part(cls, part_name: str) -> PartModel:
         part = PartByName.get(part_name)
@@ -153,7 +155,7 @@ class RecipePartModel(BaseModel):
             raise ValueError(f"Part {part_name} does not exist")
         return part
 
-    @field_validator('Amount', mode='before')
+    @field_validator("Amount", mode="before")
     @classmethod
     def validate_amount(cls, amount: str) -> Fraction:
         return validate_fraction_helper(amount)
@@ -181,20 +183,22 @@ class RecipeModel(BaseModel):
     def __hash__(self):
         return hash(self.Name)
 
-    @field_validator('Machine', mode='before')
+    @field_validator("Machine", mode="before")
     @classmethod
     def validate_machine(cls, machine_name: str) -> MachineModel | MultiMachineModel:
-        machine = MultiMachineByName.get(machine_name) or MachineByName.get(machine_name)
+        machine = MultiMachineByName.get(machine_name) or MachineByName.get(
+            machine_name
+        )
         if not machine:
             raise ValueError(f"Machine/MultiMachine {machine_name} does not exist")
         return machine
 
-    @field_validator('BatchTime', mode='before')
+    @field_validator("BatchTime", mode="before")
     @classmethod
     def validate_batchtime(cls, amount: str) -> int | Fraction:
         return validate_fraction_helper(amount)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def index_name(self) -> Self:
         RecipeByName.add(self.Name, self)
         return self
@@ -210,11 +214,23 @@ class RecipeModel(BaseModel):
         return [part for part in self.Parts if part.Amount >= 0]
 
     def __rich_repr__(self):
-        yield f"name", self.Name,
-        yield f"inputs", self.Inputs,
-        yield f"outputs", self.Outputs,
+        yield (
+            f"name",
+            self.Name,
+        )
+        yield (
+            f"inputs",
+            self.Inputs,
+        )
+        yield (
+            f"outputs",
+            self.Outputs,
+        )
         yield f"machine", self.Machine.Name
-        yield f"batchtime", rich_fraction_helper(self.BatchTime),
+        yield (
+            f"batchtime",
+            rich_fraction_helper(self.BatchTime),
+        )
 
 
 class AllDataModel(BaseModel):
@@ -259,7 +275,9 @@ def validate_input_by_id_helper(data) -> dict[str, list[int]]:
 class ModelerNodeModel(BaseModel):
     Name: str
     ParentId: Optional[int] = Field(alias="Parent", default=None, repr=False)
-    InputNodesById: Optional[dict[str, list[int]]] = Field(alias="Inputs", repr=False, default=None)
+    InputNodesById: Optional[dict[str, list[int]]] = Field(
+        alias="Inputs", repr=False, default=None
+    )
     Max: Optional[Fraction] = None
     Id: Optional[int] = None
     Machine: Optional[MachineModel] = None

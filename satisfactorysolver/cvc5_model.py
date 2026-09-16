@@ -62,16 +62,22 @@ class CVC5Model(SolverModel):
 
     def absolute_diff(self, a, b):
         # This is faster than using if clauses
-        tempvar = self.create_real_var(name=f"tempvar {next(self.count)} for absolute difference")
+        tempvar = self.create_real_var(
+            name=f"tempvar {next(self.count)} for absolute difference"
+        )
         self.add_constraint_to_model((a - b) <= tempvar)
         self.add_constraint_to_model(-(a - b) <= tempvar)
         return tempvar  # return cvc5.If(a - b >= 0, a - b, b - a)
 
     def try_maximize_output(self):
-        _, _, producer_output_vars = collect_vars(self.node_inputs, self.node_outputs, self.model_data.Nodes)
+        _, _, producer_output_vars = collect_vars(
+            self.node_inputs, self.node_outputs, self.model_data.Nodes
+        )
         sum_exprs = []
         penalty_exprs = []
-        edge_by_node_and_part = {graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)}
+        edge_by_node_and_part = {
+            graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)
+        }
         for edge in self.g.out_edges(data=True):
             part_name = edge[2]["part_name"]
             edge_var = edge[2]["edge_var"]
@@ -79,14 +85,16 @@ class CVC5Model(SolverModel):
         for part_list in edge_by_node_and_part.values():
             for var_list in part_list.values():
                 sum_exprs.append(reduce(operator.add, var_list))
-            if self.condition == 'balanced':
+            if self.condition == "balanced":
                 # Penalize non-equal outputs
                 for var_list in part_list.values():
                     for pair in itertools.combinations(var_list, 2):
                         penalty_exprs.append(self.absolute_diff(pair[0], pair[1]))
             else:
                 penalty_exprs = [0]
-        self.add_constraint_to_model(self.objective_var == sum(sum_exprs) - sum(penalty_exprs))
+        self.add_constraint_to_model(
+            self.objective_var == sum(sum_exprs) - sum(penalty_exprs)
+        )
         # Don't let objective fall to zero or else most constraints are satisfiable at 0
         self.add_constraint_to_model(self.objective_var > 0)
 

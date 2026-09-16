@@ -43,7 +43,7 @@ class Z3Model(SolverModel):
     def __init__(self, model_data, condition):
         super().__init__(model_data)
         self.condition = condition
-        if condition == 'balanced':
+        if condition == "balanced":
             self.solver_model = z3.Optimize()
         else:
             self.solver_model = z3.Solver()
@@ -70,7 +70,9 @@ class Z3Model(SolverModel):
     def maximize_output(self):
         prod_exprs = []
         penalty_exprs = []
-        edge_by_node_and_part = {graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)}
+        edge_by_node_and_part = {
+            graph_node[0]: defaultdict(list) for graph_node in self.g.nodes(data=True)
+        }
         for edge in self.g.out_edges(data=True):
             part_name = edge[2]["part_name"]
             edge_var = edge[2]["edge_var"]
@@ -86,7 +88,7 @@ class Z3Model(SolverModel):
 
         # Don't let objective fall to zero or else the other constraints are trivially satisfiable
         self.add_constraint_to_model(self.objective_var > 0)
-        if self.condition == 'balanced':
+        if self.condition == "balanced":
             self.solver_model.maximize(self.objective_var)
             self.solver_model.minimize(self.penalty_var)
 

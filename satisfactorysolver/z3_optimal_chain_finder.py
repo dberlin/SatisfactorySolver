@@ -60,7 +60,7 @@ class Z3OptimalChainFinder(OptimalChainFinder[z3.ArithRef]):
     def __init__(self, recipe_data):
         super().__init__(recipe_data)
         self.solver_model = z3.Optimize()
-        z3.set_param('parallel.enable', True)
+        z3.set_param("parallel.enable", True)
         self.num_scopes = 0
 
     @override
