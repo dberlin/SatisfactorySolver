@@ -84,7 +84,7 @@ class OptimalChainFinder[VarType](ABC):
 
     def fix_input_amounts(self, all_items, inputs):
         for item in all_items:
-            if item in inputs.keys():
+            if item in inputs:
                 self.add_constraint_to_model(
                     self.user_given_inputs[item] == inputs[item]
                 )
@@ -259,7 +259,7 @@ class OptimalChainFinder[VarType](ABC):
                 self.recipes_by_output[part.Name].add(recipe)
 
         # Seed the queue with recipes that can output our outputs
-        for needed_output in outputs.keys():
+        for needed_output in outputs:
             for recipe in self.recipes_by_output.get(needed_output, []):
                 node_queue.append(recipe)
                 visited.add(recipe)

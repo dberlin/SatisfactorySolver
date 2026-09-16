@@ -350,6 +350,9 @@ class ModelerNodeById:
 
     @classmethod
     def add(cls, node: ModelerNodeModel):
+        # Pydantic can revalidate the same node when it is nested in a model.
+        if node.Id is not None and cls._by_id.get(node.Id) is node:
+            return
         the_id = next(cls._next_id)
         cls._by_id[the_id] = node
         node.Id = the_id

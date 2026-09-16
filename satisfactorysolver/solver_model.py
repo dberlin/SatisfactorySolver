@@ -79,7 +79,7 @@ class SolverModel(ABC):
         generated_table.add_column("Node name", justify="left", no_wrap=True)
         generated_table.add_column("Float Value", justify="left", no_wrap=True)
         generated_table.add_column("True Value", justify="left", no_wrap=True)
-        for node, variables in data.items():
+        for variables in data.values():
             for var in variables.values():
                 result = model_result[var]
                 fraction = Fraction(str(result))
@@ -192,7 +192,7 @@ class SolverModel(ABC):
             target_dict[node.Id] = {}
 
             if special_case and node.Name == special_case["name"]:
-                for input_kind, input_node_list in node.InputNodesById.items():
+                for input_kind in node.InputNodesById:
                     var = self.create_real_var(
                         f"{node.Id}.{node.Name}.{special_case['prefix']}.{input_kind}"
                     )

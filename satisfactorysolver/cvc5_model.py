@@ -70,7 +70,7 @@ class CVC5Model(SolverModel):
         return tempvar  # return cvc5.If(a - b >= 0, a - b, b - a)
 
     def try_maximize_output(self):
-        _, _, producer_output_vars = collect_vars(
+        _, _, _producer_output_vars = collect_vars(
             self.node_inputs, self.node_outputs, self.model_data.Nodes
         )
         sum_exprs = []

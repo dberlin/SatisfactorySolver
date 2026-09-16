@@ -40,7 +40,7 @@ def collect_vars(node_inputs, node_outputs, nodes):
         if node.Name == "AWESOME Sink":
             continue
         is_producer = len(node_input_dict) == 0 and len(node_output_dict) == 1
-        is_consumer = len(node_output_dict) == 0 and len(node_input_dict) > 0
+        len(node_output_dict) == 0 and len(node_input_dict) > 0
         all_input_vars.extend(node_input_dict.values())
         all_output_vars.extend(node_output_dict.values())
         if is_producer:
