@@ -1,9 +1,10 @@
-[tool.pdm.build]
-includes = []
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["uv_build>=0.12.15,<0.13"]
+build-backend = "uv_build"
 
+[tool.uv.build-backend]
+module-root = ""
+source-include = ["main.py", "*.sfmd", "tests/**"]
 
 [project]
 authors = [{ name = "Daniel Berlin", email = "dberlin@dberlin.org" }]
@@ -13,18 +14,19 @@ dependencies = [
   "rich<16.0.0,>=13.9.4",
   "highspy<2.0.0,>=1.9.0",
   "pydantic<3.0.0,>=2.10.4",
-  "deepmerge<4.0,>=2.0",
   "networkx<4.0.0,>=3.4.2",
   "matplotlib<4.0.0,>=3.10.0",
-  "setuptools<76.0.0,>=75.6.0",
-  "wheel<1.0.0,>=0.45.1",
   "z3-solver<6.0.0.0,>=4.13.4.0",
   "cvc5<2.0.0,>=1.2.0",
-  "pytest<10.0.0,>=8.3.4",
 ]
 name = "satisfactorysolver"
 version = "0.1.0"
-description = ""
+description = "Solvers for Satisfactory factory models and optimal production chains"
+readme = "README.md"
+license-files = ["LICENSE.txt"]
+
+[project.scripts]
+satisfactory-chain = "satisfactorysolver.optimal_chain_displayer:main"
 
 [dependency-groups]
-dev = ["ruff>=0.16.8"]
+dev = ["pytest<10.0.0,>=8.3.4", "ruff>=0.16.8"]

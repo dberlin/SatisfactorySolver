@@ -112,7 +112,14 @@ class MultiMachineModel(BaseModel):
     ShowPpm: bool | None = False
     DefaultMax: int | None = None
     Machines: set[MultiMachineMachineModel] | None = None
-    Capacities: list[MultiMachineCapacityModel]
+    Capacities: list[MultiMachineCapacityModel] = Field(default_factory=list)
+
+    @field_validator("DefaultMax", mode="before")
+    @classmethod
+    def validate_default_max(cls, default_max: int | str | None) -> int | str | None:
+        if default_max == "":
+            return None
+        return default_max
 
     def __eq__(self, other):
         return self.Name == other.Name

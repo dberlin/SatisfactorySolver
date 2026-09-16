@@ -71,6 +71,82 @@ If you discover a case the SMT solver is not fast enough, happy to help.
 </div>
 </div>
 
+## Build and run
+
+Requires Python 3.12 or newer and [uv](https://docs.astral.sh/uv/).
+
+```sh
+uv sync
+uv build
+uv run pytest
+```
+
+The build uses `uv_build` and produces a wheel and source distribution. The wheel
+includes the game data, so installed commands do not depend on the working directory.
+
+The existing factory-model example is still available:
+
+```sh
+uv run main.py "instant scrap 10.sfmd"
+```
+
+## Optimal production chains
+
+```sh
+# Produce 20 Iron Plates per minute, using Z3.
+uv run satisfactory-chain --output "Iron Plate=20"
+
+# Use Pyomo with its bundled HiGHS solver.
+uv run satisfactory-chain --solver pyomo --output "Iron Plate=20"
+
+# Supply an existing intermediate and request multiple outputs.
+uv run satisfactory-chain --input "Iron Ingot=30" \
+  --output "Iron Plate=20" --output "Iron Rod=10"
+
+# Find the maximum possible output under the resource limits.
+uv run satisfactory-chain --solver pyomo --output "Iron Plate=-1"
+```
+
+The command prints **Inputs**, **Outputs**, **Intermediates**, and **Num recipes**
+as Rich tables, with decimal and solver-value columns. Z3 preserves exact fractions;
+HiGHS uses floating-point values. Recipe multipliers refer to each recipe's catalog
+rate, not rounded machine counts.
+
+All quantities are rates per minute. Decimal and fractional rates such as `1/3` are
+accepted. Inputs are exact external supplies, not upper bounds. Requested outputs
+are exact requirements; unrequested byproducts may also appear in Outputs.
+All available recipes, including alternates, participate.
+
+For fixed targets, the objective minimizes resource throughput weighted by scarcity,
+using the map-wide bounds in `ResourceLimits`. An output rate of `-1` instead
+maximizes that output first, then minimizes weighted resource use without sacrificing
+the maximum. With multiple `-1` targets, their total rate is maximized.
+Infeasible or unbounded problems exit with an error rather than displaying a solution.
+
+The command is also available as
+`uv run python -m satisfactorysolver.optimal_chain_displayer`.
+
+## Game data
+
+The bundled Steam snapshot supplied on 2026-09-16 is stored in
+`satisfactorysolver/data/game_data.json`, alongside `additional_data.json`.
+Both files are included in distributions. To refresh the snapshot, replace those
+files with the corresponding Satisfactory Modeler files.
+
+`satisfactorysolver.game_data.load_game_data()` loads the bundled data. Additional
+data overrides matching records by `Name`, preserving fields omitted by the overlay
+and replacing supplied lists rather than duplicating recipe parts or capacities.
+
+To use a separate data directory without changing the bundled snapshot:
+
+```sh
+uv run satisfactory-chain --data-dir /path/to/modeler/game_data \
+  --output "Iron Plate=20"
+```
+
+That directory must contain both `game_data.json` and `additional_data.json`.
+
+
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/dberlin/SatisfactorySolver.svg?style=for-the-badge

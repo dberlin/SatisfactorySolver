@@ -1,9 +1,8 @@
 import logging
-import time
+from fractions import Fraction
 from typing import override
 
-import rich.pretty
-from z3 import z3, z3num
+from z3 import z3
 
 from satisfactorysolver.optimal_chain_finder import OptimalChainFinder
 
@@ -12,10 +11,9 @@ logger = logging.getLogger(__name__)
 
 class Z3OptimalChainFinder(OptimalChainFinder[z3.ArithRef]):
     def add_optimization_constraints(self, outputs_to_maximize):
-        exprs = [self.resources_scaled, -(sum(outputs_to_maximize) * 99999)]
-        # exprs.append(self.items_used * 0.4)
-        expr = sum(exprs)
-        self.solver_model.minimize(expr)
+        if outputs_to_maximize:
+            self.objectives.append(self.solver_model.maximize(sum(outputs_to_maximize)))
+        self.objectives.append(self.solver_model.minimize(self.resources_scaled))
 
     def add_constraint_to_model(self, constraint, name=""):
         self.solver_model.add(constraint)
@@ -26,6 +24,7 @@ class Z3OptimalChainFinder(OptimalChainFinder[z3.ArithRef]):
 
     def push(self):
         self.solver_model.push()
+        self._has_solution = False
         self.num_scopes += 1
 
     def pop(self, num=1):
@@ -33,35 +32,38 @@ class Z3OptimalChainFinder(OptimalChainFinder[z3.ArithRef]):
             self.solver_model.pop()
             self.num_scopes -= 1
             num -= 1
+        self._has_solution = False
 
     @override
-    def get_fraction_from_val(self, val):
-        numeral = z3num.Numeral(val)
-        fraction = numeral.approx(3).as_fraction()
-        return fraction
+    def get_fraction_from_val(self, val) -> Fraction:
+        return val.as_fraction()
 
     @override
-    def solve(self):
-        logger.debug(f"Model:\n{self.solver_model}")
-        start_time = time.perf_counter()
-        logger.debug(f"Starting finding function max, time is {start_time}")
-        result = self.solver_model.check()
-        end_time = time.perf_counter()
-        logger.debug(f"Ending finding function max, time is {end_time}")
-        logger.debug(f"Elapsed time is {end_time - start_time} seconds")
-        # If it can't be satisfied at all, give up early
-        if result != z3.sat:
-            return
-        if logger.level <= logging.DEBUG:
-            rich.pretty.pprint(self.solver_model.model())
-            self.print_inputs_outputs()
-        return
+    def solve(self) -> bool:
+        self._has_solution = False
+        logger.debug("Model:\n%s", self.solver_model)
+        if self.solver_model.check() != z3.sat:
+            return False
+        # Optimize reports sat for unbounded objectives too. Only finite optima
+        # can be displayed as an optimal production chain.
+        if not all(
+            z3.is_rational_value(bound) or z3.is_int_value(bound)
+            for objective in self.objectives
+            for bound in (objective.lower(), objective.upper())
+        ):
+            return False
+        self._has_solution = True
+        return True
 
     def __init__(self, recipe_data):
         super().__init__(recipe_data)
+        self.reset_solver_model()
+
+    @override
+    def reset_solver_model(self):
         self.solver_model = z3.Optimize()
-        z3.set_param("parallel.enable", True)
         self.num_scopes = 0
+        self.objectives: list[z3.OptimizeObjective] = []
 
     @override
     def create_real_var(self, name: str):

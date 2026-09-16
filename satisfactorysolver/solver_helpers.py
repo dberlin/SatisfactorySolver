@@ -26,8 +26,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from satisfactorysolver.modeler_models import ModelerNodeModel
-
 
 def collect_vars(node_inputs, node_outputs, nodes):
     all_input_vars = []
@@ -86,8 +84,8 @@ class ResourceLimits:
 
     # Water is unlimited
     @classmethod
-    def get_limit_for_node(cls, node: ModelerNodeModel):
-        match node.Outputs[0].Part.Name:
+    def get_limit_for_part(cls, part_name: str):
+        match part_name:
             case "Coal":
                 return cls.Coal
             case "Iron Ore":
@@ -114,6 +112,4 @@ class ResourceLimits:
                 return cls.Uranium
             case "Water":
                 return 2**32
-        raise ValueError(
-            f"Could not find resource limit for part {node.Outputs[0].Part.Name}"
-        )
+        raise ValueError(f"Could not find resource limit for part {part_name}")

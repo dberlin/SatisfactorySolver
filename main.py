@@ -32,22 +32,15 @@ import math
 from fractions import Fraction
 
 import rich.logging
-from deepmerge import always_merger
 
-from satisfactorysolver.modeler_models import AllDataModel, ModelerFileModel
+from satisfactorysolver.game_data import load_game_data
+from satisfactorysolver.modeler_models import ModelerFileModel
 
 logging.basicConfig(
     level=logging.INFO,
     handlers=[rich.logging.RichHandler(rich_tracebacks=True)],
 )
 logger = logging.getLogger(__name__)
-
-
-def load_game_data():
-    game_data = json.load(open("game_data.json", "r"))
-    additional_data = json.load(open("additional_data.json", "r"))
-    merged = always_merger.merge(game_data, additional_data)
-    return AllDataModel.model_validate(merged)
 
 
 def load_model_file(name):

@@ -2,6 +2,8 @@ import itertools
 import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict, deque
+from fractions import Fraction
+from math import isclose
 
 from rich import console, table
 
@@ -16,6 +18,12 @@ class OptimalChainFinder[VarType](ABC):
     """
 
     def __init__(self, recipe_data):
+        self.recipe_data = recipe_data
+        self.solver_model = None
+        self._has_solution = False
+        self._reset_problem_state()
+
+    def _reset_problem_state(self):
         self.items_used = None
         self.resources_scaled = None
         self.resource_weights = {}
@@ -24,40 +32,51 @@ class OptimalChainFinder[VarType](ABC):
         self.user_given_outputs = {}
         self.intermediates = {}
         self.num_recipes = {}
-        self.recipe_data = recipe_data
         self.products = set()
         self.ingredients = set()
         self.recipes = set()
         self.resources = set()
         self.recipes_by_output = defaultdict(set)
         self.recipes_by_input = defaultdict(set)
-        self.solver_model = None
+        self._has_solution = False
 
     def build_model(self, inputs, outputs):
+        self._reset_problem_state()
+        self.reset_solver_model()
         self.resources_scaled = self.create_real_var(name="Resources Scaled")
         self.items_used = self.create_real_var(name="Items Used")
         self.resources = set(ResourceLimits.get_resource_names())
         possibly_used_recipes = self.construct_possibly_used_recipes(outputs)
         self.construct_sets(possibly_used_recipes)
-        all_items = self.resources.union(self.ingredients, self.products)
+        all_items = self.resources.union(
+            self.ingredients, self.products, inputs, outputs
+        )
         self.construct_input_items(all_items)
         self.construct_output_items(all_items)
         self.construct_intermediate_items(all_items)
         self.construct_num_recipes()
         self.fix_input_amounts(all_items, inputs)
         self.fix_output_amounts(outputs)
-        self.add_product_constraints()
+        self.add_product_constraints(all_items)
         self.add_ingredient_constraints(all_items)
         self.add_resource_constraints()
         self.calculate_resource_weights()
         self.calculate_resources_scaled()
         self.calculate_item_use(all_items)
         self.add_optimization_constraints(
-            [output for (output, amount) in outputs.items() if amount == -1]
+            [
+                self.user_given_outputs[output]
+                for output, amount in outputs.items()
+                if amount == -1
+            ]
         )
 
     @abstractmethod
-    def solve(self):
+    def reset_solver_model(self):
+        pass
+
+    @abstractmethod
+    def solve(self) -> bool:
         pass
 
     @abstractmethod
@@ -69,6 +88,8 @@ class OptimalChainFinder[VarType](ABC):
         pass
 
     def get_model_result_by_var(self, var):
+        if not self._has_solution:
+            raise RuntimeError("No optimal solution is available")
         return self.solver_model.model()[var]
 
     def construct_sets(self, all_recipes):
@@ -93,7 +114,8 @@ class OptimalChainFinder[VarType](ABC):
 
     def fix_output_amounts(self, outputs):
         for item, amount in outputs.items():
-            self.add_constraint_to_model(self.user_given_outputs[item] == amount)
+            if amount != -1:
+                self.add_constraint_to_model(self.user_given_outputs[item] == amount)
 
     def construct_input_items(self, all_items):
         for item in all_items:
@@ -132,15 +154,15 @@ class OptimalChainFinder[VarType](ABC):
             related_recipes = recipes_mapping[item]
 
             for recipe in related_recipes:
-                batch_time_factor = 60.0 / recipe.BatchTime
+                batch_time_factor = Fraction(60, 1) / recipe.BatchTime
                 amount = self.get_amount_for_item(getattr(recipe, kind), item)
                 exprs.append(batch_time_factor * amount * self.num_recipes[recipe.Name])
 
             self.add_constraint_to_model(sum(exprs) == self.intermediates[item])
 
-    def add_product_constraints(self):
+    def add_product_constraints(self, all_items):
         self.add_related_constraints(
-            self.products, self.user_given_inputs, self.recipes_by_output, "Outputs"
+            all_items, self.user_given_inputs, self.recipes_by_output, "Outputs"
         )
 
     def add_ingredient_constraints(self, all_items):
@@ -159,18 +181,19 @@ class OptimalChainFinder[VarType](ABC):
         for resource in self.resources:
             self.add_constraint_to_model(
                 self.intermediates[resource]
-                <= ResourceLimits.get_limit_for_node(resource)
+                <= ResourceLimits.get_limit_for_part(resource)
             )
 
     def calculate_resource_weights(self):
-        filtered_limits = {}
-        for resource in self.resources:
-            if "Water" not in resource:
-                filtered_limits[resource] = ResourceLimits.get_limit_for_node(resource)
-        avg_limit = sum(filtered_limits.values()) / len(filtered_limits)
+        filtered_limits = {
+            resource: ResourceLimits.get_limit_for_part(resource)
+            for resource in self.resources
+            if resource != "Water"
+        }
+        avg_limit = Fraction(sum(filtered_limits.values()), len(filtered_limits))
         for resource in self.resources:
             self.resource_weights[resource] = (
-                avg_limit / ResourceLimits.get_limit_for_node(resource)
+                avg_limit / ResourceLimits.get_limit_for_part(resource)
             )
 
     def calculate_resources_scaled(self):
@@ -199,12 +222,16 @@ class OptimalChainFinder[VarType](ABC):
             var = value_dict[key]
             result = model_result(var)
             if result is None:
-                logging.critical(
-                    f"Var {var} has a None result. This should not happen."
+                logger.critical(
+                    "Var %s has a None result. This should not happen.", var
                 )
                 continue
-            if self.get_fraction_from_val(result) > 0.001:
-                fraction = self.get_fraction_from_val(result)
+            fraction = self.get_fraction_from_val(result)
+            if isinstance(result, float):
+                is_zero = isclose(result, 0.0, abs_tol=1e-9)
+            else:
+                is_zero = fraction == 0
+            if not is_zero:
                 generated_table.add_row(
                     str(var), str(round(float(fraction), 2)), str(result)
                 )
@@ -212,6 +239,8 @@ class OptimalChainFinder[VarType](ABC):
 
     def print_inputs_outputs(self):
         """Print the resulting input and output values as two tables."""
+        if not self._has_solution:
+            raise RuntimeError("No optimal solution is available")
         model_result = self.get_model_result_by_var
         rich_console = console.Console()
         # Create and print Inputs table

@@ -175,7 +175,7 @@ class SolverModel(ABC):
         """
         for node in self.model_data.Nodes:
             if len(node.Inputs) == 0 and len(node.Outputs) == 1:
-                limit = ResourceLimits.get_limit_for_node(node)
+                limit = ResourceLimits.get_limit_for_part(node.Outputs[0].Part.Name)
                 self.add_constraint_to_model(
                     self.node_outputs[node.Id][node.Outputs[0].Part.Name] <= limit
                 )

@@ -1,25 +1,31 @@
 import fractions
 import logging
-import time
 from typing import override
 
 from pyomo import environ as pyo
+from pyomo.common.numeric_types import RegisterNumericType
 from pyomo.contrib import appsi
 
 from satisfactorysolver.optimal_chain_finder import OptimalChainFinder
 from satisfactorysolver.pyomo_model import defractionize
+
+# Model construction uses exact rates before defractionize lowers them for HiGHS.
+RegisterNumericType(fractions.Fraction)
 
 logger = logging.getLogger(__name__)
 
 
 class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
     def add_optimization_constraints(self, outputs_to_maximize):
-        exprs = [self.resources_scaled, -(sum(outputs_to_maximize) * 99999)]
-        # exprs.append(self.items_used * 0.4)
-        expr = sum(exprs)
-        objective = pyo.Objective(expr=expr, sense=pyo.minimize)
-
-        self.solver_model.add_component(str(next(self.count)), objective)
+        self.output_total = sum(outputs_to_maximize) if outputs_to_maximize else None
+        if self.output_total is not None:
+            self.solver_model.objective = pyo.Objective(
+                expr=self.output_total, sense=pyo.maximize
+            )
+        else:
+            self.solver_model.objective = pyo.Objective(
+                expr=self.resources_scaled, sense=pyo.minimize
+            )
 
     def add_constraint_to_model(self, constraint, name=""):
         constraint = pyo.Constraint(expr=defractionize(constraint))
@@ -35,31 +41,42 @@ class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
     def get_fraction_from_val(self, val):
         return fractions.Fraction(val)
 
-    def solve(self):
-        logger.debug("Model:\n")
-        if logger.level <= logging.DEBUG:
-            self.solver_model.pprint()
-        start_time = time.perf_counter()
-        logger.debug(f"Starting finding function max, time is {start_time}")
+    def solve(self) -> bool:
+        self._has_solution = False
+        self.opt.config.stream_solver = logger.isEnabledFor(logging.DEBUG)
         result = self.opt.solve(self.solver_model)
-        end_time = time.perf_counter()
-        logger.debug(f"Ending finding function max, time is {end_time}")
-        logger.debug(f"Elapsed time is {end_time - start_time} seconds")
-        # If it can't be satisfied at all, give up early
         if result.termination_condition != appsi.base.TerminationCondition.optimal:
-            return
-        if logger.level <= logging.DEBUG:
-            logger.debug("Model after finding function max:\n")
-            self.solver_model.pprint()
-            self.print_inputs_outputs()
-        return
+            return False
+        result.solution_loader.load_vars()
+        if self.output_total is not None:
+            # Fix the first optimum before minimizing resource use: a weighted
+            # sum can sacrifice output, and is not a lexicographic objective.
+            self.solver_model.maximum_output = pyo.Constraint(
+                expr=self.output_total == pyo.value(self.output_total)
+            )
+            self.solver_model.objective.set_value(self.resources_scaled)
+            self.solver_model.objective.sense = pyo.minimize
+            self.output_total = None
+            result = self.opt.solve(self.solver_model)
+            if result.termination_condition != appsi.base.TerminationCondition.optimal:
+                return False
+            result.solution_loader.load_vars()
+        self._has_solution = True
+        return True
 
     def __init__(self, recipe_data):
         super().__init__(recipe_data)
+        self.reset_solver_model()
+
+    @override
+    def reset_solver_model(self):
         self.solver_model = pyo.ConcreteModel()
         self.opt = appsi.solvers.Highs()
-        self.opt.config.stream_solver = True
+        self.opt.config.load_solution = False
+        self.output_total = None
 
     @override
     def get_model_result_by_var(self, var):
+        if not self._has_solution:
+            raise RuntimeError("No optimal solution is available")
         return var.value
