@@ -26,11 +26,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import argparse
-import logging
-
 import json
+import logging
 import math
-import sys
 from fractions import Fraction
 
 import rich.logging
@@ -115,6 +113,7 @@ def find_objective_max(model, objective_var, sat_val):
 
 if args.solver == "cvc5":
     import cvc5.pythonic
+
     from satisfactorysolver.cvc5_model import CVC5Model
 
     def cvc5_all_smt(s, initial_terms):
@@ -182,13 +181,14 @@ if args.solver == "cvc5":
             model.objective_var
             == Fraction(obj_result.numerator(), obj_result.denominator())
         )
-        logging.info(f"Enumerating all optimal solutions")
+        logging.info("Enumerating all optimal solutions")
         for m in cvc5_all_smt(model.solver_model, model.edge_vars):
             model.print_inputs_outputs()
     else:
         logging.error(f"No solution found, status: {status}")
 if args.solver == "z3":
     import z3
+
     from satisfactorysolver.z3_model import Z3Model
 
     model = Z3Model(model_data, args.condition)
@@ -233,14 +233,15 @@ if args.solver == "z3":
             model.solver_model.add(
                 model.objective_var == model_result[model.objective_var]
             )
-            logging.info(f"Enumerating all optimal solutions")
+            logging.info("Enumerating all optimal solutions")
             for m in z3_all_smt(model.solver_model, model.edge_vars):
                 model.print_inputs_outputs()
     else:
         logging.error(f"No solution found, status: {status}")
 if args.solver == "pyomo":
-    from satisfactorysolver.pyomo_model import PyomoModel
     from pyomo.contrib import appsi
+
+    from satisfactorysolver.pyomo_model import PyomoModel
 
     model = PyomoModel(model_data, args.condition)
     if logger.level <= logging.DEBUG:

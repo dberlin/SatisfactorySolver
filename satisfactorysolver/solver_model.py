@@ -31,7 +31,7 @@ from collections import defaultdict
 from fractions import Fraction
 
 import networkx as nx
-from rich import table, console
+from rich import console, table
 
 from satisfactorysolver.solver_helpers import ResourceLimits
 

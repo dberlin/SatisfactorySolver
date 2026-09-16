@@ -3,7 +3,7 @@ import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict, deque
 
-from rich import table, console
+from rich import console, table
 
 from satisfactorysolver.solver_helpers import ResourceLimits
 
@@ -93,7 +93,7 @@ class OptimalChainFinder[VarType](ABC):
 
     def fix_output_amounts(self, outputs):
         for item, amount in outputs.items():
-            self.add_constraint_to_model(self.user_given_outputs[item] == outputs[item])
+            self.add_constraint_to_model(self.user_given_outputs[item] == amount)
 
     def construct_input_items(self, all_items):
         for item in all_items:

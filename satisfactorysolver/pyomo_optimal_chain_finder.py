@@ -36,7 +36,7 @@ class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
         return fractions.Fraction(val)
 
     def solve(self):
-        logger.debug(f"Model:\n")
+        logger.debug("Model:\n")
         if logger.level <= logging.DEBUG:
             self.solver_model.pprint()
         start_time = time.perf_counter()
@@ -47,12 +47,12 @@ class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
         logger.debug(f"Elapsed time is {end_time - start_time} seconds")
         # If it can't be satisfied at all, give up early
         if result.termination_condition != appsi.base.TerminationCondition.optimal:
-            return None
+            return
         if logger.level <= logging.DEBUG:
-            logger.debug(f"Model after finding function max:\n")
+            logger.debug("Model after finding function max:\n")
             self.solver_model.pprint()
             self.print_inputs_outputs()
-        return None
+        return
 
     def __init__(self, recipe_data):
         super().__init__(recipe_data)

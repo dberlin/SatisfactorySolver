@@ -133,8 +133,7 @@ class PyomoModel(SolverModel):
 
     def print_inputs_outputs(self):
         # Print the resulting values as two tables
-        from rich import table
-        from rich import console
+        from rich import console, table
 
         input_table = table.Table(title="Node inputs")
         input_table.add_column("Node name", justify="left", no_wrap=True)

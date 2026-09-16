@@ -51,11 +51,11 @@ class Z3OptimalChainFinder(OptimalChainFinder[z3.ArithRef]):
         logger.debug(f"Elapsed time is {end_time - start_time} seconds")
         # If it can't be satisfied at all, give up early
         if result != z3.sat:
-            return None
+            return
         if logger.level <= logging.DEBUG:
             rich.pretty.pprint(self.solver_model.model())
             self.print_inputs_outputs()
-        return None
+        return
 
     def __init__(self, recipe_data):
         super().__init__(recipe_data)

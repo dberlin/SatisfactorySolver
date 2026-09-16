@@ -28,23 +28,23 @@
 import itertools
 from fractions import Fraction
 from functools import cached_property
-from typing import Optional, Self
+from typing import Self
 
-from pydantic import BaseModel, model_validator, field_validator, computed_field, Field
+from pydantic import BaseModel, Field, computed_field, field_validator, model_validator
 
-from satisfactorysolver.helpers import validate_fraction_helper, rich_fraction_helper
+from satisfactorysolver.helpers import rich_fraction_helper, validate_fraction_helper
 
 
 class MachineModel(BaseModel):
     Name: str
-    Tier: Optional[str] = None
-    AveragePower: Optional[int] = None
-    OverclockPowerExponent: Optional[Fraction] = None
-    ProductionShardMultiplier: Optional[Fraction] = None
-    ProductionShardPowerExponent: Optional[int] = None
-    MaxProductionShards: Optional[int] = None
-    ShowPpm: Optional[bool] = False
-    DefaultMax: Optional[int] = None
+    Tier: str | None = None
+    AveragePower: int | None = None
+    OverclockPowerExponent: Fraction | None = None
+    ProductionShardMultiplier: Fraction | None = None
+    ProductionShardPowerExponent: int | None = None
+    MaxProductionShards: int | None = None
+    ShowPpm: bool | None = False
+    DefaultMax: int | None = None
 
     def __eq__(self, other):
         return self.Name == other.Name
@@ -67,10 +67,10 @@ class MachineModel(BaseModel):
 
 class MultiMachineMachineModel(BaseModel):
     Name: str
-    PartsRatio: Optional[Fraction] = 1
-    Default: Optional[bool] = False
-    ShowPpm: Optional[bool] = False
-    DefaultMax: Optional[int] = None
+    PartsRatio: Fraction | None = 1
+    Default: bool | None = False
+    ShowPpm: bool | None = False
+    DefaultMax: int | None = None
 
     def __eq__(self, other):
         return self.Name == other.Name
@@ -98,8 +98,8 @@ class MultiMachineMachineModel(BaseModel):
 
 class MultiMachineCapacityModel(BaseModel):
     Name: str
-    PartsRatio: Optional[Fraction] = 1
-    Default: Optional[bool] = False
+    PartsRatio: Fraction | None = 1
+    Default: bool | None = False
 
     @field_validator("PartsRatio", mode="before")
     @classmethod
@@ -109,9 +109,9 @@ class MultiMachineCapacityModel(BaseModel):
 
 class MultiMachineModel(BaseModel):
     Name: str
-    ShowPpm: Optional[bool] = False
-    DefaultMax: Optional[int] = None
-    Machines: Optional[set[MultiMachineMachineModel]] = None
+    ShowPpm: bool | None = False
+    DefaultMax: int | None = None
+    Machines: set[MultiMachineMachineModel] | None = None
     Capacities: list[MultiMachineCapacityModel]
 
     def __eq__(self, other):
@@ -128,8 +128,8 @@ class MultiMachineModel(BaseModel):
 
 class PartModel(BaseModel):
     Name: str
-    Tier: Optional[str] = None
-    SinkPoints: Optional[int] = None
+    Tier: str | None = None
+    SinkPoints: int | None = None
 
     def __eq__(self, other):
         return self.Name == other.Name
@@ -172,10 +172,10 @@ class RecipeModel(BaseModel):
     Name: str
     Parts: list[RecipePartModel]
     Machine: MachineModel | MultiMachineModel
-    Tier: Optional[str] = None
+    Tier: str | None = None
     BatchTime: int | Fraction
-    Alternate: Optional[bool] = False
-    MinPower: Optional[int] = None
+    Alternate: bool | None = False
+    MinPower: int | None = None
 
     def __eq__(self, other):
         return self.Name == other.Name
@@ -215,20 +215,20 @@ class RecipeModel(BaseModel):
 
     def __rich_repr__(self):
         yield (
-            f"name",
+            "name",
             self.Name,
         )
         yield (
-            f"inputs",
+            "inputs",
             self.Inputs,
         )
         yield (
-            f"outputs",
+            "outputs",
             self.Outputs,
         )
-        yield f"machine", self.Machine.Name
+        yield "machine", self.Machine.Name
         yield (
-            f"batchtime",
+            "batchtime",
             rich_fraction_helper(self.BatchTime),
         )
 
@@ -274,13 +274,13 @@ def validate_input_by_id_helper(data) -> dict[str, list[int]]:
 
 class ModelerNodeModel(BaseModel):
     Name: str
-    ParentId: Optional[int] = Field(alias="Parent", default=None, repr=False)
-    InputNodesById: Optional[dict[str, list[int]]] = Field(
+    ParentId: int | None = Field(alias="Parent", default=None, repr=False)
+    InputNodesById: dict[str, list[int]] | None = Field(
         alias="Inputs", repr=False, default=None
     )
-    Max: Optional[Fraction] = None
-    Id: Optional[int] = None
-    Machine: Optional[MachineModel] = None
+    Max: Fraction | None = None
+    Id: int | None = None
+    Machine: MachineModel | None = None
 
     @staticmethod
     def _id_converter(item):
@@ -361,5 +361,5 @@ class ModelerNodeById:
 
 class ModelerFileModel(BaseModel):
     Version: str
-    Outpost: Optional[int] = None
+    Outpost: int | None = None
     Nodes: list[ModelerNodeModel] = Field(alias="Data")
