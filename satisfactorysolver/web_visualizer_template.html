@@ -3,11 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
 <title>__TITLE__</title>
 <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/elkjs@0.9.3/lib/elk.bundled.js"></script>
 <style>
+  /* Colors follow the system/browser theme. color-scheme makes the browser's
+     own controls (checkboxes, sliders, dropdowns, scrollbars) follow it too. */
   :root {
+    color-scheme: dark;
+    accent-color: var(--accent);
     --bg: #1d2127;
     --panel: #262b33;
     --panel-2: #2f353f;
@@ -26,6 +31,7 @@
   }
   @media (prefers-color-scheme: light) {
     :root {
+      color-scheme: light;
       --bg: #f3f4f6;
       --panel: #ffffff;
       --panel-2: #eef0f3;
