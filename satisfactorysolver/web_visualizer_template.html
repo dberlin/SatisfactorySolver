@@ -586,6 +586,8 @@
   // pages opened from file://), fall back to the main-thread ELK.
   const ELK_WORKER_URL = "https://cdn.jsdelivr.net/npm/elkjs@0.9.3/lib/elk-worker.min.js";
   let enginesPromise = null;
+  // Shown next to the crossing count, so it is visible where layouts ran.
+  let engineLabel = "";
   function layoutEngines() {
     if (!enginesPromise) {
       enginesPromise = (async () => {
@@ -594,16 +596,29 @@
           const source = new Blob(['importScripts("' + ELK_WORKER_URL + '");'], { type: "text/javascript" });
           const url = URL.createObjectURL(source);
           const size = Math.max(2, Math.min(4, navigator.hardwareConcurrency || 2));
-          pool = Array.from({ length: size }, () => new ELK({ workerFactory: () => new Worker(url) }));
+          // A worker whose script fails to load reports it only as an error
+          // event, so turn that into a prompt fallback instead of a timeout.
+          let workerFailed;
+          const failure = new Promise((_, reject) => (workerFailed = reject));
+          failure.catch(() => {});
+          const startWorker = () => {
+            const worker = new Worker(url);
+            worker.addEventListener("error", (ev) => workerFailed(new Error(ev.message || "worker script failed to load")));
+            return worker;
+          };
+          pool = Array.from({ length: size }, () => new ELK({ workerFactory: startWorker }));
           const probe = { id: "probe", children: [{ id: "a", width: 1, height: 1 }], edges: [] };
           await Promise.race([
             Promise.all(pool.map((engine) => engine.layout(probe))),
+            failure,
             new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), 4000)),
           ]);
+          engineLabel = pool.length + " web workers";
           return pool;
         } catch (err) {
           console.warn("ELK web workers unavailable, laying out on the main thread:", err);
           pool.forEach((engine) => engine.terminateWorker());
+          engineLabel = "main thread (web workers unavailable: " + (err && err.message ? err.message : err) + ")";
           return [elk];
         }
       })();
@@ -617,8 +632,12 @@
   async function bestLayout(graph) {
     const engines = await layoutEngines();
     const results = await Promise.all(LAYOUT_SEEDS.map((seed, i) => {
-      const options = Object.assign({}, graph.layoutOptions, { "elk.randomSeed": String(seed) });
-      return engines[i % engines.length].layout(Object.assign({}, graph, { layoutOptions: options }));
+      // Each seed needs its own copy: main-thread ELK writes positions and
+      // routes into the graph it is given (workers get a copy anyway), so
+      // shared node and edge objects would end up holding whichever seed ran last.
+      const copy = structuredClone(graph);
+      copy.layoutOptions["elk.randomSeed"] = String(seed);
+      return engines[i % engines.length].layout(copy);
     }));
     let best = null;
     for (const result of results) {
@@ -737,7 +756,7 @@
     bestLayout(graph).then(({ result, crossings }) => {
       if (run !== layoutRun) return;
       document.getElementById("layout-info").textContent =
-        crossings + " edge crossing" + (crossings === 1 ? "" : "s");
+        crossings + " edge crossing" + (crossings === 1 ? "" : "s") + " · " + engineLabel;
       size = { width: result.width, height: result.height };
       const edgeLayer = svgEl("g", { class: "edges" }, viewport);
       const labelLayer = svgEl("g", { class: "elabels" }, viewport);
@@ -910,6 +929,7 @@
       return;
     }
     if (run !== layoutRun) return;
+    document.getElementById("layout-info").textContent = "ELK on " + engineLabel;
     for (const c of result.children) {
       const node = nodes.find((n) => String(n.id) === c.id);
       if (!node) continue;
