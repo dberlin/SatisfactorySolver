@@ -131,6 +131,9 @@ class PyomoModel(SolverModel):
     def pprint(self):
         self.model.pprint()
 
+    def solution_value_getter(self):
+        return lambda var: var.value
+
     def print_inputs_outputs(self):
         # Print the resulting values as two tables
         from rich import console, table

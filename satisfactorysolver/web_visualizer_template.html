@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/elkjs@0.9.3/lib/elk.bundled.js"></script>
+<style>
+  :root {
+    --bg: #1d2127;
+    --panel: #262b33;
+    --panel-2: #2f353f;
+    --border: #3b424e;
+    --text: #e6e8eb;
+    --muted: #9aa3ae;
+    --accent: #df691a;
+    --machine: #df691a;
+    --resource: #4f6d8c;
+    --consumer: #8c4f6d;
+    --sink: #6d4f8c;
+    --product: #3f8c5a;
+    --input: #5a6470;
+    --edge: #b8c0cc;
+    --edge-zero: #5a6270;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f3f4f6;
+      --panel: #ffffff;
+      --panel-2: #eef0f3;
+      --border: #d5d9df;
+      --text: #1d2127;
+      --muted: #5b6470;
+      --edge: #4a5260;
+      --edge-zero: #b5bcc6;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    padding: 10px 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header h1 span { color: var(--accent); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+  .controls label { color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  select, button {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font: inherit;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  nav.tabs { display: flex; gap: 2px; padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--border); }
+  nav.tabs button {
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: none;
+    padding: 8px 14px;
+    color: var(--muted);
+  }
+  nav.tabs button.active { color: var(--text); border-bottom-color: var(--accent); }
+  main { flex: 1; min-height: 0; position: relative; }
+  .view { position: absolute; inset: 0; display: none; }
+  .view.active { display: block; }
+  #graph { position: absolute; inset: 0; }
+  #details {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: min(340px, calc(100% - 24px));
+    max-height: calc(100% - 24px);
+    overflow: auto;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+  #details h2 { margin: 0 0 2px; font-size: 15px; }
+  #details .sub { color: var(--muted); margin-bottom: 8px; }
+  #details .close { float: right; padding: 0 6px; }
+  #legend {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  #legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  .scroll { overflow: auto; height: 100%; padding: 16px; }
+  table { border-collapse: collapse; width: 100%; max-width: 1100px; }
+  th, td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; background: var(--panel); position: sticky; top: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.group td { background: var(--panel-2); font-weight: 600; }
+  .pos { color: #6cc28a; }
+  .neg { color: #e0795b; }
+  .muted { color: var(--muted); }
+  .tag { font-size: 11px; padding: 1px 5px; border-radius: 3px; background: var(--panel-2); color: var(--muted); margin-left: 6px; }
+  h3 { margin: 18px 0 8px; font-size: 14px; }
+  #details table th { position: static; }
+  #stats { color: var(--muted); font-size: 13px; }
+  .workspace { flex: 1; min-height: 0; display: flex; }
+  #sidebar {
+    width: 330px;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+  #sidebar[hidden] { display: none; }
+  #sidebar h2 { font-size: 13px; margin: 0 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  #sidebar textarea, #sidebar input[type="search"] {
+    width: 100%;
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 7px;
+    font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    resize: vertical;
+  }
+  #sidebar .field { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+  .solve-row { display: flex; gap: 10px; align-items: center; }
+  #solve-status { font-size: 12px; color: var(--muted); }
+  #solve-status.error { color: #e0795b; }
+  .recipes { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .recipe-actions { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 8px 0; font-size: 12px; }
+  .recipe-actions button { padding: 2px 8px; font-size: 12px; }
+  .recipe-actions label { color: var(--muted); display: flex; gap: 4px; align-items: center; }
+  #recipe-list { flex: 1; overflow: auto; margin: 0 -12px; padding: 0 12px; }
+  .recipe-group { margin-bottom: 8px; }
+  .recipe-group h4 { margin: 6px 0 2px; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .recipe-row { display: flex; gap: 8px; align-items: baseline; padding: 3px 4px; border-radius: 4px; cursor: pointer; }
+  .recipe-row:hover { background: var(--panel-2); }
+  .recipe-row input { flex: none; }
+  .recipe-row .rname { flex: 1; min-width: 0; }
+  .recipe-row .rmeta { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .recipe-row.used .rname { font-weight: 600; }
+  .recipe-row.used .rmeta { color: var(--accent); }
+  .recipe-row.off .rname { color: var(--muted); text-decoration: line-through; }
+  svg.flow { display: block; cursor: grab; user-select: none; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  svg.flow.panning { cursor: grabbing; }
+  svg.flow .node { cursor: pointer; }
+  svg.flow .node rect { stroke: transparent; stroke-width: 2; }
+  svg.flow .node:hover rect, svg.flow .node.hot rect { stroke: var(--text); }
+  svg.flow .node.idle { opacity: 0.45; }
+  svg.flow .node text { fill: #fff; font-size: 12px; }
+  svg.flow .node text.title { font-size: 13px; font-weight: 700; }
+  svg.flow .edge { cursor: pointer; }
+  svg.flow .edge .line { fill: none; stroke: var(--edge); marker-end: url(#arrow); }
+  svg.flow .edge.zero .line { stroke: var(--edge-zero); stroke-dasharray: 4 3; }
+  svg.flow .edge .hit { fill: none; stroke: transparent; stroke-width: 12; }
+  svg.flow .edge:hover .line, svg.flow .edge.hot .line { stroke: var(--accent); marker-end: url(#arrow-hot); }
+  svg.flow .arrowhead { fill: var(--edge); }
+  svg.flow .arrowhead.hot { fill: var(--accent); }
+  svg.flow .elabel { cursor: pointer; }
+  svg.flow .elabel text { fill: var(--text); font-size: 11px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+  svg.flow .elabel.hot text { fill: var(--accent); }
+  svg.flow.focus .node:not(.hot), svg.flow.focus .edge:not(.hot), svg.flow.focus .elabel:not(.hot) { opacity: 0.2; }
+  #layout-info { position: absolute; right: 12px; bottom: 12px; font-size: 12px; color: var(--muted); }
+  #layout-info:empty { display: none; }
+  #empty {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  @media (max-width: 760px) {
+    .workspace { flex-direction: column; }
+    #sidebar { width: auto; max-height: 45vh; border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>&#9881;</span> __TITLE__</h1>
+  <div class="controls">
+    <label>Solution <select id="solution"></select></label>
+    <label>Layout
+      <select id="layout">
+        <option value="layered">ELK Layered</option>
+        <option value="stress">ELK Stress</option>
+        <option value="force">ELK Force</option>
+        <option value="mrtree">ELK Mr. Tree</option>
+        <option value="radial">ELK Radial</option>
+        <option value="physics">vis physics (live)</option>
+      </select>
+    </label>
+    <label id="direction-control">Direction
+      <select id="direction">
+        <option value="RIGHT">Left → right</option>
+        <option value="DOWN">Top → bottom</option>
+        <option value="LEFT">Right → left</option>
+        <option value="UP">Bottom → top</option>
+      </select>
+    </label>
+    <label id="placement-control">Placement
+      <select id="placement">
+        <option value="NETWORK_SIMPLEX">Network simplex</option>
+        <option value="BRANDES_KOEPF">Brandes–Köpf</option>
+        <option value="LINEAR_SEGMENTS">Linear segments</option>
+        <option value="SIMPLE">Simple</option>
+      </select>
+    </label>
+    <label id="routing-control">Edges
+      <select id="routing">
+        <option value="ORTHOGONAL">Orthogonal</option>
+        <option value="SPLINES">Splines</option>
+        <option value="POLYLINE">Polyline</option>
+      </select>
+    </label>
+    <label>Spacing <input type="range" id="spacing" min="20" max="200" value="70"></label>
+    <label><input type="checkbox" id="hideZero" checked> Hide idle</label>
+    <button id="fit">Fit</button>
+  </div>
+  <div id="stats"></div>
+</header>
+<nav class="tabs">
+  <button data-view="graph-view" class="active">Visualization</button>
+  <button data-view="buildings-view">Buildings</button>
+  <button data-view="items-view">Items</button>
+</nav>
+<div class="workspace">
+<aside id="sidebar" hidden>
+  <section>
+    <h2>Targets</h2>
+    <label class="field">Outputs (Item=rate per minute, -1 to maximize)
+      <textarea id="outputs" rows="3" placeholder="Rocket Fuel=1000" spellcheck="false"></textarea>
+    </label>
+    <label class="field">Supplied inputs
+      <textarea id="inputs" rows="2" placeholder="Water=600" spellcheck="false"></textarea>
+    </label>
+    <div class="solve-row"><button id="solve">Solve</button><span id="solve-status"></span></div>
+  </section>
+  <section class="recipes">
+    <h2>Recipes <span id="recipe-count" class="muted"></span></h2>
+    <input type="search" id="recipe-filter" placeholder="Filter recipes or items…">
+    <div class="recipe-actions">
+      <button id="enable-all">Enable all</button>
+      <button id="disable-unused">Disable unused</button>
+      <label><input type="checkbox" id="used-only"> Used only</label>
+    </div>
+    <div id="recipe-list"></div>
+  </section>
+</aside>
+<main>
+  <section class="view active" id="graph-view">
+    <div id="graph"></div>
+    <div id="empty">No solution</div>
+    <div id="legend"></div>
+    <div id="layout-info"></div>
+    <div id="details"></div>
+  </section>
+  <section class="view" id="buildings-view"><div class="scroll" id="buildings"></div></section>
+  <section class="view" id="items-view"><div class="scroll" id="items"></div></section>
+</main>
+</div>
+<script id="solver-data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  "use strict";
+  const DATA = JSON.parse(document.getElementById("solver-data").textContent);
+  const EPS = 1e-6;
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const KINDS = {
+    resource: { label: "Resource", color: "--resource" },
+    machine: { label: "Production", color: "--machine" },
+    consumer: { label: "Consumer", color: "--consumer" },
+    sink: { label: "Sink", color: "--sink" },
+    product: { label: "Output", color: "--product" },
+    input: { label: "Input", color: "--input" },
+  };
+
+  const fmt = (v) => {
+    if (Math.abs(v) < EPS) return "0";
+    return (Math.round(v * 1000) / 1000).toLocaleString(undefined, { maximumFractionDigits: 3 });
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const sumRates = (rates) => Object.values(rates || {}).reduce((a, r) => a + r.value, 0);
+
+  function machineLine(n) {
+    if (n.kind === "sink") return fmt(sumRates(n.inputs)) + " / min sunk";
+    if (n.count == null) {
+      const total = n.kind === "consumer" ? sumRates(n.inputs) : sumRates(n.outputs);
+      const cap = n.max != null ? " (cap " + fmt(n.max) + ")" : "";
+      return (n.machine || "") + "\n" + fmt(total) + " / min" + cap;
+    }
+    if (n.count < EPS) return n.machine + "\nidle";
+    const clock = (n.count / n.buildings) * 100;
+    return n.buildings + "× " + n.machine + " @ " + fmt(clock) + "%";
+  }
+
+  function isIdle(n) {
+    if (n.kind === "product" || n.kind === "input") return false;
+    return sumRates(n.inputs) < EPS && sumRates(n.outputs) < EPS;
+  }
+
+  // Modeler graph nodes have numeric ids worth showing; chain nodes do not.
+  const nodeRef = (n) => (typeof n.id === "number" ? "#" + n.id : "");
+  const isEndpoint = (n) => n && (n.kind === "product" || n.kind === "input");
+
+  // ---- Solution selector -------------------------------------------------
+  const solutionSelect = document.getElementById("solution");
+  function refreshSolutionOptions() {
+    solutionSelect.innerHTML = "";
+    DATA.solutions.forEach((s, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = s.label;
+      solutionSelect.appendChild(opt);
+    });
+    solutionSelect.closest("label").style.display = DATA.solutions.length > 1 ? "" : "none";
+  }
+  refreshSolutionOptions();
+
+  // ---- Graph -------------------------------------------------------------
+  // Layered layouts are drawn as SVG straight from ELK's result, so the edge
+  // routes ELK computed (around nodes, with few crossings) are what you see.
+  // The other layouts only give node positions, so vis-network draws those.
+  const container = document.getElementById("graph");
+  const details = document.getElementById("details");
+  let renderer = null; // { fit(), clearSelection(), destroy() }
+  let current = null;
+
+  const elk = new ELK();
+  const DIRECTIONAL = new Set(["layered", "mrtree"]);
+  const TREE_ALGORITHMS = new Set(["mrtree", "radial"]);
+  let layoutRun = 0;
+
+  function layoutSettings() {
+    return {
+      algorithm: document.getElementById("layout").value,
+      direction: document.getElementById("direction").value,
+      placement: document.getElementById("placement").value,
+      routing: document.getElementById("routing").value,
+      spacing: +document.getElementById("spacing").value,
+    };
+  }
+
+  function syncLayoutControls() {
+    const { algorithm } = layoutSettings();
+    document.getElementById("direction-control").style.display = DIRECTIONAL.has(algorithm) ? "" : "none";
+    document.getElementById("placement-control").style.display = algorithm === "layered" ? "" : "none";
+    document.getElementById("routing-control").style.display = algorithm === "layered" ? "" : "none";
+  }
+
+  function elkOptions(s) {
+    const gap = String(s.spacing);
+    const opts = {
+      "elk.algorithm": s.algorithm,
+      "elk.spacing.nodeNode": gap,
+      "elk.spacing.edgeLabel": "4",
+      "elk.padding": "[top=20,left=20,bottom=20,right=20]",
+    };
+    if (DIRECTIONAL.has(s.algorithm)) opts["elk.direction"] = s.direction;
+    if (s.algorithm === "layered") {
+      Object.assign(opts, {
+        "elk.edgeRouting": s.routing,
+        "elk.edgeLabels.inline": "true",
+        "elk.spacing.edgeEdge": String(s.spacing / 5),
+        "elk.spacing.edgeNode": String(s.spacing / 3),
+        "elk.layered.spacing.nodeNodeBetweenLayers": String(s.spacing * 1.5),
+        "elk.layered.spacing.edgeNodeBetweenLayers": String(s.spacing / 3),
+        "elk.layered.spacing.edgeEdgeBetweenLayers": String(s.spacing / 5),
+        "elk.layered.nodePlacement.strategy": s.placement,
+        "elk.layered.cycleBreaking.strategy": "GREEDY",
+        // Crossing minimization: layer sweeps, then the greedy-switch pass,
+        // which ELK otherwise skips on graphs over 40 nodes (edge labels and
+        // long edges add hidden nodes that count). Rather than raising
+        // elk.layered.thoroughness (internal restarts judged by ELK's own
+        // estimate), bestLayout() tries several seeds and counts the crossings
+        // of the final routes. Routing loop edges around the layers
+        // (elk.layered.feedbackEdges) was measured to add crossings here.
+        "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+        "elk.layered.crossingMinimization.greedySwitch.type": "TWO_SIDED",
+        "elk.layered.crossingMinimization.greedySwitch.activationThreshold": "0",
+        "elk.layered.edgeRouting.splines.mode": "CONSERVATIVE",
+      });
+    } else if (s.algorithm === "stress") {
+      opts["elk.stress.desiredEdgeLength"] = String(s.spacing * 3);
+    } else if (s.algorithm === "force") {
+      opts["elk.force.repulsion"] = String(s.spacing / 20);
+      opts["elk.force.iterations"] = "500";
+    } else if (s.algorithm === "radial") {
+      opts["elk.radial.compactor"] = "WEDGE_COMPACTION";
+    }
+    return opts;
+  }
+
+  // ---- Labels and measurement --------------------------------------------
+  const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+  const measureCtx = document.createElement("canvas").getContext("2d");
+  function textWidth(text, size, weight) {
+    measureCtx.font = (weight || 400) + " " + size + "px " + FONT;
+    return measureCtx.measureText(text).width;
+  }
+
+  // Lines of text inside a node; the first is the bold title.
+  function nodeLines(n) {
+    if (isEndpoint(n)) return [n.name, KINDS[n.kind].label];
+    return [(n.recipe || n.name) + (n.alternate ? " (alt)" : ""), ...machineLine(n).split("\n")];
+  }
+  const edgeLines = (e) => [e.part, fmt(e.value) + " / min"];
+
+  const NODE_FONT = 13, NODE_LINE = 17, NODE_PAD_X = 12, NODE_PAD_Y = 8;
+  const LABEL_FONT = 11, LABEL_LINE = 13;
+
+  function nodeSize(lines) {
+    const width = Math.max(...lines.map((l, i) => textWidth(l, NODE_FONT, i === 0 ? 700 : 400)));
+    return { width: Math.max(90, Math.ceil(width) + NODE_PAD_X * 2), height: lines.length * NODE_LINE + NODE_PAD_Y * 2 };
+  }
+
+  function labelSize(lines) {
+    const width = Math.max(...lines.map((l) => textWidth(l, LABEL_FONT)));
+    return { width: Math.ceil(width) + 6, height: lines.length * LABEL_LINE + 2 };
+  }
+
+  // Tree algorithms recurse forever on production loops, so give them a BFS
+  // spanning tree hanging off one virtual root instead of the real graph.
+  const TREE_ROOT = "__root__";
+  function spanningTree(nodes, edges) {
+    const out = new Map(nodes.map((n) => [n.id, []]));
+    const hasIn = new Set();
+    for (const e of edges) {
+      out.get(e.from).push(e);
+      hasIn.add(e.to);
+    }
+    let roots = nodes.filter((n) => !hasIn.has(n.id)).map((n) => n.id);
+    if (!roots.length && nodes.length) roots = [nodes[0].id];
+    const seen = new Set(roots);
+    const tree = roots.map((id) => ({ id: "root-" + id, from: TREE_ROOT, to: id, label: "" }));
+    const queue = [...roots];
+    const expand = () => {
+      while (queue.length) {
+        for (const e of out.get(queue.shift())) {
+          if (seen.has(e.to)) continue;
+          seen.add(e.to);
+          tree.push(e);
+          queue.push(e.to);
+        }
+      }
+    };
+    expand();
+    // Anything only reachable through a cycle hangs off the root too.
+    for (const n of nodes) {
+      if (seen.has(n.id)) continue;
+      seen.add(n.id);
+      tree.push({ id: "root-" + n.id, from: TREE_ROOT, to: n.id, label: "" });
+      queue.push(n.id);
+      expand();
+    }
+    return tree;
+  }
+
+  function buildGraph() {
+    const sol = DATA.solutions[+solutionSelect.value || 0];
+    current = sol;
+    ++layoutRun; // cancel any layout still in flight
+    if (renderer) renderer.destroy();
+    renderer = null;
+    details.style.display = "none";
+    document.getElementById("layout-info").textContent = "";
+    document.getElementById("empty").style.display = sol ? "none" : "flex";
+    if (!sol) {
+      ["stats", "buildings", "items"].forEach((id) => (document.getElementById(id).innerHTML = ""));
+      return;
+    }
+    const hideZero = document.getElementById("hideZero").checked;
+    const hidden = new Set(sol.nodes.filter((n) => hideZero && isIdle(n)).map((n) => n.id));
+    const nodes = sol.nodes.filter((n) => !hidden.has(n.id));
+    const edges = sol.edges.filter(
+      (e) => !hidden.has(e.from) && !hidden.has(e.to) && !(hideZero && e.value < EPS)
+    );
+    const settings = layoutSettings();
+    renderer = settings.algorithm === "layered"
+      ? svgRenderer(nodes, edges, settings)
+      : visRenderer(nodes, edges, settings);
+
+    renderStats(sol);
+    renderBuildings(sol);
+    renderItems(sol);
+  }
+
+  const edgeWidth = (e, maxRate) => (e.value < EPS ? 1 : 1.2 + 4.5 * Math.sqrt(e.value / maxRate));
+
+  // ---- SVG renderer (ELK Layered, with ELK's edge routes) -----------------
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  function svgEl(tag, attrs, parent) {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, v);
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+
+  function roundedPolyline(points, radius) {
+    let d = "M" + points[0].x + "," + points[0].y;
+    for (let i = 1; i < points.length - 1; i++) {
+      const p = points[i], a = points[i - 1], b = points[i + 1];
+      const la = Math.hypot(p.x - a.x, p.y - a.y), lb = Math.hypot(b.x - p.x, b.y - p.y);
+      const r = Math.min(radius, la / 2, lb / 2);
+      if (r < 0.5) { d += " L" + p.x + "," + p.y; continue; }
+      const p1 = { x: p.x + ((a.x - p.x) * r) / la, y: p.y + ((a.y - p.y) * r) / la };
+      const p2 = { x: p.x + ((b.x - p.x) * r) / lb, y: p.y + ((b.y - p.y) * r) / lb };
+      d += " L" + p1.x + "," + p1.y + " Q" + p.x + "," + p.y + " " + p2.x + "," + p2.y;
+    }
+    const last = points[points.length - 1];
+    return d + " L" + last.x + "," + last.y;
+  }
+
+  function sectionPath(section, routing) {
+    const bends = section.bendPoints || [];
+    const start = section.startPoint, end = section.endPoint;
+    // For splines, ELK's bend points are the control points of a chain of
+    // cubic Béziers: (c1, c2, end) triples after the start point.
+    if (routing === "SPLINES" && bends.length && (bends.length + 1) % 3 === 0) {
+      const pts = [...bends, end];
+      let d = "M" + start.x + "," + start.y;
+      for (let i = 0; i < pts.length; i += 3) {
+        d += " C" + [pts[i], pts[i + 1], pts[i + 2]].map((p) => p.x + "," + p.y).join(" ");
+      }
+      return d;
+    }
+    return roundedPolyline([start, ...bends, end], routing === "ORTHOGONAL" ? 8 : 0);
+  }
+
+  // Number of places where two routed edges cross, treating each route as the
+  // polyline through its points (for splines, the control polygon).
+  function countCrossings(result) {
+    const routes = result.edges.map((e) =>
+      (e.sections || []).flatMap((s) => {
+        const p = [s.startPoint, ...(s.bendPoints || []), s.endPoint];
+        return p.slice(1).map((q, i) => [p[i], q]);
+      })
+    );
+    const crosses = ([p1, p2], [p3, p4]) => {
+      const d = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);
+      if (Math.abs(d) < 1e-9) return false;
+      const ua = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / d;
+      const ub = ((p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x)) / d;
+      return ua > 1e-6 && ua < 1 - 1e-6 && ub > 1e-6 && ub < 1 - 1e-6;
+    };
+    let count = 0;
+    for (let i = 0; i < routes.length; i++)
+      for (let j = i + 1; j < routes.length; j++)
+        for (const a of routes[i]) for (const b of routes[j]) if (crosses(a, b)) count++;
+    return count;
+  }
+
+  // Lay out in a pool of web workers so several seeds run in parallel without
+  // freezing the page. If workers cannot start (some browsers refuse them for
+  // pages opened from file://), fall back to the main-thread ELK.
+  const ELK_WORKER_URL = "https://cdn.jsdelivr.net/npm/elkjs@0.9.3/lib/elk-worker.min.js";
+  let enginesPromise = null;
+  function layoutEngines() {
+    if (!enginesPromise) {
+      enginesPromise = (async () => {
+        let pool = [];
+        try {
+          const source = new Blob(['importScripts("' + ELK_WORKER_URL + '");'], { type: "text/javascript" });
+          const url = URL.createObjectURL(source);
+          const size = Math.max(2, Math.min(4, navigator.hardwareConcurrency || 2));
+          pool = Array.from({ length: size }, () => new ELK({ workerFactory: () => new Worker(url) }));
+          const probe = { id: "probe", children: [{ id: "a", width: 1, height: 1 }], edges: [] };
+          await Promise.race([
+            Promise.all(pool.map((engine) => engine.layout(probe))),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), 4000)),
+          ]);
+          return pool;
+        } catch (err) {
+          console.warn("ELK web workers unavailable, laying out on the main thread:", err);
+          pool.forEach((engine) => engine.terminateWorker());
+          return [elk];
+        }
+      })();
+    }
+    return enginesPromise;
+  }
+
+  // ELK's crossing minimization is randomized and results vary a lot from seed
+  // to seed, so lay out with several seeds and keep the fewest crossings.
+  const LAYOUT_SEEDS = [1, 2, 3, 4, 5, 6, 7, 8];
+  async function bestLayout(graph) {
+    const engines = await layoutEngines();
+    const results = await Promise.all(LAYOUT_SEEDS.map((seed, i) => {
+      const options = Object.assign({}, graph.layoutOptions, { "elk.randomSeed": String(seed) });
+      return engines[i % engines.length].layout(Object.assign({}, graph, { layoutOptions: options }));
+    }));
+    let best = null;
+    for (const result of results) {
+      const crossings = countCrossings(result);
+      if (!best || crossings < best.crossings) best = { result, crossings };
+    }
+    return best;
+  }
+
+  function svgRenderer(nodes, edges, settings) {
+    const run = layoutRun;
+    const maxRate = Math.max(1, ...edges.map((e) => e.value));
+    const svg = svgEl("svg", { class: "flow", width: "100%", height: "100%" }, container);
+    const defs = svgEl("defs", {}, svg);
+    for (const [id, cls] of [["arrow", "arrowhead"], ["arrow-hot", "arrowhead hot"]]) {
+      const marker = svgEl("marker", {
+        id, viewBox: "0 0 10 10", refX: "10", refY: "5", markerWidth: "9", markerHeight: "9",
+        markerUnits: "userSpaceOnUse", orient: "auto-start-reverse",
+      }, defs);
+      svgEl("path", { d: "M0,0 L10,5 L0,10 z", class: cls }, marker);
+    }
+    const viewport = svgEl("g", {}, svg);
+    const view = { x: 0, y: 0, k: 1 };
+    let size = { width: 0, height: 0 };
+    let dragged = false;
+    const applyView = () => viewport.setAttribute("transform", "translate(" + view.x + "," + view.y + ") scale(" + view.k + ")");
+
+    function fit() {
+      const w = container.clientWidth, h = container.clientHeight;
+      if (!size.width || !w || !h) return;
+      view.k = Math.min(w / size.width, h / size.height, 1.5) * 0.95;
+      view.x = (w - size.width * view.k) / 2;
+      view.y = (h - size.height * view.k) / 2;
+      applyView();
+    }
+
+    // Pan by dragging the background, zoom around the cursor with the wheel.
+    svg.addEventListener("wheel", (ev) => {
+      ev.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      const px = ev.clientX - rect.left, py = ev.clientY - rect.top;
+      const k = Math.min(8, Math.max(0.05, view.k * Math.exp(-ev.deltaY * 0.0015)));
+      view.x = px - ((px - view.x) * k) / view.k;
+      view.y = py - ((py - view.y) * k) / view.k;
+      view.k = k;
+      applyView();
+    }, { passive: false });
+    svg.addEventListener("pointerdown", (ev) => {
+      if (ev.button !== 0) return;
+      const startX = ev.clientX, startY = ev.clientY, ox = view.x, oy = view.y;
+      dragged = false;
+      const move = (m) => {
+        if (!dragged && Math.hypot(m.clientX - startX, m.clientY - startY) < 4) return;
+        dragged = true;
+        svg.classList.add("panning");
+        view.x = ox + m.clientX - startX;
+        view.y = oy + m.clientY - startY;
+        applyView();
+      };
+      const up = () => {
+        svg.classList.remove("panning");
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+
+    const nodeEls = new Map();
+    const edgeEls = [];
+
+    function clearSelection() {
+      svg.classList.remove("focus");
+      svg.querySelectorAll(".hot").forEach((el) => el.classList.remove("hot"));
+    }
+
+    function focusOn(nodeIds, edgeIndexes) {
+      clearSelection();
+      svg.classList.add("focus");
+      nodeIds.forEach((id) => nodeEls.get(id) && nodeEls.get(id).classList.add("hot"));
+      edgeIndexes.forEach((i) => edgeEls[i] && edgeEls[i].forEach((el) => el.classList.add("hot")));
+    }
+
+    svg.addEventListener("click", (ev) => {
+      if (dragged) return;
+      const nodeEl = ev.target.closest(".node");
+      const edgeEl = ev.target.closest("[data-edge]");
+      if (nodeEl) {
+        const n = nodes[+nodeEl.dataset.index];
+        const touching = edges.map((e, i) => (e.from === n.id || e.to === n.id ? i : -1)).filter((i) => i >= 0);
+        focusOn([n.id, ...touching.flatMap((i) => [edges[i].from, edges[i].to])], touching);
+        showDetails(n.id);
+      } else if (edgeEl) {
+        const i = +edgeEl.dataset.edge;
+        focusOn([edges[i].from, edges[i].to], [i]);
+        showEdge(edges[i]);
+      } else {
+        clearSelection();
+        details.style.display = "none";
+      }
+    });
+
+    const nodeLinesById = new Map(nodes.map((n) => [n.id, nodeLines(n)]));
+    const graph = {
+      id: "root",
+      layoutOptions: elkOptions(settings),
+      children: nodes.map((n) => Object.assign({ id: String(n.id) }, nodeSize(nodeLinesById.get(n.id)))),
+      edges: edges.map((e, i) => ({
+        id: "e" + i,
+        sources: [String(e.from)],
+        targets: [String(e.to)],
+        labels: [Object.assign({ id: "l" + i, text: edgeLines(e).join("\n") }, labelSize(edgeLines(e)))],
+      })),
+    };
+
+    bestLayout(graph).then(({ result, crossings }) => {
+      if (run !== layoutRun) return;
+      document.getElementById("layout-info").textContent =
+        crossings + " edge crossing" + (crossings === 1 ? "" : "s");
+      size = { width: result.width, height: result.height };
+      const edgeLayer = svgEl("g", { class: "edges" }, viewport);
+      const labelLayer = svgEl("g", { class: "elabels" }, viewport);
+      const nodeLayer = svgEl("g", { class: "nodes" }, viewport);
+
+      result.edges.forEach((le, i) => {
+        const e = edges[i];
+        const zero = e.value < EPS;
+        const g = svgEl("g", { class: "edge" + (zero ? " zero" : ""), "data-edge": i }, edgeLayer);
+        svgEl("title", {}, g).textContent = e.part + ": " + e.exact + " / min";
+        for (const section of le.sections || []) {
+          const d = sectionPath(section, settings.routing);
+          svgEl("path", { d, class: "hit" }, g);
+          svgEl("path", { d, class: "line", "stroke-width": edgeWidth(e, maxRate) }, g);
+        }
+        const parts = [g];
+        for (const label of le.labels || []) {
+          const lg = svgEl("g", { class: "elabel", "data-edge": i, transform: "translate(" + label.x + "," + label.y + ")" }, labelLayer);
+          edgeLines(e).forEach((line, j) => {
+            svgEl("text", { x: label.width / 2, y: (j + 1) * LABEL_LINE - 2, "text-anchor": "middle" }, lg).textContent = line;
+          });
+          parts.push(lg);
+        }
+        edgeEls[i] = parts;
+      });
+
+      result.children.forEach((c, index) => {
+        const n = nodes[index];
+        const g = svgEl("g", {
+          class: "node" + (isIdle(n) ? " idle" : ""),
+          "data-index": index,
+          transform: "translate(" + c.x + "," + c.y + ")",
+        }, nodeLayer);
+        svgEl("title", {}, g).textContent = n.recipe || n.name;
+        svgEl("rect", {
+          width: c.width, height: c.height,
+          rx: isEndpoint(n) ? c.height / 2 : 5,
+          style: "fill: var(" + KINDS[n.kind].color + ")",
+        }, g);
+        nodeLinesById.get(n.id).forEach((line, j) => {
+          svgEl("text", {
+            x: c.width / 2,
+            y: NODE_PAD_Y + (j + 1) * NODE_LINE - 4,
+            "text-anchor": "middle",
+            class: j === 0 ? "title" : "",
+          }, g).textContent = line;
+        });
+        nodeEls.set(n.id, g);
+      });
+      fit();
+    }).catch((err) => console.error("ELK layout failed", err));
+
+    return {
+      fit,
+      clearSelection,
+      destroy: () => { container.innerHTML = ""; },
+    };
+  }
+
+  // ---- vis-network renderer (other layouts) -------------------------------
+  function visRenderer(visibleNodes, visibleEdges, settings) {
+    const run = layoutRun;
+    const maxRate = Math.max(1, ...visibleEdges.map((e) => e.value));
+    const textColor = css("--text");
+    const nodes = visibleNodes.map((n) => {
+      const color = css(KINDS[n.kind].color);
+      const lines = nodeLines(n);
+      return {
+        id: n.id,
+        label: "<b>" + lines[0] + "</b>\n" + lines.slice(1).join("\n"),
+        title: n.recipe || n.name,
+        shape: isEndpoint(n) ? "ellipse" : "box",
+        margin: 10,
+        color: {
+          background: color,
+          border: color,
+          highlight: { background: color, border: textColor },
+          hover: { background: color, border: textColor },
+        },
+        font: { color: "#ffffff", multi: "html", face: FONT, size: 14 },
+        borderWidth: 2,
+        opacity: isIdle(n) ? 0.45 : 1,
+      };
+    });
+
+    // Edges sharing a pair of nodes (either direction) would be drawn on the
+    // same curve, so give each its own bend.
+    const pairKey = (e) => [String(e.from), String(e.to)].sort().join("|");
+    const pairCounts = new Map();
+    for (const e of visibleEdges) pairCounts.set(pairKey(e), (pairCounts.get(pairKey(e)) || 0) + 1);
+    const pairSeen = new Map();
+
+    const edges = visibleEdges.map((e, i) => {
+      const zero = e.value < EPS;
+      const color = zero ? css("--edge-zero") : css("--edge");
+      let smooth;
+      if (pairCounts.get(pairKey(e)) > 1) {
+        // curvedCW bends relative to the edge's own direction, so opposite
+        // directions land on opposite sides; parallel edges fan out further.
+        const key = String(e.from) + ">" + String(e.to);
+        const nth = pairSeen.get(key) || 0;
+        pairSeen.set(key, nth + 1);
+        smooth = { enabled: true, type: "curvedCW", roundness: 0.2 + 0.15 * nth };
+      }
+      return {
+        ...(smooth && { smooth }),
+        id: i,
+        from: e.from,
+        to: e.to,
+        label: edgeLines(e).join("\n"),
+        title: e.part + ": " + e.exact + " / min",
+        arrows: { to: { enabled: true, scaleFactor: 0.6 } },
+        width: edgeWidth(e, maxRate),
+        dashes: zero,
+        color: { color: color, highlight: css("--accent"), hover: css("--accent") },
+        font: { color: textColor, strokeWidth: 3, strokeColor: css("--bg"), size: 12, align: "middle" },
+      };
+    });
+
+    const physics = settings.algorithm === "physics";
+    const network = new vis.Network(container, { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) }, {
+      interaction: { hover: true, tooltipDelay: 150, multiselect: false },
+      edges: {
+        selectionWidth: 2,
+        smooth: physics ? { enabled: true, type: "dynamic" } : { enabled: true, type: "continuous", roundness: 0.2 },
+      },
+      nodes: { widthConstraint: { maximum: 260 } },
+      layout: { hierarchical: false, randomSeed: 1 },
+      physics: physics
+        ? { enabled: true, solver: "forceAtlas2Based", forceAtlas2Based: { gravitationalConstant: -120, springLength: 160 }, stabilization: { iterations: 400 } }
+        : { enabled: false },
+    });
+    network.on("click", (params) => {
+      if (params.nodes.length) showDetails(params.nodes[0]);
+      else if (params.edges.length) showEdge(visibleEdges[params.edges[0]]);
+      else details.style.display = "none";
+    });
+    if (physics) network.once("stabilizationIterationsDone", () => network.fit());
+    else placeWithElk(network, nodes, edges, settings, run);
+
+    return {
+      fit: () => network.fit(),
+      clearSelection: () => network.unselectAll(),
+      destroy: () => network.destroy(),
+    };
+  }
+
+  // Measure the rendered vis nodes, have ELK place them, then move them there.
+  async function placeWithElk(network, nodes, edges, s, run) {
+    const children = nodes.map((n) => {
+      const box = network.getBoundingBox(n.id);
+      return { id: String(n.id), width: box.right - box.left, height: box.bottom - box.top };
+    });
+    if (TREE_ALGORITHMS.has(s.algorithm)) {
+      children.push({ id: TREE_ROOT, width: 1, height: 1 });
+      edges = spanningTree(nodes, edges);
+    }
+    const elkEdges = edges.map((e) => ({
+      id: "e" + e.id,
+      sources: [String(e.from)],
+      targets: [String(e.to)],
+      labels: e.label ? [Object.assign({ text: e.label }, labelSize(e.label.split("\n")))] : [],
+    }));
+    let result;
+    try {
+      const [engine] = await layoutEngines();
+      result = await engine.layout({ id: "root", layoutOptions: elkOptions(s), children, edges: elkEdges });
+    } catch (err) {
+      console.error("ELK layout failed", err);
+      return;
+    }
+    if (run !== layoutRun) return;
+    for (const c of result.children) {
+      const node = nodes.find((n) => String(n.id) === c.id);
+      if (!node) continue;
+      network.moveNode(node.id, c.x + c.width / 2, c.y + c.height / 2);
+    }
+    network.fit();
+  }
+
+  function rateRows(rates) {
+    const entries = Object.entries(rates || {});
+    if (!entries.length) return '<tr><td colspan="3" class="muted">none</td></tr>';
+    return entries.map(([part, r]) =>
+      "<tr><td>" + esc(part) + '</td><td class="num">' + fmt(r.value) + '</td><td class="num muted">' + esc(r.exact) + "</td></tr>"
+    ).join("");
+  }
+
+  function openDetails(html) {
+    details.innerHTML = '<button class="close" aria-label="Close">×</button>' + html;
+    details.style.display = "block";
+    details.querySelector(".close").onclick = () => {
+      details.style.display = "none";
+      if (renderer) renderer.clearSelection();
+    };
+  }
+
+  function showDetails(id) {
+    const n = current.nodes.find((x) => x.id === id);
+    if (!n) return;
+    let html = "";
+    if (isEndpoint(n)) {
+      const edge = current.edges.find((e) => e.from === id || e.to === id);
+      html += "<h2>" + esc(n.name) + '</h2><div class="sub">' +
+        (n.kind === "product" ? "Leaves the factory" : "Supplied from outside the factory") + "</div>";
+      if (edge) html += "<p>" + fmt(edge.value) + ' / min <span class="muted">(' + esc(edge.exact) + ")</span></p>";
+    } else {
+      html += "<h2>" + esc(n.recipe || n.name) + (n.alternate ? '<span class="tag">alternate</span>' : "") + "</h2>";
+      html += '<div class="sub">' + (nodeRef(n) ? "Node " + nodeRef(n) + " · " : "") + KINDS[n.kind].label + (n.machine ? " · " + esc(n.machine) : "") + "</div>";
+      if (n.count != null) {
+        html += "<p>Machines: <b>" + fmt(n.count) + "</b>";
+        if (n.buildings) html += " → " + n.buildings + " @ " + fmt((n.count / n.buildings) * 100) + "%";
+        if (n.max != null) html += '<br><span class="muted">Limit: ' + fmt(n.max) + " machines</span>";
+        html += "</p>";
+      } else if (n.max != null) {
+        html += '<p class="muted">Limit: ' + fmt(n.max) + " / min</p>";
+      }
+      html += '<h3>Inputs</h3><table><tr><th>Item</th><th class="num">/ min</th><th class="num">exact</th></tr>' + rateRows(n.inputs) + "</table>";
+      html += '<h3>Outputs</h3><table><tr><th>Item</th><th class="num">/ min</th><th class="num">exact</th></tr>' + rateRows(n.outputs) + "</table>";
+    }
+    openDetails(html);
+  }
+
+  function showEdge(e) {
+    if (!e) return;
+    const nameOf = (id) => {
+      const n = current.nodes.find((x) => x.id === id);
+      return n ? (n.recipe || n.name) + (nodeRef(n) ? " (" + nodeRef(n) + ")" : "") : String(id);
+    };
+    openDetails("<h2>" + esc(e.part) + '</h2><div class="sub">' + esc(nameOf(e.from)) + " → " + esc(nameOf(e.to)) +
+      "</div><p>" + fmt(e.value) + ' / min <span class="muted">(' + esc(e.exact) + ")</span></p>");
+  }
+
+  // ---- Summaries ---------------------------------------------------------
+  function itemTotals(sol) {
+    const items = {};
+    const get = (p) => (items[p] = items[p] || { produced: 0, consumed: 0, raw: 0, exported: 0, imported: 0 });
+    for (const n of sol.nodes) {
+      if (n.kind === "product" || n.kind === "input") continue;
+      for (const [p, r] of Object.entries(n.outputs || {})) {
+        get(p).produced += r.value;
+        if (n.kind === "resource") get(p).raw += r.value;
+      }
+      for (const [p, r] of Object.entries(n.inputs || {})) get(p).consumed += r.value;
+    }
+    const byId = new Map(sol.nodes.map((n) => [n.id, n]));
+    for (const e of sol.edges) {
+      if (isEndpoint(byId.get(e.to))) get(e.part).exported += e.value;
+      if (isEndpoint(byId.get(e.from))) get(e.part).imported += e.value;
+    }
+    return items;
+  }
+
+  function renderStats(sol) {
+    const active = sol.nodes.filter((n) => n.buildings);
+    const buildings = active.reduce((a, n) => a + n.buildings, 0);
+    const items = itemTotals(sol);
+    const raw = Object.entries(items).filter(([, t]) => t.raw > EPS);
+    document.getElementById("stats").textContent =
+      buildings + " buildings · " + raw.map(([p, t]) => fmt(t.raw) + " " + p).join(", ");
+  }
+
+  function renderBuildings(sol) {
+    const groups = {};
+    for (const n of sol.nodes) {
+      if (n.kind === "product" || n.kind === "input" || n.kind === "sink") continue;
+      (groups[n.machine || "Unknown"] = groups[n.machine || "Unknown"] || []).push(n);
+    }
+    let html = '<table><tr><th>Building / recipe</th><th class="num">Node</th><th class="num">Machines</th><th class="num">Buildings</th><th class="num">Clock</th><th class="num">Limit</th><th>Main output</th></tr>';
+    for (const machine of Object.keys(groups).sort()) {
+      const list = groups[machine];
+      const total = list.reduce((a, n) => a + (n.buildings || 0), 0);
+      html += '<tr class="group"><td colspan="3">' + esc(machine) + '</td><td class="num">' + (list[0].count != null ? total : "") + "</td><td colspan=3></td></tr>";
+      for (const n of list) {
+        const out = Object.entries(n.kind === "consumer" ? n.inputs : n.outputs)[0];
+        html += "<tr" + (isIdle(n) ? ' class="muted"' : "") + "><td>" + esc(n.recipe || n.name) + (n.alternate ? '<span class="tag">alt</span>' : "") +
+          '</td><td class="num">' + nodeRef(n) + "</td>" +
+          '<td class="num">' + (n.count != null ? fmt(n.count) : "—") + "</td>" +
+          '<td class="num">' + (n.buildings || (n.count != null ? 0 : "—")) + "</td>" +
+          '<td class="num">' + (n.buildings ? fmt((n.count / n.buildings) * 100) + "%" : "—") + "</td>" +
+          '<td class="num">' + (n.max != null ? fmt(n.max) + (n.maxIsRate ? " /min" : "") : "—") + "</td>" +
+          "<td>" + (out ? esc(out[0]) + " " + fmt(out[1].value) + " / min" : "") + "</td></tr>";
+      }
+    }
+    document.getElementById("buildings").innerHTML = html + "</table>";
+  }
+
+  function renderItems(sol) {
+    const items = itemTotals(sol);
+    let html = '<table><tr><th>Item</th><th class="num">Mined / extracted</th><th class="num">Produced</th><th class="num">Consumed</th><th class="num">Unconnected out</th><th class="num">Unconnected in</th></tr>';
+    for (const part of Object.keys(items).sort()) {
+      const t = items[part];
+      if (t.produced < EPS && t.consumed < EPS) continue;
+      html += "<tr><td>" + esc(part) + "</td>" +
+        '<td class="num">' + (t.raw > EPS ? fmt(t.raw) : "") + "</td>" +
+        '<td class="num">' + fmt(t.produced) + "</td>" +
+        '<td class="num">' + fmt(t.consumed) + "</td>" +
+        '<td class="num pos">' + (t.exported > EPS ? fmt(t.exported) : "") + "</td>" +
+        '<td class="num neg">' + (t.imported > EPS ? fmt(t.imported) : "") + "</td></tr>";
+    }
+    document.getElementById("items").innerHTML = html + "</table>";
+  }
+
+  // ---- Legend, tabs, controls -------------------------------------------
+  document.getElementById("legend").innerHTML = Object.values(KINDS)
+    .map((k) => '<span><i style="background:' + css(k.color) + '"></i>' + k.label + "</span>").join("");
+
+  document.querySelectorAll("nav.tabs button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("nav.tabs button").forEach((b) => b.classList.toggle("active", b === btn));
+      document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === btn.dataset.view));
+      if (btn.dataset.view === "graph-view" && renderer) renderer.fit();
+    });
+  });
+  solutionSelect.addEventListener("change", buildGraph);
+  document.getElementById("layout").addEventListener("change", () => { syncLayoutControls(); buildGraph(); });
+  ["direction", "placement", "routing", "spacing"].forEach((id) =>
+    document.getElementById(id).addEventListener("change", buildGraph)
+  );
+  syncLayoutControls();
+  document.getElementById("hideZero").addEventListener("change", buildGraph);
+  document.getElementById("fit").addEventListener("click", () => renderer && renderer.fit());
+  window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", buildGraph);
+
+  // ---- Live mode: re-solve on the server as recipes and targets change ----
+  if (DATA.live) setupLive(DATA.live);
+
+  function setupLive(live) {
+    const sidebar = document.getElementById("sidebar");
+    const outputsBox = document.getElementById("outputs");
+    const inputsBox = document.getElementById("inputs");
+    const status = document.getElementById("solve-status");
+    const list = document.getElementById("recipe-list");
+    const filterBox = document.getElementById("recipe-filter");
+    const usedOnly = document.getElementById("used-only");
+    const disabled = new Set(live.disabled || []);
+    let recipes = [];
+    let seq = 0;
+    let timer = null;
+    let rankedFor = null;
+    let usedFirst = new Set();
+    const rank = (name) => (usedFirst.has(name) ? 0 : 1);
+
+    sidebar.hidden = false;
+    outputsBox.value = live.outputs || "";
+    inputsBox.value = live.inputs || "";
+
+    function setStatus(text, isError) {
+      status.textContent = text;
+      status.classList.toggle("error", !!isError);
+    }
+
+    async function solve() {
+      clearTimeout(timer);
+      const mine = ++seq;
+      setStatus("Solving…");
+      let body;
+      try {
+        const res = await fetch("api/solve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ outputs: outputsBox.value, inputs: inputsBox.value, disabled: [...disabled] }),
+        });
+        body = await res.json();
+      } catch (err) {
+        if (mine === seq) setStatus("Server unreachable: " + err.message, true);
+        return;
+      }
+      if (mine !== seq) return; // a newer request superseded this one
+      if (body.recipes) {
+        recipes = body.recipes;
+        // Put what the chain uses first, but only re-rank when the targets
+        // change, so the list does not jump around under the cursor while
+        // recipes are being toggled.
+        const targets = outputsBox.value + "\n--\n" + inputsBox.value;
+        if (targets !== rankedFor && !body.error) {
+          rankedFor = targets;
+          usedFirst = new Set(recipes.filter((r) => r.used).flatMap((r) => [r.name, groupName(r)]));
+        }
+      }
+      renderRecipes();
+      if (body.error) {
+        // Keep showing the last good chain so the change can be undone in context.
+        setStatus(body.error, true);
+        return;
+      }
+      setStatus("Solved in " + Math.round(body.seconds * 1000) + " ms");
+      DATA.solutions = [body.solution];
+      refreshSolutionOptions();
+      buildGraph();
+    }
+
+    const scheduleSolve = () => {
+      clearTimeout(timer);
+      timer = setTimeout(solve, 250);
+    };
+
+    function groupName(r) {
+      if (r.products.length) return r.products[0];
+      return "Consumes " + (r.ingredients[0] || "nothing");
+    }
+
+    function renderRecipes() {
+      const query = filterBox.value.trim().toLowerCase();
+      const matches = (r) =>
+        !query || [r.name, r.machine, ...r.products, ...r.ingredients].some((s) => s.toLowerCase().includes(query));
+      const groups = new Map();
+      for (const r of recipes) {
+        if (usedOnly.checked && !r.used) continue;
+        if (!matches(r)) continue;
+        const g = groupName(r);
+        if (!groups.has(g)) groups.set(g, []);
+        groups.get(g).push(r);
+      }
+      const names = [...groups.keys()].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+      let html = "";
+      for (const g of names) {
+        const rows = groups.get(g).sort((a, b) => rank(a.name) - rank(b.name) || a.name.localeCompare(b.name));
+        html += '<div class="recipe-group"><h4>' + esc(g) + "</h4>";
+        for (const r of rows) {
+          const on = !disabled.has(r.name);
+          const meta = r.used ? (r.buildings ? r.buildings + "× " : "") + r.machine : r.machine;
+          html += '<label class="recipe-row' + (r.used ? " used" : "") + (on ? "" : " off") + '" title="' +
+            esc(r.ingredients.join(", ") + " → " + r.products.join(", ")) + '">' +
+            '<input type="checkbox" data-recipe="' + esc(r.name) + '"' + (on ? " checked" : "") + ">" +
+            '<span class="rname">' + esc(r.name) + (r.alternate ? '<span class="tag">alt</span>' : "") + "</span>" +
+            '<span class="rmeta">' + esc(meta) + "</span></label>";
+        }
+        html += "</div>";
+      }
+      const scroll = list.scrollTop;
+      list.innerHTML = html || '<p class="muted">No recipes match.</p>';
+      list.scrollTop = scroll;
+      const used = recipes.filter((r) => r.used).length;
+      document.getElementById("recipe-count").textContent =
+        "· " + used + " used, " + disabled.size + " off, " + recipes.length + " possible";
+    }
+
+    list.addEventListener("change", (ev) => {
+      const name = ev.target.dataset.recipe;
+      if (!name) return;
+      if (ev.target.checked) disabled.delete(name);
+      else disabled.add(name);
+      ev.target.closest(".recipe-row").classList.toggle("off", !ev.target.checked);
+      scheduleSolve();
+    });
+    filterBox.addEventListener("input", renderRecipes);
+    usedOnly.addEventListener("change", renderRecipes);
+    document.getElementById("enable-all").addEventListener("click", () => {
+      disabled.clear();
+      solve();
+    });
+    document.getElementById("disable-unused").addEventListener("click", () => {
+      recipes.filter((r) => !r.used).forEach((r) => disabled.add(r.name));
+      renderRecipes();
+    });
+    document.getElementById("solve").addEventListener("click", solve);
+    [outputsBox, inputsBox].forEach((box) =>
+      box.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
+          ev.preventDefault();
+          solve();
+        }
+      })
+    );
+    solve();
+  }
+
+  buildGraph();
+})();
+</script>
+</body>
+</html>

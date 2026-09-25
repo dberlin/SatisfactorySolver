@@ -29,12 +29,15 @@ import argparse
 import json
 import logging
 import math
+import webbrowser
 from fractions import Fraction
+from pathlib import Path
 
 import rich.logging
 
 from satisfactorysolver.game_data import load_game_data
 from satisfactorysolver.modeler_models import ModelerFileModel
+from satisfactorysolver.web_visualizer import capture_solution, write_html
 
 logging.basicConfig(
     level=logging.INFO,
@@ -76,11 +79,38 @@ parser.add_argument(
     "Practical means any optimal solution that does not involve splitting inputs and outputs "
     "into smaller than eighths.",
 )
+parser.add_argument(
+    "--html",
+    metavar="PATH",
+    help="Also write the solution(s) to an interactive HTML visualization at PATH.",
+)
+parser.add_argument(
+    "--open",
+    action="store_true",
+    help="Open the HTML visualization in a browser after writing it (requires --html).",
+)
 parser.add_argument("filename")
 args = parser.parse_args()
 game_data = load_game_data()
 logger.setLevel(logging.INFO - (args.verbose * 10))
 model_data = load_model_file(args.filename)
+html_solutions = []
+
+
+def report_solution(model):
+    """Print the current solution, and add it to the HTML visualization if requested."""
+    model.print_inputs_outputs()
+    if not args.html:
+        return
+    html_solutions.append(
+        capture_solution(
+            model,
+            model.solution_value_getter(),
+            f"Solution {len(html_solutions) + 1}",
+        )
+    )
+    # Rewrite after every solution so enumeration can be interrupted
+    write_html(html_solutions, args.html, Path(args.filename).stem)
 
 
 def find_objective_max(model, objective_var, sat_val):
@@ -176,7 +206,7 @@ if args.solver == "cvc5":
         )
         logging.info("Enumerating all optimal solutions")
         for m in cvc5_all_smt(model.solver_model, model.edge_vars):
-            model.print_inputs_outputs()
+            report_solution(model)
     else:
         logging.error(f"No solution found, status: {status}")
 if args.solver == "z3":
@@ -212,7 +242,7 @@ if args.solver == "z3":
     status = model.solver_model.check()
     if status == z3.sat:
         if args.condition == "balanced":
-            model.print_inputs_outputs()
+            report_solution(model)
         else:
             model_result = model.solver_model.model()
             last_status, last_sat_val = find_objective_max(
@@ -228,7 +258,7 @@ if args.solver == "z3":
             )
             logging.info("Enumerating all optimal solutions")
             for m in z3_all_smt(model.solver_model, model.edge_vars):
-                model.print_inputs_outputs()
+                report_solution(model)
     else:
         logging.error(f"No solution found, status: {status}")
 if args.solver == "pyomo":
@@ -274,4 +304,9 @@ if args.solver == "pyomo":
     rich.print(results)  # from IPython.display import display
     if logger.level <= logging.DEBUG:
         model.pprint()
-    model.print_inputs_outputs()
+    report_solution(model)
+
+if args.html and html_solutions:
+    logger.info(f"Wrote {len(html_solutions)} solution(s) to {args.html}")
+    if args.open:
+        webbrowser.open(Path(args.html).resolve().as_uri())

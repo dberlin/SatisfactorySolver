@@ -86,6 +86,11 @@ class SolverModel(ABC):
                 generated_table.add_row(str(var), str(float(fraction)), str(result))
         return generated_table
 
+    def solution_value_getter(self):
+        """Return a callable mapping a solver variable to its value in the current solution."""
+        model_result = self.solver_model.model()
+        return lambda var: model_result[var]
+
     def print_inputs_outputs(self):
         """Print the resulting input and output values as two tables."""
         model_result = self.solver_model.model()
