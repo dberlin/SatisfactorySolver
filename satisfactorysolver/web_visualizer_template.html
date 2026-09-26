@@ -251,6 +251,24 @@
       </select>
     </label>
     <label>Spacing <input type="range" id="spacing" min="20" max="200" value="70"></label>
+    <label class="transport-control" title="Split nodes and routes so every solid item fits on one belt or lift of this tier">Belts/lifts
+      <select id="belt-tier">
+        <option value="">No split</option>
+        <option value="60">Mk.1 (60)</option>
+        <option value="120">Mk.2 (120)</option>
+        <option value="270">Mk.3 (270)</option>
+        <option value="480">Mk.4 (480)</option>
+        <option value="780">Mk.5 (780)</option>
+        <option value="1200">Mk.6 (1200)</option>
+      </select>
+    </label>
+    <label class="transport-control" title="Split nodes and routes so every fluid fits in one pipeline of this tier">Pipes
+      <select id="pipe-tier">
+        <option value="">No split</option>
+        <option value="300">Mk.1 (300)</option>
+        <option value="600">Mk.2 (600)</option>
+      </select>
+    </label>
     <label><input type="checkbox" id="hideZero" checked> Hide idle</label>
     <button id="fit">Fit</button>
   </div>
@@ -339,6 +357,147 @@
   // Modeler graph nodes have numeric ids worth showing; chain nodes do not.
   const nodeRef = (n) => (typeof n.id === "number" ? "#" + n.id : "");
   const isEndpoint = (n) => n && (n.kind === "product" || n.kind === "input");
+  const groupTag = (n) => (n.groups ? " [" + n.group + "/" + n.groups + "]" : "");
+
+  // ---- Belt and pipe limits ----------------------------------------------
+  // Exact arithmetic on the solver's fraction strings ("7/3"), so split rates
+  // still add up to the solved ones.
+  const Q = {
+    make(n, d = 1n) {
+      if (d < 0n) { n = -n; d = -d; }
+      let a = n < 0n ? -n : n, b = d;
+      while (b) [a, b] = [b, a % b];
+      return a > 1n ? { n: n / a, d: d / a } : { n, d };
+    },
+    parse: (s) => { const [n, d] = String(s).split("/"); return Q.make(BigInt(n), BigInt(d || "1")); },
+    int: (i) => ({ n: BigInt(i), d: 1n }),
+    add: (a, b) => Q.make(a.n * b.d + b.n * a.d, a.d * b.d),
+    sub: (a, b) => Q.make(a.n * b.d - b.n * a.d, a.d * b.d),
+    mul: (a, b) => Q.make(a.n * b.n, a.d * b.d),
+    div: (a, b) => Q.make(a.n * b.d, a.d * b.n),
+    cmp: (a, b) => { const x = a.n * b.d - b.n * a.d; return x < 0n ? -1 : x > 0n ? 1 : 0; },
+    min: (a, b) => (Q.cmp(a, b) <= 0 ? a : b),
+    floor: (a) => a.n / a.d, // nonnegative values only
+    num: (a) => Number(a.n) / Number(a.d),
+    str: (a) => (a.d === 1n ? String(a.n) : a.n + "/" + a.d),
+  };
+  const ZERO = Q.int(0), ONE = Q.int(1);
+  const qRate = (q) => ({ value: Q.num(q), exact: Q.str(q) });
+  // A node needing more groups than this stays whole rather than swamping the layout.
+  const MAX_GROUPS = 50;
+
+  // Split each chain node into groups whose every item flow fits on one belt
+  // (or lift) or pipe of the chosen tiers, then route each item from producer
+  // groups to consumer groups, filling one consumer at a time, so no route
+  // carries more than one belt or pipe either. Where one machine fits, groups
+  // hold whole machines at 100% and the last group takes the remainder.
+  // Nodes that already fit stay whole, fed by as many groups as it takes.
+  function splitForTransport(sol, beltCap, pipeCap) {
+    if (!sol || !sol.chain || (!beltCap && !pipeCap)) return sol;
+    const fluids = new Set(sol.fluids || []);
+    const capOf = (part) => {
+      const cap = fluids.has(part) ? pipeCap : beltCap;
+      return cap ? Q.int(cap) : null;
+    };
+
+    // What each node sends and receives of each item along its edges.
+    const flowOut = new Map(), flowIn = new Map();
+    const addFlow = (map, id, part, q) => {
+      if (!map.has(id)) map.set(id, new Map());
+      const m = map.get(id);
+      m.set(part, Q.add(m.get(part) || ZERO, q));
+    };
+    for (const e of sol.edges) {
+      const q = Q.parse(e.exact);
+      addFlow(flowOut, e.from, e.part, q);
+      addFlow(flowIn, e.to, e.part, q);
+    }
+
+    const scale = (rates, share) => rates && Object.fromEntries(
+      Object.entries(rates).map(([part, r]) => [part, qRate(Q.mul(Q.parse(r.exact), share))])
+    );
+    const nodes = [];
+    const groupsOf = new Map();
+    for (const n of sol.nodes) {
+      // The largest share of the node that one group can take.
+      let limit = ONE;
+      const consider = (part, q) => {
+        const cap = capOf(part);
+        if (cap && q.n > 0n) limit = Q.min(limit, Q.div(cap, q));
+      };
+      for (const rates of [n.inputs, n.outputs])
+        for (const [part, r] of Object.entries(rates || {})) consider(part, Q.parse(r.exact));
+      for (const map of [flowOut, flowIn])
+        for (const [part, q] of map.get(n.id) || []) consider(part, q);
+
+      let shares = [ONE];
+      let tooMany = 0;
+      if (Q.cmp(limit, ONE) < 0) {
+        let size = limit;
+        if (n.countExact) {
+          const count = Q.parse(n.countExact);
+          const whole = Q.floor(Q.mul(limit, count));
+          if (whole >= 1n) size = Q.div(Q.int(whole), count);
+        }
+        const needed = Q.floor(Q.div(ONE, size)) + 1n;
+        if (needed > BigInt(MAX_GROUPS)) {
+          tooMany = Number(needed);
+        } else {
+          shares = [];
+          let rest = ONE;
+          while (Q.cmp(rest, size) > 0) {
+            shares.push(size);
+            rest = Q.sub(rest, size);
+          }
+          shares.push(rest);
+        }
+      }
+
+      const groups = shares.map((share, i) => {
+        if (shares.length === 1) return { node: tooMany ? Object.assign({}, n, { tooMany }) : n, share };
+        const g = Object.assign({}, n, {
+          id: n.id + "#" + (i + 1),
+          group: i + 1,
+          groups: shares.length,
+          inputs: scale(n.inputs, share),
+          outputs: scale(n.outputs, share),
+        });
+        if (n.countExact) {
+          const count = Q.mul(Q.parse(n.countExact), share);
+          g.count = Q.num(count);
+          g.countExact = Q.str(count);
+          g.buildings = g.count > 0 ? Math.ceil(g.count - 1e-6) : null;
+        }
+        return { node: g, share };
+      });
+      groupsOf.set(n.id, groups);
+      groups.forEach((g) => nodes.push(g.node));
+    }
+
+    // Route each item: every producer group fills consumer groups in order,
+    // so each route is no bigger than the groups at its ends.
+    const edges = [];
+    for (const part of new Set(sol.edges.map((e) => e.part))) {
+      const side = (map) => sol.nodes.flatMap((n) => {
+        const q = map.has(n.id) && map.get(n.id).get(part);
+        return q ? groupsOf.get(n.id).map((g) => ({ id: g.node.id, left: Q.mul(q, g.share) })) : [];
+      });
+      const sources = side(flowOut), sinks = side(flowIn);
+      let i = 0, j = 0;
+      while (i < sources.length && j < sinks.length) {
+        const source = sources[i], sink = sinks[j];
+        const q = Q.min(source.left, sink.left);
+        if (q.n > 0n) edges.push({ from: source.id, to: sink.id, part, ...qRate(q) });
+        source.left = Q.sub(source.left, q);
+        sink.left = Q.sub(sink.left, q);
+        if (source.left.n <= 0n) i++;
+        if (sink.left.n <= 0n) j++;
+      }
+    }
+    return Object.assign({}, sol, { nodes, edges });
+  }
+
+  const transportLimit = (id) => +document.getElementById(id).value || 0;
 
   // ---- Solution selector -------------------------------------------------
   const solutionSelect = document.getElementById("solution");
@@ -438,8 +597,10 @@
 
   // Lines of text inside a node; the first is the bold title.
   function nodeLines(n) {
-    if (isEndpoint(n)) return [n.name, KINDS[n.kind].label];
-    return [(n.recipe || n.name) + (n.alternate ? " (alt)" : ""), ...machineLine(n).split("\n")];
+    if (isEndpoint(n)) return [n.name + groupTag(n), KINDS[n.kind].label];
+    const lines = [(n.recipe || n.name) + (n.alternate ? " (alt)" : "") + groupTag(n), ...machineLine(n).split("\n")];
+    if (n.tooMany) lines.push("needs " + n.tooMany + " belts/pipes");
+    return lines;
   }
   const edgeLines = (e) => [e.part, fmt(e.value) + " / min"];
 
@@ -494,7 +655,9 @@
   }
 
   function buildGraph() {
-    const sol = DATA.solutions[+solutionSelect.value || 0];
+    const raw = DATA.solutions[+solutionSelect.value || 0];
+    document.querySelectorAll(".transport-control").forEach((el) => (el.style.display = raw && raw.chain ? "" : "none"));
+    const sol = splitForTransport(raw, transportLimit("belt-tier"), transportLimit("pipe-tier"));
     current = sol;
     ++layoutRun; // cancel any layout still in flight
     if (renderer) renderer.destroy();
@@ -966,13 +1129,16 @@
     if (!n) return;
     let html = "";
     if (isEndpoint(n)) {
-      const edge = current.edges.find((e) => e.from === id || e.to === id);
-      html += "<h2>" + esc(n.name) + '</h2><div class="sub">' +
+      const total = current.edges
+        .filter((e) => e.from === id || e.to === id)
+        .reduce((sum, e) => sum + e.value, 0);
+      html += "<h2>" + esc(n.name) + esc(groupTag(n)) + '</h2><div class="sub">' +
         (n.kind === "product" ? "Leaves the factory" : "Supplied from outside the factory") + "</div>";
-      if (edge) html += "<p>" + fmt(edge.value) + ' / min <span class="muted">(' + esc(edge.exact) + ")</span></p>";
+      html += "<p>" + fmt(total) + " / min</p>";
     } else {
       html += "<h2>" + esc(n.recipe || n.name) + (n.alternate ? '<span class="tag">alternate</span>' : "") + "</h2>";
-      html += '<div class="sub">' + (nodeRef(n) ? "Node " + nodeRef(n) + " · " : "") + KINDS[n.kind].label + (n.machine ? " · " + esc(n.machine) : "") + "</div>";
+      html += '<div class="sub">' + (nodeRef(n) ? "Node " + nodeRef(n) + " · " : "") +
+        (n.groups ? "Group " + n.group + " of " + n.groups + " · " : "") + KINDS[n.kind].label + (n.machine ? " · " + esc(n.machine) : "") + "</div>";
       if (n.count != null) {
         html += "<p>Machines: <b>" + fmt(n.count) + "</b>";
         if (n.buildings) html += " → " + n.buildings + " @ " + fmt((n.count / n.buildings) * 100) + "%";
@@ -981,6 +1147,7 @@
       } else if (n.max != null) {
         html += '<p class="muted">Limit: ' + fmt(n.max) + " / min</p>";
       }
+      if (n.tooMany) html += '<p class="muted">Needs ' + n.tooMany + " belts or pipes; too many groups to split.</p>";
       html += '<h3>Inputs</h3><table><tr><th>Item</th><th class="num">/ min</th><th class="num">exact</th></tr>' + rateRows(n.inputs) + "</table>";
       html += '<h3>Outputs</h3><table><tr><th>Item</th><th class="num">/ min</th><th class="num">exact</th></tr>' + rateRows(n.outputs) + "</table>";
     }
@@ -1040,7 +1207,7 @@
       for (const n of list) {
         const out = Object.entries(n.kind === "consumer" ? n.inputs : n.outputs)[0];
         html += "<tr" + (isIdle(n) ? ' class="muted"' : "") + "><td>" + esc(n.recipe || n.name) + (n.alternate ? '<span class="tag">alt</span>' : "") +
-          '</td><td class="num">' + nodeRef(n) + "</td>" +
+          '</td><td class="num">' + (nodeRef(n) || (n.groups ? n.group + "/" + n.groups : "")) + "</td>" +
           '<td class="num">' + (n.count != null ? fmt(n.count) : "—") + "</td>" +
           '<td class="num">' + (n.buildings || (n.count != null ? 0 : "—")) + "</td>" +
           '<td class="num">' + (n.buildings ? fmt((n.count / n.buildings) * 100) + "%" : "—") + "</td>" +
@@ -1085,6 +1252,18 @@
   );
   syncLayoutControls();
   document.getElementById("hideZero").addEventListener("change", buildGraph);
+  // Remember the tiers across visits; storage may be unavailable.
+  ["belt-tier", "pipe-tier"].forEach((id) => {
+    const select = document.getElementById(id);
+    try {
+      const saved = localStorage.getItem("chain-" + id);
+      if (saved != null && [...select.options].some((o) => o.value === saved)) select.value = saved;
+    } catch (err) { /* ignore */ }
+    select.addEventListener("change", () => {
+      try { localStorage.setItem("chain-" + id, select.value); } catch (err) { /* ignore */ }
+      buildGraph();
+    });
+  });
   document.getElementById("fit").addEventListener("click", () => renderer && renderer.fit());
   window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", buildGraph);
 

@@ -3,6 +3,7 @@ import threading
 import urllib.request
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
+from fractions import Fraction
 from http.server import ThreadingHTTPServer
 
 import pytest
@@ -153,3 +154,15 @@ def test_concurrent_solves_share_one_solver_thread(session: ChainSession) -> Non
         for name in used_recipes(response)
         if "Rocket Fuel" in name
     } == {"Nitro Rocket Fuel"}
+
+
+def test_chain_solution_marks_fluids_for_pipe_limits(session: ChainSession) -> None:
+    finder = Z3OptimalChainFinder(session.recipes)
+    finder.build_model({}, {"Turbofuel": 2000})
+    assert finder.solve()
+    solution = capture_chain_solution(finder, "Chain")
+    assert solution["chain"] is True
+    assert {"Turbofuel", "Water", "Crude Oil"} <= set(solution["fluids"])
+    assert "Sulfur" not in solution["fluids"]
+    blender = next(n for n in solution["nodes"] if n["recipe"] == "Turbo Blend Fuel")
+    assert Fraction(blender["countExact"]) == pytest.approx(blender["count"])

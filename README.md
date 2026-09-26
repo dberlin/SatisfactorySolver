@@ -127,6 +127,12 @@ maximizes that output first, then minimizes weighted resource use without sacrif
 the maximum. With multiple `-1` targets, their total rate is maximized.
 Infeasible or unbounded problems exit with an error rather than displaying a solution.
 
+In the HTML and `--serve` visualizations, the **Belts/lifts** and **Pipes** tiers
+split each recipe into groups whose every item flow fits on one belt or pipe of that
+tier (for example 1000 Sulfur/min at Mk.5 becomes groups of 780 and 220), and route
+items between groups so no connection carries more than one belt or pipe. Groups hold
+whole machines at 100% where possible. **No split** keeps each recipe as one node.
+
 The command is also available as
 `uv run python -m satisfactorysolver.optimal_chain_displayer`.
 

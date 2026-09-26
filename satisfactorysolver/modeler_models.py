@@ -137,6 +137,7 @@ class PartModel(BaseModel):
     Name: str
     Tier: str | None = None
     SinkPoints: int | None = None
+    Fluid: bool = False
 
     def __eq__(self, other):
         return self.Name == other.Name

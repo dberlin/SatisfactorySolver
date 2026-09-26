@@ -11,6 +11,8 @@ from fractions import Fraction
 from html import escape
 from pathlib import Path
 
+from satisfactorysolver.modeler_models import PartByName
+
 AWESOME_SINK_NAME = "AWESOME Sink"
 
 
@@ -87,6 +89,7 @@ def _node_entry(
         "max": float(node_max) if node_max is not None else None,
         "maxIsRate": bool(recipe and recipe.Machine.ShowPpm),
         "count": float(count) if count is not None else None,
+        "countExact": str(count) if count is not None else None,
         "buildings": math.ceil(count - Fraction(1, 10**6))
         if count is not None and count > 0
         else None,
@@ -243,7 +246,19 @@ def capture_chain_solution(finder, label: str) -> dict:
                         {"from": source, "to": sink, "part": part, **_rate(rate)}
                     )
 
-    return {"label": label, "nodes": nodes, "edges": edges}
+    # "chain" lets the viewer regroup nodes and reroute items to fit belt and
+    # pipe tiers, which only makes sense when edges are not user-drawn.
+    return {
+        "label": label,
+        "nodes": nodes,
+        "edges": edges,
+        "chain": True,
+        "fluids": sorted(
+            part
+            for part in producers.keys() | consumers.keys()
+            if (model := PartByName.get(part)) is not None and model.Fluid
+        ),
+    }
 
 
 def render_html(solutions: list[dict], title: str, live: dict | None = None) -> str:
