@@ -137,6 +137,34 @@ def test_external_input_is_conserved_and_cannot_be_manufactured(
 
 
 @pytest.mark.parametrize("backend", BACKENDS)
+def test_excess_input_is_left_unused_instead_of_output(backend, recipes) -> None:
+    finder = backend(recipes)
+    finder.build_model({"Catalyst": Fraction(10)}, {"Widget": Fraction(1)})
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.user_given_inputs["Catalyst"]) == pytest.approx(
+        2
+    )
+    assert solved_value(finder, finder.user_given_outputs["Catalyst"]) == pytest.approx(
+        0
+    )
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_excess_resource_input_is_left_unused(backend, recipes) -> None:
+    finder = backend(recipes)
+    finder.build_model({"Iron Ore": Fraction(100)}, {"Plate": Fraction(10)})
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.user_given_inputs["Iron Ore"]) == pytest.approx(
+        10
+    )
+    assert solved_value(finder, finder.user_given_outputs["Iron Ore"]) == pytest.approx(
+        0
+    )
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
 def test_output_without_a_recipe_is_infeasible(backend, recipes) -> None:
     finder = backend(recipes)
     finder.build_model({}, {"Unobtainium": Fraction(1)})

@@ -17,15 +17,14 @@ logger = logging.getLogger(__name__)
 
 class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
     def add_optimization_constraints(self, outputs_to_maximize):
-        self.output_total = sum(outputs_to_maximize) if outputs_to_maximize else None
-        if self.output_total is not None:
-            self.solver_model.objective = pyo.Objective(
-                expr=self.output_total, sense=pyo.maximize
-            )
-        else:
-            self.solver_model.objective = pyo.Objective(
-                expr=self.resources_scaled, sense=pyo.minimize
-            )
+        # Lexicographic objectives, solved in order. Each optimum is fixed
+        # before the next is solved: a weighted sum could trade them off.
+        self.objective_stages = []
+        if outputs_to_maximize:
+            self.objective_stages.append((sum(outputs_to_maximize), pyo.maximize))
+        self.objective_stages.append((self.resources_scaled, pyo.minimize))
+        if self.tie_break is not None:
+            self.objective_stages.append((self.tie_break, pyo.minimize))
 
     def add_constraint_to_model(self, constraint, name=""):
         constraint = pyo.Constraint(expr=defractionize(constraint))
@@ -44,19 +43,19 @@ class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
     def solve(self) -> bool:
         self._has_solution = False
         self.opt.config.stream_solver = logger.isEnabledFor(logging.DEBUG)
-        result = self.opt.solve(self.solver_model)
-        if result.termination_condition != appsi.base.TerminationCondition.optimal:
-            return False
-        result.solution_loader.load_vars()
-        if self.output_total is not None:
-            # Fix the first optimum before minimizing resource use: a weighted
-            # sum can sacrifice output, and is not a lexicographic objective.
-            self.solver_model.maximum_output = pyo.Constraint(
-                expr=self.output_total == pyo.value(self.output_total)
-            )
-            self.solver_model.objective.set_value(self.resources_scaled)
-            self.solver_model.objective.sense = pyo.minimize
-            self.output_total = None
+        stages = self.objective_stages
+        self.objective_stages = []
+        for index, (expr, sense) in enumerate(stages):
+            if index == 0:
+                self.solver_model.objective = pyo.Objective(expr=expr, sense=sense)
+            else:
+                prev_expr = stages[index - 1][0]
+                self.solver_model.add_component(
+                    f"fixed_objective_{index - 1}",
+                    pyo.Constraint(expr=prev_expr == pyo.value(prev_expr)),
+                )
+                self.solver_model.objective.set_value(expr)
+                self.solver_model.objective.sense = sense
             result = self.opt.solve(self.solver_model)
             if result.termination_condition != appsi.base.TerminationCondition.optimal:
                 return False
@@ -73,7 +72,7 @@ class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
         self.solver_model = pyo.ConcreteModel()
         self.opt = appsi.solvers.Highs()
         self.opt.config.load_solution = False
-        self.output_total = None
+        self.objective_stages = []
 
     @override
     def get_model_result_by_var(self, var):

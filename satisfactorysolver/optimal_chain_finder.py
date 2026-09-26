@@ -25,6 +25,8 @@ class OptimalChainFinder[VarType](ABC):
 
     def _reset_problem_state(self):
         self.items_used = None
+        self.items_extracted = None
+        self.tie_break = None
         self.resources_scaled = None
         self.resource_weights = {}
         self.count = itertools.count()
@@ -63,6 +65,15 @@ class OptimalChainFinder[VarType](ABC):
         self.calculate_resource_weights()
         self.calculate_resources_scaled()
         self.calculate_item_use(all_items)
+        if inputs:
+            # Minimized after resource use. Less extraction uses supplied inputs
+            # before mining the same items; less total flow leaves unneeded
+            # supplied inputs unused instead of passing them straight through
+            # as outputs. The two never trade off, so one combined objective
+            # settles both. Without supplied inputs neither can happen, so the
+            # extra objective (which roughly doubles z3 solve time) is skipped.
+            self.calculate_items_extracted()
+            self.tie_break = self.items_extracted + self.items_used
         self.add_optimization_constraints(
             [
                 self.user_given_outputs[output]
@@ -104,10 +115,12 @@ class OptimalChainFinder[VarType](ABC):
             self.recipes.add(recipe.Name)
 
     def fix_input_amounts(self, all_items, inputs):
+        # Supplied inputs are availability limits: any excess is left unused
+        # rather than being passed through as an output.
         for item in all_items:
             if item in inputs:
                 self.add_constraint_to_model(
-                    self.user_given_inputs[item] == inputs[item]
+                    self.user_given_inputs[item] <= inputs[item]
                 )
             else:
                 self.add_constraint_to_model(self.user_given_inputs[item] == 0)
@@ -202,6 +215,27 @@ class OptimalChainFinder[VarType](ABC):
             for resource in self.resource_weights
         )
         self.add_constraint_to_model(expr == self.resources_scaled)
+
+    def calculate_items_extracted(self):
+        """Total output of recipes with no inputs (miners, extractors, wells).
+        Minimizing this prefers supplied inputs over extracting the same items anew.
+        """
+        extractors = {
+            recipe
+            for recipes in self.recipes_by_output.values()
+            for recipe in recipes
+            if not recipe.Inputs
+        }
+        exprs = [
+            Fraction(60, 1)
+            / recipe.BatchTime
+            * abs(amount)
+            * self.num_recipes[recipe.Name]
+            for recipe in extractors
+            for part, amount in recipe.Outputs
+        ]
+        self.items_extracted = self.create_real_var(name="Items Extracted")
+        self.add_constraint_to_model(sum(exprs) == self.items_extracted)
 
     def calculate_item_use(self, all_items):
         expr = sum(self.intermediates[item] for item in all_items)
