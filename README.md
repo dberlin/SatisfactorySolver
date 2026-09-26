@@ -113,8 +113,12 @@ HiGHS uses floating-point values. Recipe multipliers refer to each recipe's cata
 rate, not rounded machine counts.
 
 All quantities are rates per minute. Decimal and fractional rates such as `1/3` are
-accepted. Inputs are exact external supplies, not upper bounds. Requested outputs
-are exact requirements; unrequested byproducts may also appear in Outputs.
+accepted. `ITEM=RATE` inputs are external supplies of up to that rate; any excess
+is left unused, and the item may still be mined or produced beyond it. `ITEM<=RATE`
+also caps the item's total use, supplied plus mined or produced, which is useful with
+maximized outputs (for example `--input "Crude Oil<=600" --output "Plastic=-1"`).
+Requested outputs are exact requirements; unrequested byproducts may also appear
+in Outputs.
 All available recipes, including alternates, participate.
 
 For fixed targets, the objective minimizes resource throughput weighted by scarcity,

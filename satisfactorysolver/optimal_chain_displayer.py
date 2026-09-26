@@ -11,6 +11,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 
 from satisfactorysolver.game_data import load_game_data
+from satisfactorysolver.optimal_chain_finder import InputLimit
 
 
 @dataclass
@@ -29,9 +30,14 @@ class ChainArguments(argparse.Namespace):
 
 
 def parse_rate(value: str) -> tuple[str, Fraction]:
-    """Parse an item and an exact per-minute rate, including fractional rates."""
+    """Parse an item and an exact per-minute rate, including fractional rates.
+
+    ``Item<=rate`` returns the rate as an InputLimit.
+    """
     item, separator, rate = value.rpartition("=")
-    if not separator or not item.strip():
+    is_limit = item.endswith("<")
+    item = item.removesuffix("<").strip()
+    if not separator or not item:
         raise argparse.ArgumentTypeError('expected "Item name=rate"')
     try:
         amount = Fraction(rate.strip())
@@ -39,7 +45,7 @@ def parse_rate(value: str) -> tuple[str, Fraction]:
         raise argparse.ArgumentTypeError(
             "rate must be a finite number or fraction"
         ) from error
-    return item.strip(), amount
+    return item, InputLimit(amount) if is_limit else amount
 
 
 def canonical_names(names) -> dict[str, str]:
@@ -69,6 +75,8 @@ def validate_targets(
             item = canonical.get(item.casefold(), item)
             if item in target:
                 raise ValueError(f"duplicate {kind} item: {item}")
+            if kind == "output" and isinstance(amount, InputLimit):
+                raise ValueError(f"{item}: only inputs accept <=")
             if amount < 0 and not (kind == "output" and amount == -1):
                 raise ValueError(
                     f"{kind} rates must be nonnegative"
@@ -84,7 +92,8 @@ def validate_targets(
 def parse_targets(
     input_lines: list[str], output_lines: list[str], item_names: set[str]
 ) -> tuple[dict[str, Fraction], dict[str, Fraction]]:
-    """Parse and validate ITEM=RATE lines, raising ValueError on any problem."""
+    """Parse and validate ITEM=RATE (or input ITEM<=RATE) lines, raising
+    ValueError on any problem."""
     try:
         input_entries = [parse_rate(line) for line in input_lines]
         output_entries = [parse_rate(line) for line in output_lines]
@@ -113,7 +122,9 @@ def main(argv: list[str] | None = None) -> int:
         type=parse_rate,
         default=[],
         metavar="ITEM=RATE",
-        help="exact externally supplied input; repeat for multiple items",
+        help="externally supplied input, used up to RATE; ITEM<=RATE also caps the "
+        "item's total use, including any extracted or produced; repeat for "
+        "multiple items",
     )
     parser.add_argument(
         "-o",

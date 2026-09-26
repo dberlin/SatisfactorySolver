@@ -12,6 +12,11 @@ from satisfactorysolver.solver_helpers import ResourceLimits
 logger = logging.getLogger(__name__)
 
 
+class InputLimit(Fraction):
+    """A supplied input rate that also caps the item's total use, counting the
+    supply plus anything extracted or produced (``ITEM<=RATE``)."""
+
+
 class OptimalChainFinder[VarType](ABC):
     """
     Class to find optimal production chains to produce a given set of items in a given set of quantities.
@@ -119,9 +124,10 @@ class OptimalChainFinder[VarType](ABC):
         # rather than being passed through as an output.
         for item in all_items:
             if item in inputs:
-                self.add_constraint_to_model(
-                    self.user_given_inputs[item] <= inputs[item]
-                )
+                amount = Fraction(inputs[item])
+                self.add_constraint_to_model(self.user_given_inputs[item] <= amount)
+                if isinstance(inputs[item], InputLimit):
+                    self.add_constraint_to_model(self.intermediates[item] <= amount)
             else:
                 self.add_constraint_to_model(self.user_given_inputs[item] == 0)
 

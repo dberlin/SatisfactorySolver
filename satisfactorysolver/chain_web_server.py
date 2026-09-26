@@ -13,14 +13,18 @@ from fractions import Fraction
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+from satisfactorysolver.optimal_chain_finder import InputLimit
 from satisfactorysolver.web_visualizer import capture_chain_solution, render_html
 
 logger = logging.getLogger(__name__)
 
 
 def format_rates(rates: dict[str, Fraction]) -> str:
-    """Format rates as the ITEM=RATE lines the web UI edits."""
-    return "\n".join(f"{item}={rate}" for item, rate in rates.items())
+    """Format rates as the ITEM=RATE (or ITEM<=RATE) lines the web UI edits."""
+    return "\n".join(
+        f"{item}{'<=' if isinstance(rate, InputLimit) else '='}{rate}"
+        for item, rate in rates.items()
+    )
 
 
 class ChainSession:

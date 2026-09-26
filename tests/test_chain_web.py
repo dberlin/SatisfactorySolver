@@ -7,7 +7,7 @@ from http.server import ThreadingHTTPServer
 
 import pytest
 
-from satisfactorysolver.chain_web_server import ChainSession, make_handler
+from satisfactorysolver.chain_web_server import ChainSession, format_rates, make_handler
 from satisfactorysolver.game_data import load_game_data
 from satisfactorysolver.modeler_models import (
     MachineByName,
@@ -16,6 +16,7 @@ from satisfactorysolver.modeler_models import (
     RecipeByName,
 )
 from satisfactorysolver.optimal_chain_displayer import parse_targets
+from satisfactorysolver.optimal_chain_finder import InputLimit
 from satisfactorysolver.web_visualizer import capture_chain_solution
 from satisfactorysolver.z3_optimal_chain_finder import Z3OptimalChainFinder
 
@@ -119,6 +120,20 @@ def test_item_names_ignore_case(session: ChainSession) -> None:
     assert inputs == {"Water": 5} and outputs == {"Alclad Aluminum Sheet": 10}
     with pytest.raises(ValueError, match="duplicate output"):
         parse_targets([], ["water=1", "Water=2"], {"Water"})
+
+
+def test_input_limits_parse_and_round_trip() -> None:
+    inputs, _ = parse_targets(
+        ["Crude Oil <= 600", "Water=5"],
+        ["Plastic=-1"],
+        {"Crude Oil", "Water", "Plastic"},
+    )
+    assert inputs == {"Crude Oil": 600, "Water": 5}
+    assert isinstance(inputs["Crude Oil"], InputLimit)
+    assert not isinstance(inputs["Water"], InputLimit)
+    assert format_rates(inputs) == "Crude Oil<=600\nWater=5"
+    with pytest.raises(ValueError, match="only inputs"):
+        parse_targets([], ["Plastic<=5"], {"Plastic"})
 
 
 def test_concurrent_solves_share_one_solver_thread(session: ChainSession) -> None:

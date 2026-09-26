@@ -11,6 +11,7 @@ from satisfactorysolver.modeler_models import (
     RecipeByName,
     RecipeModel,
 )
+from satisfactorysolver.optimal_chain_finder import InputLimit
 from satisfactorysolver.pyomo_optimal_chain_finder import PyomoOptimalChainFinder
 from satisfactorysolver.z3_optimal_chain_finder import Z3OptimalChainFinder
 
@@ -162,6 +163,31 @@ def test_excess_resource_input_is_left_unused(backend, recipes) -> None:
     assert solved_value(finder, finder.user_given_outputs["Iron Ore"]) == pytest.approx(
         0
     )
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_input_limit_caps_total_use_including_extraction(backend, recipes) -> None:
+    finder = backend(recipes)
+    finder.build_model({"Iron Ore": InputLimit(10)}, {"Plate": Fraction(20)})
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.intermediates["Iron Ore"]) == pytest.approx(10)
+    assert solved_value(finder, finder.user_given_inputs["Iron Ore"]) == pytest.approx(
+        10
+    )
+    assert solved_value(
+        finder, finder.num_recipes["Inefficient Plate"]
+    ) == pytest.approx(10)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_input_limit_bounds_a_maximized_output(backend, recipes) -> None:
+    recipes = {recipe for recipe in recipes if recipe.Name != "Inefficient Plate"}
+    finder = backend(recipes)
+    finder.build_model({"Iron Ore": InputLimit(10)}, {"Plate": Fraction(-1)})
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.user_given_outputs["Plate"]) == pytest.approx(10)
 
 
 @pytest.mark.parametrize("backend", BACKENDS)
