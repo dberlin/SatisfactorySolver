@@ -175,7 +175,7 @@ class FindFractions(ExpressionReplacementVisitor):
 
     def beforeChild(self, node, child, child_idx):
         if isinstance(child, fractions.Fraction):
-            assert "Should not have found a fraction"
+            raise TypeError("defractionize left a Fraction in the expression")
         if type(child) in nonpyomo_leaf_types or not child.is_expression_type():
             return False, child
         return True, None

@@ -28,7 +28,7 @@
 import itertools
 from fractions import Fraction
 from functools import cached_property
-from typing import Self
+from typing import ClassVar, Self
 
 from pydantic import BaseModel, Field, computed_field, field_validator, model_validator
 
@@ -352,7 +352,7 @@ class ModelerNodeModel(BaseModel):
 
 
 class ModelerNodeById:
-    _by_id = {}
+    _by_id: ClassVar[dict[int, "ModelerNodeModel"]] = {}
     _next_id = itertools.count()
 
     @classmethod
