@@ -14,6 +14,7 @@ class Z3OptimalChainFinder(OptimalChainFinder[z3.ArithRef]):
         if outputs_to_maximize:
             self.objectives.append(self.solver_model.maximize(sum(outputs_to_maximize)))
         self.objectives.append(self.solver_model.minimize(self.resources_scaled))
+        self.objectives.append(self.solver_model.minimize(self.machines))
         if self.tie_break is not None:
             self.objectives.append(self.solver_model.minimize(self.tie_break))
 

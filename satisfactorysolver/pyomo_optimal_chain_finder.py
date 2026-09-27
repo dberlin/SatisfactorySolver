@@ -23,6 +23,7 @@ class PyomoOptimalChainFinder(OptimalChainFinder[pyo.Var]):
         if outputs_to_maximize:
             self.objective_stages.append((sum(outputs_to_maximize), pyo.maximize))
         self.objective_stages.append((self.resources_scaled, pyo.minimize))
+        self.objective_stages.append((self.machines, pyo.minimize))
         if self.tie_break is not None:
             self.objective_stages.append((self.tie_break, pyo.minimize))
 

@@ -103,6 +103,32 @@ def test_fixed_output_minimizes_weighted_resources(backend, recipes) -> None:
 
 
 @pytest.mark.parametrize("backend", BACKENDS)
+def test_equal_resource_chains_prefer_fewer_machines(backend, recipes) -> None:
+    # Like packaging and unpackaging fuel: the same resources, more machines.
+    slow = RecipeModel.model_validate(
+        {
+            "Name": "Slow Plate",
+            "Parts": [
+                {"Part": "Iron Ore", "Amount": "-1"},
+                {"Part": "Plate", "Amount": "1"},
+            ],
+            "Machine": "Test Machine",
+            "BatchTime": "600",
+            "Alternate": True,
+        }
+    )
+    for inputs in ({}, {"Catalyst": Fraction(1)}):
+        finder = backend(recipes | {slow})
+        finder.build_model(inputs, {"Plate": Fraction(10)})
+
+        assert finder.solve() is True
+        assert solved_value(finder, finder.num_recipes["Slow Plate"]) == pytest.approx(
+            0
+        )
+        assert solved_value(finder, finder.machines) == pytest.approx(20)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
 def test_marked_output_is_maximized_with_all_recipes_available(
     backend, recipes
 ) -> None:

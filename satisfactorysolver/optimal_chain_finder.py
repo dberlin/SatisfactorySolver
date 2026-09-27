@@ -33,6 +33,7 @@ class OptimalChainFinder[VarType](ABC):
         self.items_extracted = None
         self.tie_break = None
         self.resources_scaled = None
+        self.machines = None
         self.resource_weights = {}
         self.resource_limits = {}
         self.count = itertools.count()
@@ -84,8 +85,9 @@ class OptimalChainFinder[VarType](ABC):
         self.calculate_resource_weights()
         self.calculate_resources_scaled()
         self.calculate_item_use(all_items)
+        self.calculate_machines()
         if any(not isinstance(amount, InputLimit) for amount in inputs.values()):
-            # Minimized after resource use. Less extraction uses supplied inputs
+            # Minimized after resource use and machines. Less extraction uses supplied inputs
             # before mining unweighted items; less total flow leaves unneeded
             # supplied inputs unused instead of passing them straight through
             # as outputs. The two never trade off, so one combined objective
@@ -276,6 +278,13 @@ class OptimalChainFinder[VarType](ABC):
     def calculate_item_use(self, all_items):
         expr = sum(self.intermediates[item] for item in all_items)
         self.add_constraint_to_model(expr == self.items_used)
+
+    def calculate_machines(self):
+        """Total machines at 100% clock. Minimized after resource use, so among
+        chains using the same resources the simplest wins, such as a blender
+        making Diluted Fuel over packaging water and unpackaging fuel."""
+        self.machines = self.create_real_var(name="Machines")
+        self.add_constraint_to_model(sum(self.num_recipes.values()) == self.machines)
 
     @abstractmethod
     def add_optimization_constraints(self, outputs_to_maximize):
