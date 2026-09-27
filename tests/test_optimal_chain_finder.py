@@ -166,18 +166,43 @@ def test_excess_resource_input_is_left_unused(backend, recipes) -> None:
 
 
 @pytest.mark.parametrize("backend", BACKENDS)
-def test_input_limit_caps_total_use_including_extraction(backend, recipes) -> None:
+def test_input_limit_caps_total_use_without_supplying_anything(
+    backend, recipes
+) -> None:
     finder = backend(recipes)
     finder.build_model({"Iron Ore": InputLimit(10)}, {"Plate": Fraction(20)})
 
     assert finder.solve() is True
     assert solved_value(finder, finder.intermediates["Iron Ore"]) == pytest.approx(10)
     assert solved_value(finder, finder.user_given_inputs["Iron Ore"]) == pytest.approx(
-        10
+        0
     )
     assert solved_value(
         finder, finder.num_recipes["Inefficient Plate"]
     ) == pytest.approx(10)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_input_limit_that_does_not_bind_changes_nothing(backend, recipes) -> None:
+    # A cap is not a supply: capped copper must not become free and win.
+    finder = backend(recipes)
+    finder.build_model({"Copper Ore": InputLimit(1000)}, {"Plate": Fraction(10)})
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.num_recipes["Efficient Plate"]) == pytest.approx(
+        10
+    )
+    assert solved_value(
+        finder, finder.user_given_inputs["Copper Ore"]
+    ) == pytest.approx(0)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_water_costs_nothing(backend, recipes) -> None:
+    finder = backend(recipes)
+    finder.build_model({}, {"Plate": Fraction(1)})
+
+    assert finder.resource_weights["Water"] == 0
 
 
 @pytest.mark.parametrize("backend", BACKENDS)

@@ -139,9 +139,9 @@ def main(argv: list[str] | None = None) -> int:
         type=parse_rate,
         default=[],
         metavar="ITEM=RATE",
-        help="externally supplied input, used up to RATE; ITEM<=RATE also caps the "
-        "item's total use, including any extracted or produced; repeat for "
-        "multiple items",
+        help="externally supplied input, used up to RATE; ITEM<=RATE instead caps "
+        "the item's total use, extracted or produced, without supplying any; "
+        "repeat for multiple items",
     )
     parser.add_argument(
         "-o",

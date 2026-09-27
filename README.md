@@ -115,15 +115,16 @@ rate, not rounded machine counts.
 All quantities are rates per minute. Decimal and fractional rates such as `1/3` are
 accepted. `ITEM=RATE` inputs are external supplies of up to that rate; any excess
 is left unused, and the item may still be mined or produced beyond it. `ITEM<=RATE`
-also caps the item's total use, supplied plus mined or produced, which is useful with
-maximized outputs (for example `--input "Crude Oil<=600" --output "Plastic=-1"`).
+instead caps the item's total use, mined or produced, without supplying any; a cap
+that the chain stays under changes nothing. Caps are useful with maximized outputs
+(for example `--input "Crude Oil<=600" --output "Plastic=-1"`).
 Requested outputs are exact requirements; unrequested byproducts may also appear
 in Outputs.
 All available recipes, including alternates, participate.
 
 For fixed targets, the objective minimizes resource extraction weighted by scarcity,
-using the map-wide bounds in `ResourceLimits`. Supplied inputs are free, so they are
-used before anything is mined. An output rate of `-1` instead
+using the map-wide bounds in `ResourceLimits`. Water is unlimited and free. Supplied
+inputs are free too, so they are used before anything is mined. An output rate of `-1` instead
 maximizes that output first, then minimizes weighted resource use without sacrificing
 the maximum. With multiple `-1` targets, their total rate is maximized.
 Infeasible or unbounded problems exit with an error rather than displaying a solution.

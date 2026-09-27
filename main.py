@@ -47,7 +47,8 @@ logger = logging.getLogger(__name__)
 
 
 def load_model_file(name):
-    model_data = json.load(open(name, "r"))
+    with open(name) as model_file:
+        model_data = json.load(model_file)
     return ModelerFileModel.model_validate(model_data)
 
 
@@ -204,11 +205,11 @@ if args.solver == "cvc5":
             model.objective_var
             == Fraction(obj_result.numerator(), obj_result.denominator())
         )
-        logging.info("Enumerating all optimal solutions")
+        logger.info("Enumerating all optimal solutions")
         for m in cvc5_all_smt(model.solver_model, model.edge_vars):
             report_solution(model)
     else:
-        logging.error(f"No solution found, status: {status}")
+        logger.error(f"No solution found, status: {status}")
 if args.solver == "z3":
     import z3
 
@@ -256,11 +257,11 @@ if args.solver == "z3":
             model.solver_model.add(
                 model.objective_var == model_result[model.objective_var]
             )
-            logging.info("Enumerating all optimal solutions")
+            logger.info("Enumerating all optimal solutions")
             for m in z3_all_smt(model.solver_model, model.edge_vars):
                 report_solution(model)
     else:
-        logging.error(f"No solution found, status: {status}")
+        logger.error(f"No solution found, status: {status}")
 if args.solver == "pyomo":
     from pyomo.contrib import appsi
 

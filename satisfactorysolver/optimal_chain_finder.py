@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class InputLimit(Fraction):
-    """A supplied input rate that also caps the item's total use, counting the
-    supply plus anything extracted or produced (``ITEM<=RATE``)."""
+    """A cap on an item's total use, extracted or produced (``ITEM<=RATE``).
+    Unlike a plain input rate, it supplies nothing."""
 
 
 class OptimalChainFinder[VarType](ABC):
@@ -84,12 +84,13 @@ class OptimalChainFinder[VarType](ABC):
         self.calculate_resource_weights()
         self.calculate_resources_scaled()
         self.calculate_item_use(all_items)
-        if inputs:
+        if any(not isinstance(amount, InputLimit) for amount in inputs.values()):
             # Minimized after resource use. Less extraction uses supplied inputs
             # before mining unweighted items; less total flow leaves unneeded
             # supplied inputs unused instead of passing them straight through
             # as outputs. The two never trade off, so one combined objective
-            # settles both. Without supplied inputs neither can happen, so the
+            # settles both. Without supplied inputs (caps supply nothing) neither
+            # can happen, so the
             # extra objective (which roughly doubles z3 solve time) is skipped.
             self.calculate_items_extracted()
             self.tie_break = self.items_extracted + self.items_used
@@ -136,14 +137,19 @@ class OptimalChainFinder[VarType](ABC):
     def fix_input_amounts(self, all_items, inputs):
         # Supplied inputs are availability limits: any excess is left unused
         # rather than being passed through as an output.
+        # Caps supply nothing; they only bound the item's total use.
         for item in all_items:
-            if item in inputs:
-                amount = Fraction(inputs[item])
-                self.add_constraint_to_model(self.user_given_inputs[item] <= amount)
-                if isinstance(inputs[item], InputLimit):
-                    self.add_constraint_to_model(self.intermediates[item] <= amount)
-            else:
+            amount = inputs.get(item)
+            if amount is None or isinstance(amount, InputLimit):
                 self.add_constraint_to_model(self.user_given_inputs[item] == 0)
+            else:
+                self.add_constraint_to_model(
+                    self.user_given_inputs[item] <= Fraction(amount)
+                )
+            if isinstance(amount, InputLimit):
+                self.add_constraint_to_model(
+                    self.intermediates[item] <= Fraction(amount)
+                )
 
     def fix_output_amounts(self, outputs):
         for item, amount in outputs.items():
@@ -221,7 +227,8 @@ class OptimalChainFinder[VarType](ABC):
     def calculate_resource_weights(self):
         """Weight each resource by its scarcity: the average limit over its own.
 
-        A resource with a zero limit cannot be extracted, so its weight is moot.
+        Water is unlimited and free. A resource with a zero limit cannot be
+        extracted, so its weight is moot.
         """
         available = {
             resource: limit
@@ -231,7 +238,8 @@ class OptimalChainFinder[VarType](ABC):
         avg_limit = Fraction(sum(available.values()), max(len(available), 1))
         for resource in self.resources:
             limit = self.resource_limits[resource]
-            self.resource_weights[resource] = avg_limit / limit if limit else 0
+            free = resource == "Water" or not limit
+            self.resource_weights[resource] = 0 if free else avg_limit / limit
 
     def calculate_resources_scaled(self):
         # Supplied inputs are free: only what the chain extracts costs anything.
@@ -243,8 +251,9 @@ class OptimalChainFinder[VarType](ABC):
         self.add_constraint_to_model(expr == self.resources_scaled)
 
     def calculate_items_extracted(self):
-        """Total output of recipes with no inputs (miners, extractors, wells).
-        Minimizing this prefers supplied inputs over extracting the same items anew.
+        """Total output of recipes with no inputs (miners, extractors, wells),
+        except free water. Minimizing this prefers supplied inputs over
+        extracting the same items anew.
         """
         extractors = {
             recipe
@@ -259,6 +268,7 @@ class OptimalChainFinder[VarType](ABC):
             * self.num_recipes[recipe.Name]
             for recipe in extractors
             for part, amount in recipe.Outputs
+            if part.Name != "Water"
         ]
         self.items_extracted = self.create_real_var(name="Items Extracted")
         self.add_constraint_to_model(sum(exprs) == self.items_extracted)
