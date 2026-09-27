@@ -121,11 +121,35 @@ Requested outputs are exact requirements; unrequested byproducts may also appear
 in Outputs.
 All available recipes, including alternates, participate.
 
-For fixed targets, the objective minimizes resource throughput weighted by scarcity,
-using the map-wide bounds in `ResourceLimits`. An output rate of `-1` instead
+For fixed targets, the objective minimizes resource extraction weighted by scarcity,
+using the map-wide bounds in `ResourceLimits`. Supplied inputs are free, so they are
+used before anything is mined. An output rate of `-1` instead
 maximizes that output first, then minimizes weighted resource use without sacrificing
 the maximum. With multiple `-1` targets, their total rate is maximized.
 Infeasible or unbounded problems exit with an error rather than displaying a solution.
+
+By default resources are limited map-wide. `--near X,Y --radius METERS` (or the
+**Near** and **Within** fields in `--serve`) instead limits extraction to the resource
+nodes within that horizontal distance of a map point, in meters (game units / 100;
+the map spans roughly -2800 to 4100 m east-west and -3100 to 3000 m north-south).
+Each node counts at its 250% rate: Miner Mk.3 300/600/1200 per minute for
+impure/normal/pure, Oil Extractor 150/300/600, and Resource Well Extractor 75/150/300
+per satellite. Resources are then weighted by their scarcity within range. Water stays
+unlimited, and supplied inputs neither count against the nodes in range nor cost
+anything, even for resources with no nodes in range.
+
+```sh
+uv run satisfactory-chain --output "Iron Plate=-1" --near "-2520,-1250" --radius 1000
+```
+
+The node positions in `satisfactorysolver/data/resource_nodes.json` are read from the
+installed game by `tools/extract_resource_nodes` (needs the .NET 10 SDK; it downloads
+the Oodle decompressor on first run):
+
+```sh
+cd tools/extract_resource_nodes
+dotnet run -c Release -- "C:\Program Files (x86)\Steam\steamapps\common\Satisfactory"
+```
 
 In the HTML and `--serve` visualizations, the **Belts/lifts** and **Pipes** tiers
 split each recipe into groups whose every item flow fits on one belt or pipe of that

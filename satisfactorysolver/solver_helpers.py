@@ -46,14 +46,15 @@ def collect_vars(node_inputs, node_outputs, nodes):
     return all_input_vars, all_output_vars, producer_output_vars
 
 
-# These are the 1.0 resource limits, which we use to bound the producers of various sorts,
-# even in the presence of no other limits.
+# Map-wide resource limits, which we use to bound the producers of various sorts,
+# even in the presence of no other limits. They are the totals of
+# data/resource_nodes.json at 250% clock (see resource_nodes.py), which a test checks.
 
 
 class ResourceLimits:
     Iron = 92100
     Copper = 36900
-    Limestone = 69900
+    Limestone = 69300
     Coal = 42300
     Caterium = 15000
     CrudeOil = 12600

@@ -34,6 +34,7 @@ class OptimalChainFinder[VarType](ABC):
         self.tie_break = None
         self.resources_scaled = None
         self.resource_weights = {}
+        self.resource_limits = {}
         self.count = itertools.count()
         self.user_given_inputs = {}
         self.user_given_outputs = {}
@@ -47,12 +48,25 @@ class OptimalChainFinder[VarType](ABC):
         self.recipes_by_input = defaultdict(set)
         self._has_solution = False
 
-    def build_model(self, inputs, outputs):
+    def build_model(self, inputs, outputs, resource_limits=None):
+        """
+        :param resource_limits: Optional per-resource extraction limits (per
+            minute) replacing the map-wide ones, such as those of the nodes
+            near a base. Resource weights then follow these limits too.
+        """
         self._reset_problem_state()
         self.reset_solver_model()
         self.resources_scaled = self.create_real_var(name="Resources Scaled")
         self.items_used = self.create_real_var(name="Items Used")
         self.resources = set(ResourceLimits.get_resource_names())
+        self.resource_limits = {
+            resource: Fraction(ResourceLimits.get_limit_for_part(resource))
+            for resource in self.resources
+        }
+        self.resource_limits.update(
+            (resource, Fraction(limit))
+            for resource, limit in (resource_limits or {}).items()
+        )
         possibly_used_recipes = self.construct_possibly_used_recipes(outputs)
         self.construct_sets(possibly_used_recipes)
         all_items = self.resources.union(
@@ -72,7 +86,7 @@ class OptimalChainFinder[VarType](ABC):
         self.calculate_item_use(all_items)
         if inputs:
             # Minimized after resource use. Less extraction uses supplied inputs
-            # before mining the same items; less total flow leaves unneeded
+            # before mining unweighted items; less total flow leaves unneeded
             # supplied inputs unused instead of passing them straight through
             # as outputs. The two never trade off, so one combined objective
             # settles both. Without supplied inputs neither can happen, so the
@@ -197,27 +211,33 @@ class OptimalChainFinder[VarType](ABC):
         raise KeyError(f"Item {item} not found in recipe parts {recipe_parts}")
 
     def add_resource_constraints(self):
+        # The limits are on extraction; supplied inputs come from elsewhere.
         for resource in self.resources:
             self.add_constraint_to_model(
-                self.intermediates[resource]
-                <= ResourceLimits.get_limit_for_part(resource)
+                self.intermediates[resource] - self.user_given_inputs[resource]
+                <= self.resource_limits[resource]
             )
 
     def calculate_resource_weights(self):
-        filtered_limits = {
-            resource: ResourceLimits.get_limit_for_part(resource)
-            for resource in self.resources
-            if resource != "Water"
+        """Weight each resource by its scarcity: the average limit over its own.
+
+        A resource with a zero limit cannot be extracted, so its weight is moot.
+        """
+        available = {
+            resource: limit
+            for resource, limit in self.resource_limits.items()
+            if resource != "Water" and limit > 0
         }
-        avg_limit = Fraction(sum(filtered_limits.values()), len(filtered_limits))
+        avg_limit = Fraction(sum(available.values()), max(len(available), 1))
         for resource in self.resources:
-            self.resource_weights[resource] = (
-                avg_limit / ResourceLimits.get_limit_for_part(resource)
-            )
+            limit = self.resource_limits[resource]
+            self.resource_weights[resource] = avg_limit / limit if limit else 0
 
     def calculate_resources_scaled(self):
+        # Supplied inputs are free: only what the chain extracts costs anything.
         expr = sum(
-            self.resource_weights[resource] * self.intermediates[resource]
+            self.resource_weights[resource]
+            * (self.intermediates[resource] - self.user_given_inputs[resource])
             for resource in self.resource_weights
         )
         self.add_constraint_to_model(expr == self.resources_scaled)

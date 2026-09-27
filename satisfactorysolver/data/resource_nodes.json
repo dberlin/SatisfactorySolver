@@ -1,0 +1,4618 @@
+[
+  {
+    "resource": "Bauxite",
+    "purity": "pure",
+    "well": false,
+    "x": -2170.52,
+    "y": 112.42,
+    "z": 177.05
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "pure",
+    "well": false,
+    "x": -1773.67,
+    "y": 449.99,
+    "z": 237.66
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "normal",
+    "well": false,
+    "x": -1505.75,
+    "y": -0.23,
+    "z": 195.06
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "pure",
+    "well": false,
+    "x": -593.22,
+    "y": 145.95,
+    "z": 239.95
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "impure",
+    "well": false,
+    "x": -56.34,
+    "y": 442.74,
+    "z": 210.66
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "pure",
+    "well": false,
+    "x": -52.93,
+    "y": 920.75,
+    "z": 227.56
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "normal",
+    "well": false,
+    "x": 25.71,
+    "y": 98.34,
+    "z": 240.02
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "normal",
+    "well": false,
+    "x": 394.78,
+    "y": 521.2,
+    "z": 236.02
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "impure",
+    "well": false,
+    "x": 895.93,
+    "y": 626.39,
+    "z": 103.75
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "impure",
+    "well": false,
+    "x": 1033.18,
+    "y": 674.99,
+    "z": 95.4
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "normal",
+    "well": false,
+    "x": 1060.48,
+    "y": 504.79,
+    "z": 97.65
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "pure",
+    "well": false,
+    "x": 1168.78,
+    "y": 515.11,
+    "z": 173.6
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "impure",
+    "well": false,
+    "x": 1989.36,
+    "y": 933.54,
+    "z": 12.39
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "normal",
+    "well": false,
+    "x": 1990.07,
+    "y": 891.73,
+    "z": 10.97
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "pure",
+    "well": false,
+    "x": 2602.99,
+    "y": 562.28,
+    "z": -8.67
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "impure",
+    "well": false,
+    "x": 2611.28,
+    "y": 482.75,
+    "z": -8.17
+  },
+  {
+    "resource": "Bauxite",
+    "purity": "normal",
+    "well": false,
+    "x": 2631.48,
+    "y": 536.11,
+    "z": -13.25
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1784.91,
+    "y": -797.88,
+    "z": 33.31
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1533.87,
+    "y": 822.52,
+    "z": 203.3
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -1354.68,
+    "y": -1746.82,
+    "z": 77.53
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1315.74,
+    "y": 2272.53,
+    "z": -7.87
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -923.43,
+    "y": 2816.06,
+    "z": -46.2
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -128.15,
+    "y": -1046.42,
+    "z": 109.09
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 903.76,
+    "y": 807.14,
+    "z": 101.17
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1038.46,
+    "y": -948.54,
+    "z": 126.52
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1096.19,
+    "y": 1557.98,
+    "z": 41.76
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1141.8,
+    "y": -170.0,
+    "z": 140.21
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2080.06,
+    "y": -163.83,
+    "z": -0.55
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2081.4,
+    "y": -239.83,
+    "z": 5.94
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2118.43,
+    "y": -188.2,
+    "z": -0.29
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2243.08,
+    "y": -1287.42,
+    "z": 72.41
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2366.09,
+    "y": -2600.96,
+    "z": 117.84
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2707.86,
+    "y": 1201.11,
+    "z": -0.55
+  },
+  {
+    "resource": "Caterium Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 4065.64,
+    "y": -2068.1,
+    "z": -15.39
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": -2810.34,
+    "y": -1426.95,
+    "z": -16.36
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -2754.56,
+    "y": -1658.7,
+    "z": -16.22
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": -2717.94,
+    "y": -1462.29,
+    "z": -16.29
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -2656.95,
+    "y": -1625.71,
+    "z": 15.26
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": -1484.3,
+    "y": 563.1,
+    "z": 31.28
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": -1447.46,
+    "y": 644.19,
+    "z": 31.37
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -1410.72,
+    "y": 396.62,
+    "z": 191.45
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": -1136.16,
+    "y": -504.5,
+    "z": 162.66
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": -1132.16,
+    "y": -441.45,
+    "z": 162.96
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -1101.09,
+    "y": -1291.6,
+    "z": -14.05
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": -1077.94,
+    "y": 318.55,
+    "z": 224.28
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -1077.39,
+    "y": -1306.4,
+    "z": -15.25
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": -1076.4,
+    "y": -523.76,
+    "z": 161.93
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -1026.3,
+    "y": -1403.2,
+    "z": -15.82
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -996.04,
+    "y": -1468.23,
+    "z": -16.31
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -893.79,
+    "y": 1367.63,
+    "z": -39.49
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -867.88,
+    "y": 1382.01,
+    "z": -36.14
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -784.19,
+    "y": 1291.74,
+    "z": -36.49
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -759.77,
+    "y": 1305.76,
+    "z": -36.32
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": -660.77,
+    "y": 2968.71,
+    "z": -61.02
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -648.43,
+    "y": -77.38,
+    "z": 226.27
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": -609.61,
+    "y": 961.96,
+    "z": 212.34
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -537.82,
+    "y": 330.03,
+    "z": 200.12
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": -299.26,
+    "y": 396.93,
+    "z": 213.08
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 83.48,
+    "y": 704.32,
+    "z": 232.45
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 171.64,
+    "y": 2807.88,
+    "z": 27.68
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 330.25,
+    "y": 0.69,
+    "z": 230.76
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 576.23,
+    "y": 454.63,
+    "z": 248.95
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 1226.98,
+    "y": -269.66,
+    "z": 79.99
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 1280.59,
+    "y": -248.25,
+    "z": 82.64
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 1362.9,
+    "y": -209.24,
+    "z": 94.25
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 1388.05,
+    "y": -239.53,
+    "z": 94.11
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 1505.83,
+    "y": 2499.24,
+    "z": -51.36
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 1511.31,
+    "y": 753.11,
+    "z": 97.14
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 1538.54,
+    "y": 841.63,
+    "z": 95.06
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 1538.76,
+    "y": 2528.17,
+    "z": -46.1
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 1556.0,
+    "y": 1131.12,
+    "z": 60.26
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 1558.68,
+    "y": 2483.94,
+    "z": -60.63
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 1571.95,
+    "y": 2418.72,
+    "z": -62.01
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 1774.78,
+    "y": 1299.05,
+    "z": 103.77
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 1808.2,
+    "y": 1411.95,
+    "z": 93.94
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 1938.69,
+    "y": 1165.85,
+    "z": 102.48
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 2060.03,
+    "y": 1812.37,
+    "z": 103.47
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 2099.27,
+    "y": 1629.75,
+    "z": 53.48
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 2148.94,
+    "y": 1167.56,
+    "z": 108.01
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 2189.26,
+    "y": -2553.39,
+    "z": 10.7
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 2207.13,
+    "y": -2504.82,
+    "z": 12.57
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 2397.75,
+    "y": 1483.05,
+    "z": 66.62
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 2715.14,
+    "y": -2465.11,
+    "z": 16.31
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 2764.53,
+    "y": -2503.31,
+    "z": 12.61
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 3255.49,
+    "y": -2645.0,
+    "z": 16.74
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 3304.71,
+    "y": -2646.58,
+    "z": 21.44
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 3625.94,
+    "y": -1357.7,
+    "z": 58.95
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 3654.36,
+    "y": -800.82,
+    "z": -0.63
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 3658.54,
+    "y": -1333.84,
+    "z": 52.56
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 3681.28,
+    "y": -1391.51,
+    "z": 54.76
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 3688.51,
+    "y": -762.19,
+    "z": -5.39
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 3995.34,
+    "y": -2553.65,
+    "z": 38.23
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 4003.79,
+    "y": -2629.28,
+    "z": 34.27
+  },
+  {
+    "resource": "Coal",
+    "purity": "pure",
+    "well": false,
+    "x": 4044.71,
+    "y": -1167.95,
+    "z": 11.22
+  },
+  {
+    "resource": "Coal",
+    "purity": "normal",
+    "well": false,
+    "x": 4047.88,
+    "y": -1139.61,
+    "z": 6.35
+  },
+  {
+    "resource": "Coal",
+    "purity": "impure",
+    "well": false,
+    "x": 4061.97,
+    "y": -2529.9,
+    "z": 39.2
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2813.46,
+    "y": -720.0,
+    "z": -12.01
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2682.64,
+    "y": -549.91,
+    "z": -3.44
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -2669.04,
+    "y": -1333.55,
+    "z": 59.74
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2667.12,
+    "y": -513.18,
+    "z": -3.31
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1718.79,
+    "y": 1857.89,
+    "z": 10.77
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -1663.57,
+    "y": -1296.28,
+    "z": 16.0
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -1633.54,
+    "y": -1920.97,
+    "z": 107.61
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -1596.16,
+    "y": 1128.58,
+    "z": 162.54
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -1567.23,
+    "y": 1091.65,
+    "z": 161.13
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1480.08,
+    "y": -301.85,
+    "z": -5.56
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -968.01,
+    "y": -1352.76,
+    "z": 1.66
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -942.65,
+    "y": 1658.42,
+    "z": -37.35
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -839.62,
+    "y": 2735.77,
+    "z": -62.4
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -831.34,
+    "y": 2757.62,
+    "z": -62.64
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -716.73,
+    "y": 1065.11,
+    "z": 84.66
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -367.71,
+    "y": 2967.79,
+    "z": -23.66
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -333.28,
+    "y": 2316.26,
+    "z": -13.94
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -287.03,
+    "y": 1982.1,
+    "z": -19.97
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -268.98,
+    "y": -1454.69,
+    "z": 83.97
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -217.58,
+    "y": -1453.12,
+    "z": 100.22
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -212.65,
+    "y": 2831.48,
+    "z": -25.31
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 50.24,
+    "y": 1599.51,
+    "z": -120.83
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 52.51,
+    "y": 1571.69,
+    "z": -120.83
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 71.72,
+    "y": 1552.32,
+    "z": -120.83
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 201.44,
+    "y": -1698.47,
+    "z": 154.78
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 561.09,
+    "y": -859.7,
+    "z": 99.44
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 580.31,
+    "y": 823.05,
+    "z": 118.01
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 808.32,
+    "y": 2424.78,
+    "z": -44.44
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 953.46,
+    "y": -1684.42,
+    "z": 132.62
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1081.17,
+    "y": 1522.84,
+    "z": 33.88
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 1305.51,
+    "y": 1795.29,
+    "z": -55.45
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1499.37,
+    "y": 46.86,
+    "z": 154.68
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1526.48,
+    "y": 52.27,
+    "z": 151.68
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1577.38,
+    "y": 148.78,
+    "z": 153.7
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1600.86,
+    "y": 2594.21,
+    "z": -10.95
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1679.04,
+    "y": -1163.73,
+    "z": 24.27
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2255.04,
+    "y": 557.73,
+    "z": -13.04
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2334.47,
+    "y": -2479.35,
+    "z": 10.57
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2528.75,
+    "y": -1616.93,
+    "z": 34.53
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2564.02,
+    "y": -1843.55,
+    "z": 35.19
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2703.17,
+    "y": -2115.97,
+    "z": 30.51
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2775.91,
+    "y": -941.19,
+    "z": 55.36
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2822.84,
+    "y": 633.27,
+    "z": -16.01
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2877.68,
+    "y": -2748.86,
+    "z": 12.42
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2973.98,
+    "y": -964.37,
+    "z": 60.21
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2974.99,
+    "y": -73.12,
+    "z": -2.98
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2977.1,
+    "y": -1079.96,
+    "z": 54.75
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 3269.47,
+    "y": -2095.86,
+    "z": 36.88
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 3294.1,
+    "y": -1860.14,
+    "z": 37.41
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3428.06,
+    "y": -1147.28,
+    "z": 60.2
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 3489.39,
+    "y": -1855.84,
+    "z": 42.36
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3554.62,
+    "y": -1498.08,
+    "z": 42.15
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 3559.98,
+    "y": -663.86,
+    "z": -3.96
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3808.14,
+    "y": -1698.68,
+    "z": 41.87
+  },
+  {
+    "resource": "Copper Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 3816.66,
+    "y": -2682.9,
+    "z": 34.86
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": -2525.34,
+    "y": 698.13,
+    "z": -15.62
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": -2450.49,
+    "y": 905.88,
+    "z": -16.52
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": -2324.69,
+    "y": 628.38,
+    "z": -16.76
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": -2290.54,
+    "y": 780.58,
+    "z": -16.85
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": -436.12,
+    "y": -1903.16,
+    "z": 22.91
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": -357.26,
+    "y": -2095.21,
+    "z": -17.09
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": -326.0,
+    "y": -1925.38,
+    "z": 22.8
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": 121.63,
+    "y": -2253.48,
+    "z": -17.44
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 153.57,
+    "y": -1976.72,
+    "z": -16.06
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 265.98,
+    "y": -1939.84,
+    "z": -16.84
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 299.91,
+    "y": -1868.5,
+    "z": -16.89
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": 444.96,
+    "y": -2289.5,
+    "z": -17.44
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 494.04,
+    "y": -47.44,
+    "z": 131.92
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": 496.39,
+    "y": 6.56,
+    "z": 131.5
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 524.71,
+    "y": -2014.65,
+    "z": -16.59
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 525.89,
+    "y": -88.59,
+    "z": 135.93
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 571.44,
+    "y": -1913.0,
+    "z": -17.45
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 1464.52,
+    "y": -2226.38,
+    "z": -15.81
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 1477.69,
+    "y": -2129.12,
+    "z": -14.29
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 1484.78,
+    "y": -1938.69,
+    "z": -16.03
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 1673.92,
+    "y": -889.54,
+    "z": 10.5
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 1697.17,
+    "y": 2033.86,
+    "z": -92.43
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 1728.14,
+    "y": -946.08,
+    "z": 10.42
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 1737.02,
+    "y": -917.76,
+    "z": 10.51
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": false,
+    "x": 1762.97,
+    "y": -941.97,
+    "z": 14.19
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 1782.65,
+    "y": 2060.96,
+    "z": -92.39
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": 1821.16,
+    "y": 1883.97,
+    "z": -56.4
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": 1842.27,
+    "y": 2171.02,
+    "z": -89.11
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": false,
+    "x": 1847.83,
+    "y": 1910.9,
+    "z": -57.32
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": false,
+    "x": 1851.24,
+    "y": 2144.42,
+    "z": -89.11
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": true,
+    "x": -2661.95,
+    "y": 752.27,
+    "z": -12.8
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": true,
+    "x": -2653.78,
+    "y": 724.93,
+    "z": -13.42
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": true,
+    "x": -2643.73,
+    "y": 760.59,
+    "z": -12.97
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": -2633.42,
+    "y": 723.6,
+    "z": -13.54
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": -2619.41,
+    "y": 704.75,
+    "z": -11.59
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": true,
+    "x": -2606.26,
+    "y": 725.73,
+    "z": -11.88
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": true,
+    "x": -437.59,
+    "y": -84.09,
+    "z": 251.39
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": true,
+    "x": -432.39,
+    "y": -65.19,
+    "z": 250.54
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": true,
+    "x": -417.76,
+    "y": -98.68,
+    "z": 251.42
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "normal",
+    "well": true,
+    "x": -402.0,
+    "y": -43.04,
+    "z": 250.54
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": true,
+    "x": -389.57,
+    "y": -103.63,
+    "z": 253.25
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "pure",
+    "well": true,
+    "x": -369.59,
+    "y": -78.34,
+    "z": 251.7
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": 2640.52,
+    "y": 1122.81,
+    "z": -0.66
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": 2642.31,
+    "y": 1145.18,
+    "z": -0.78
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": 2671.23,
+    "y": 1151.56,
+    "z": -1.01
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": 2674.39,
+    "y": 1103.49,
+    "z": -0.91
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": 2695.0,
+    "y": 1155.88,
+    "z": -0.83
+  },
+  {
+    "resource": "Crude Oil",
+    "purity": "impure",
+    "well": true,
+    "x": 2714.25,
+    "y": 1115.04,
+    "z": -1.03
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2638.73,
+    "y": -308.48,
+    "z": -4.12
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2613.58,
+    "y": -412.28,
+    "z": -3.27
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2601.1,
+    "y": -276.74,
+    "z": -6.4
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2591.2,
+    "y": -446.89,
+    "z": -4.94
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2584.33,
+    "y": -405.61,
+    "z": -3.27
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -2562.44,
+    "y": -295.64,
+    "z": -6.68
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -2520.33,
+    "y": -1250.01,
+    "z": 38.48
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -2500.8,
+    "y": -1263.63,
+    "z": 38.38
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -2308.53,
+    "y": -1151.24,
+    "z": 39.18
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -2274.11,
+    "y": -1188.62,
+    "z": 39.32
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -1907.87,
+    "y": -1176.9,
+    "z": 7.06
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -1879.33,
+    "y": -1146.24,
+    "z": 7.06
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -1869.02,
+    "y": -1183.4,
+    "z": 7.06
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1704.48,
+    "y": -283.21,
+    "z": -5.96
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1676.03,
+    "y": 1795.57,
+    "z": 15.9
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1667.31,
+    "y": -265.66,
+    "z": -5.1
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1644.43,
+    "y": 1717.72,
+    "z": 16.12
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1627.24,
+    "y": 1824.53,
+    "z": 7.13
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1524.9,
+    "y": -457.87,
+    "z": 6.93
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -1105.88,
+    "y": -1351.53,
+    "z": 19.11
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -995.87,
+    "y": 2678.12,
+    "z": -46.61
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -985.79,
+    "y": 2658.01,
+    "z": -46.35
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -971.78,
+    "y": 2642.32,
+    "z": -46.26
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -961.01,
+    "y": 1637.53,
+    "z": -37.34
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -949.05,
+    "y": 2626.77,
+    "z": -46.2
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -940.07,
+    "y": 2681.16,
+    "z": -31.28
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -932.67,
+    "y": 2541.46,
+    "z": -45.1
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -923.72,
+    "y": 2660.82,
+    "z": -31.25
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -912.68,
+    "y": 2530.77,
+    "z": -45.14
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -650.49,
+    "y": 1374.64,
+    "z": 84.88
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -649.63,
+    "y": -2011.69,
+    "z": 69.25
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -617.57,
+    "y": 1946.34,
+    "z": -20.42
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -604.53,
+    "y": 1416.96,
+    "z": 84.17
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -589.96,
+    "y": -2245.75,
+    "z": 95.74
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -589.19,
+    "y": 1958.93,
+    "z": -21.96
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -571.61,
+    "y": 1927.73,
+    "z": -25.13
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -556.93,
+    "y": 1943.7,
+    "z": -25.57
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -541.01,
+    "y": 2294.17,
+    "z": -38.46
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -528.77,
+    "y": -2017.62,
+    "z": 67.93
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -516.45,
+    "y": 2293.91,
+    "z": -38.46
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -504.07,
+    "y": 3028.71,
+    "z": -25.83
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -501.02,
+    "y": 2844.78,
+    "z": -26.15
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -490.77,
+    "y": 2317.08,
+    "z": -38.46
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -475.34,
+    "y": 2896.07,
+    "z": -25.26
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -470.85,
+    "y": -1410.55,
+    "z": 80.74
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -449.22,
+    "y": 3022.74,
+    "z": -25.43
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -448.69,
+    "y": -1394.8,
+    "z": 79.83
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -439.4,
+    "y": 2079.92,
+    "z": -22.28
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -433.82,
+    "y": -1368.2,
+    "z": 80.46
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -433.27,
+    "y": 1302.54,
+    "z": 86.62
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -422.73,
+    "y": 1321.51,
+    "z": 86.69
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -419.28,
+    "y": 2069.08,
+    "z": -22.28
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -414.84,
+    "y": 1257.94,
+    "z": 86.45
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -382.49,
+    "y": 1279.75,
+    "z": 88.11
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": -376.14,
+    "y": -1422.5,
+    "z": 79.72
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -365.0,
+    "y": 2438.94,
+    "z": -25.03
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": -350.41,
+    "y": 2458.05,
+    "z": -25.04
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -102.34,
+    "y": 2910.35,
+    "z": -24.76
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -89.97,
+    "y": 2935.12,
+    "z": -25.27
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": -11.26,
+    "y": 2853.01,
+    "z": -11.4
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 5.72,
+    "y": 2838.02,
+    "z": -11.4
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 591.13,
+    "y": -715.02,
+    "z": 105.68
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 645.76,
+    "y": -713.87,
+    "z": 106.41
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 680.75,
+    "y": -810.01,
+    "z": 99.44
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 708.65,
+    "y": -781.26,
+    "z": 104.52
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 835.09,
+    "y": -905.07,
+    "z": 95.91
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 841.99,
+    "y": -863.94,
+    "z": 97.67
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 927.25,
+    "y": 1633.06,
+    "z": 18.82
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 937.3,
+    "y": 1602.64,
+    "z": 21.11
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 963.26,
+    "y": 1597.62,
+    "z": 21.03
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 969.59,
+    "y": 1571.63,
+    "z": 21.1
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1162.36,
+    "y": -155.52,
+    "z": 140.27
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1249.33,
+    "y": 52.26,
+    "z": 155.74
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1285.73,
+    "y": 17.95,
+    "z": 155.43
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1319.67,
+    "y": 1947.29,
+    "z": -74.25
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 1332.76,
+    "y": 1978.57,
+    "z": -73.79
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1336.37,
+    "y": 2057.92,
+    "z": -74.24
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1645.18,
+    "y": 2383.18,
+    "z": -85.89
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1780.62,
+    "y": -1205.04,
+    "z": 22.51
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 1817.24,
+    "y": -1162.8,
+    "z": 21.5
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2193.95,
+    "y": 371.89,
+    "z": -12.92
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2214.81,
+    "y": 1465.94,
+    "z": -2.0
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2256.51,
+    "y": 1476.48,
+    "z": -1.93
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2331.42,
+    "y": -264.4,
+    "z": 89.76
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2332.93,
+    "y": 1398.8,
+    "z": -3.04
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2334.33,
+    "y": 1456.03,
+    "z": -2.67
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2377.25,
+    "y": -230.06,
+    "z": 87.97
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2410.91,
+    "y": -2397.88,
+    "z": 10.48
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2426.92,
+    "y": -1494.33,
+    "z": 25.91
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2427.57,
+    "y": 879.33,
+    "z": -6.17
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2450.43,
+    "y": -223.18,
+    "z": 88.21
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2457.0,
+    "y": 300.65,
+    "z": -8.47
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2458.62,
+    "y": 43.79,
+    "z": 5.74
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2484.81,
+    "y": -1461.6,
+    "z": 35.62
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2527.51,
+    "y": 291.4,
+    "z": -7.99
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2552.5,
+    "y": -916.6,
+    "z": 55.24
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2559.08,
+    "y": -30.71,
+    "z": 35.83
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2566.12,
+    "y": -1979.79,
+    "z": 35.61
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2642.4,
+    "y": -1628.99,
+    "z": 33.32
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2655.01,
+    "y": -1782.06,
+    "z": 34.57
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2668.81,
+    "y": -1207.15,
+    "z": 40.84
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2685.24,
+    "y": -1169.44,
+    "z": 42.07
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2717.71,
+    "y": 1004.32,
+    "z": -12.95
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2737.3,
+    "y": -1481.73,
+    "z": 40.83
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2766.74,
+    "y": -1951.0,
+    "z": 28.99
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2782.66,
+    "y": -2107.72,
+    "z": 32.22
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2801.38,
+    "y": -2610.97,
+    "z": 18.6
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2826.89,
+    "y": -1793.05,
+    "z": 42.12
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 2839.69,
+    "y": -1215.98,
+    "z": 44.52
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2858.61,
+    "y": -1276.65,
+    "z": 38.76
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 2975.76,
+    "y": -1501.86,
+    "z": 39.73
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 2987.34,
+    "y": -1992.93,
+    "z": 27.09
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3048.4,
+    "y": -1729.08,
+    "z": 38.01
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 3112.3,
+    "y": -1287.05,
+    "z": 46.69
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 3117.99,
+    "y": -2153.43,
+    "z": 24.37
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 3130.1,
+    "y": -1338.42,
+    "z": 48.62
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 3145.98,
+    "y": -1967.73,
+    "z": 39.06
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3194.64,
+    "y": -1580.98,
+    "z": 38.65
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "impure",
+    "well": false,
+    "x": 3304.33,
+    "y": -1424.0,
+    "z": 39.66
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 3382.08,
+    "y": -1775.64,
+    "z": 49.59
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 3393.0,
+    "y": -1833.54,
+    "z": 44.77
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3472.28,
+    "y": -584.91,
+    "z": -7.49
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3485.26,
+    "y": -1237.51,
+    "z": 42.84
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3723.74,
+    "y": -1534.21,
+    "z": 40.06
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 3748.75,
+    "y": -2599.03,
+    "z": 32.32
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "normal",
+    "well": false,
+    "x": 3777.38,
+    "y": -2542.26,
+    "z": 33.47
+  },
+  {
+    "resource": "Iron Ore",
+    "purity": "pure",
+    "well": false,
+    "x": 3853.03,
+    "y": -1899.28,
+    "z": 42.81
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -2817.61,
+    "y": -1347.04,
+    "z": 19.98
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -2808.37,
+    "y": -420.89,
+    "z": -12.76
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -2803.06,
+    "y": -1813.63,
+    "z": 3.38
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -2789.06,
+    "y": -1863.63,
+    "z": 3.38
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -2733.21,
+    "y": -196.67,
+    "z": -15.37
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -2687.88,
+    "y": -790.95,
+    "z": -2.92
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -2670.51,
+    "y": -243.87,
+    "z": -7.24
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -2614.96,
+    "y": -1164.93,
+    "z": 43.03
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -2313.9,
+    "y": -895.3,
+    "z": 8.24
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -2273.31,
+    "y": -1582.78,
+    "z": 89.48
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -2216.97,
+    "y": -1047.36,
+    "z": 41.06
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -2061.73,
+    "y": -1416.89,
+    "z": 48.6
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1949.06,
+    "y": -257.8,
+    "z": -6.28
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -1780.99,
+    "y": -1652.42,
+    "z": 76.17
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1732.49,
+    "y": -1121.73,
+    "z": 0.32
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1672.01,
+    "y": 612.98,
+    "z": 240.01
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -1650.02,
+    "y": -1332.78,
+    "z": 16.11
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1643.81,
+    "y": 648.41,
+    "z": 243.8
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -1567.29,
+    "y": 2021.6,
+    "z": 9.61
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -1511.52,
+    "y": 1843.81,
+    "z": 9.98
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1457.81,
+    "y": -319.69,
+    "z": 32.81
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1334.45,
+    "y": -352.4,
+    "z": 38.32
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1295.99,
+    "y": -969.56,
+    "z": 41.3
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1290.15,
+    "y": -395.41,
+    "z": 28.98
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": -1105.22,
+    "y": 2497.22,
+    "z": -53.5
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -1081.2,
+    "y": 2610.59,
+    "z": -48.02
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -1078.65,
+    "y": 601.91,
+    "z": 26.53
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": -944.77,
+    "y": 2282.43,
+    "z": -23.99
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -904.58,
+    "y": -1522.79,
+    "z": -17.0
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -890.46,
+    "y": 1532.85,
+    "z": -30.2
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -800.89,
+    "y": 2047.46,
+    "z": 15.45
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": -625.37,
+    "y": 2280.43,
+    "z": -32.79
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": -559.51,
+    "y": 2715.65,
+    "z": -37.77
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -555.55,
+    "y": -1294.06,
+    "z": 69.52
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -552.88,
+    "y": 1290.03,
+    "z": 86.72
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -536.15,
+    "y": 1603.76,
+    "z": 33.56
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -525.87,
+    "y": 2646.47,
+    "z": -38.2
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": -433.22,
+    "y": 2395.53,
+    "z": -38.11
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": -418.45,
+    "y": -1524.12,
+    "z": 92.27
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": -413.01,
+    "y": 2885.58,
+    "z": -25.46
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -371.42,
+    "y": 2015.38,
+    "z": -30.56
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -87.01,
+    "y": 2834.4,
+    "z": -11.37
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": -64.49,
+    "y": -1204.83,
+    "z": 103.8
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 39.98,
+    "y": 2711.21,
+    "z": -41.08
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 41.28,
+    "y": 2732.42,
+    "z": -41.08
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 83.42,
+    "y": 1475.72,
+    "z": -96.0
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 152.4,
+    "y": -1585.79,
+    "z": -13.97
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 160.92,
+    "y": 2641.53,
+    "z": -38.24
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 207.76,
+    "y": -1349.7,
+    "z": 168.82
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 402.51,
+    "y": -1446.91,
+    "z": 3.69
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 502.6,
+    "y": -1571.53,
+    "z": -1.44
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 605.93,
+    "y": -778.91,
+    "z": 94.37
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 638.23,
+    "y": 83.77,
+    "z": 140.13
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 667.57,
+    "y": -1506.77,
+    "z": -11.81
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 678.78,
+    "y": -957.77,
+    "z": 93.62
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 695.52,
+    "y": -1003.69,
+    "z": 93.92
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 751.15,
+    "y": -1230.03,
+    "z": 136.3
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 796.71,
+    "y": -758.52,
+    "z": 120.28
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 924.95,
+    "y": -1327.49,
+    "z": 7.01
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1073.68,
+    "y": -432.39,
+    "z": 147.74
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1099.89,
+    "y": 1967.59,
+    "z": -32.47
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 1200.85,
+    "y": -99.57,
+    "z": 104.48
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1213.22,
+    "y": -882.95,
+    "z": 136.69
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 1350.05,
+    "y": 1231.75,
+    "z": 123.11
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1415.68,
+    "y": 2309.07,
+    "z": -58.35
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 1468.61,
+    "y": 1150.63,
+    "z": 122.96
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1583.14,
+    "y": -650.03,
+    "z": 25.91
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 1664.52,
+    "y": 78.04,
+    "z": 159.34
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1684.96,
+    "y": -1080.3,
+    "z": 15.87
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1759.81,
+    "y": -401.56,
+    "z": 66.12
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1771.98,
+    "y": -865.17,
+    "z": 24.59
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 1861.64,
+    "y": 770.7,
+    "z": 11.38
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 2199.01,
+    "y": 422.17,
+    "z": -15.98
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 2254.06,
+    "y": -2370.57,
+    "z": 10.43
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 2254.3,
+    "y": -69.49,
+    "z": -15.5
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 2263.2,
+    "y": -2007.02,
+    "z": 10.79
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 2373.55,
+    "y": -1649.36,
+    "z": 26.36
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 2445.91,
+    "y": -1909.03,
+    "z": 18.33
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 2458.6,
+    "y": -2189.34,
+    "z": 13.12
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 2707.72,
+    "y": 470.36,
+    "z": -16.14
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 2849.86,
+    "y": 1118.94,
+    "z": -16.06
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 2958.96,
+    "y": -2728.76,
+    "z": 12.37
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 2991.22,
+    "y": -855.12,
+    "z": 59.36
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 3086.52,
+    "y": -1006.58,
+    "z": 63.78
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 3116.23,
+    "y": -698.11,
+    "z": 56.2
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 3387.61,
+    "y": -2057.18,
+    "z": 42.25
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 3435.19,
+    "y": -834.7,
+    "z": 56.18
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 3489.08,
+    "y": -1633.5,
+    "z": 42.38
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 3551.16,
+    "y": -1229.7,
+    "z": 50.04
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 3598.85,
+    "y": -2004.69,
+    "z": 41.1
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 3707.13,
+    "y": -2219.71,
+    "z": 42.25
+  },
+  {
+    "resource": "Limestone",
+    "purity": "impure",
+    "well": false,
+    "x": 3830.46,
+    "y": -925.49,
+    "z": 2.07
+  },
+  {
+    "resource": "Limestone",
+    "purity": "normal",
+    "well": false,
+    "x": 3859.53,
+    "y": -2543.65,
+    "z": 34.2
+  },
+  {
+    "resource": "Limestone",
+    "purity": "pure",
+    "well": false,
+    "x": 3911.18,
+    "y": -2087.03,
+    "z": 49.98
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -2546.92,
+    "y": -1910.73,
+    "z": -15.82
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -2539.69,
+    "y": -1892.14,
+    "z": -14.6
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -2536.79,
+    "y": -1871.52,
+    "z": -12.41
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -2519.58,
+    "y": -1915.66,
+    "z": -17.41
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -2509.37,
+    "y": -1846.79,
+    "z": -14.57
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "normal",
+    "well": true,
+    "x": -2498.99,
+    "y": -1903.81,
+    "z": -17.4
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -2494.49,
+    "y": -1882.16,
+    "z": -17.4
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -1476.29,
+    "y": 1257.23,
+    "z": 153.16
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -1457.15,
+    "y": 1194.42,
+    "z": 151.82
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -1455.65,
+    "y": 1260.28,
+    "z": 154.39
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -1443.42,
+    "y": 1246.1,
+    "z": 153.88
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -1429.11,
+    "y": 1184.02,
+    "z": 149.95
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -1427.79,
+    "y": 1202.43,
+    "z": 151.75
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": -1417.5,
+    "y": 1219.98,
+    "z": 152.59
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 816.39,
+    "y": 1034.95,
+    "z": 101.84
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 816.64,
+    "y": 1066.68,
+    "z": 102.41
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 830.94,
+    "y": 1018.21,
+    "z": 102.16
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 839.88,
+    "y": 1078.03,
+    "z": 101.04
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 846.61,
+    "y": 992.03,
+    "z": 100.5
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 860.28,
+    "y": 1094.51,
+    "z": 99.62
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 866.97,
+    "y": 995.24,
+    "z": 100.58
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 879.17,
+    "y": 1020.45,
+    "z": 101.78
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 879.91,
+    "y": 1050.52,
+    "z": 102.09
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 887.34,
+    "y": 1077.23,
+    "z": 99.92
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "normal",
+    "well": true,
+    "x": 1250.99,
+    "y": 2543.21,
+    "z": 1.6
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 1251.04,
+    "y": 2564.75,
+    "z": 7.34
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "normal",
+    "well": true,
+    "x": 1266.44,
+    "y": 2530.42,
+    "z": -3.72
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 1282.16,
+    "y": 2588.78,
+    "z": 8.9
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 1305.16,
+    "y": 2551.26,
+    "z": -2.94
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 1310.25,
+    "y": 2574.28,
+    "z": 2.38
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2116.86,
+    "y": 1331.61,
+    "z": -2.47
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2124.92,
+    "y": 1380.87,
+    "z": -1.26
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "impure",
+    "well": true,
+    "x": 2134.49,
+    "y": 1327.07,
+    "z": -3.17
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "impure",
+    "well": true,
+    "x": 2146.6,
+    "y": 1379.94,
+    "z": -2.25
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "normal",
+    "well": true,
+    "x": 2157.26,
+    "y": 1327.91,
+    "z": -2.85
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2164.07,
+    "y": 1395.0,
+    "z": -2.12
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "normal",
+    "well": true,
+    "x": 2180.41,
+    "y": 1342.23,
+    "z": -1.88
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2181.69,
+    "y": 1375.49,
+    "z": -2.09
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "normal",
+    "well": true,
+    "x": 2202.15,
+    "y": -3107.21,
+    "z": 78.8
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2212.64,
+    "y": -3122.57,
+    "z": 79.32
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2217.85,
+    "y": -3083.46,
+    "z": 82.44
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2239.81,
+    "y": -3140.09,
+    "z": 78.67
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2252.42,
+    "y": -3098.13,
+    "z": 78.76
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "pure",
+    "well": true,
+    "x": 2264.88,
+    "y": -3136.24,
+    "z": 81.61
+  },
+  {
+    "resource": "Nitrogen Gas",
+    "purity": "normal",
+    "well": true,
+    "x": 2268.52,
+    "y": -3114.23,
+    "z": 79.06
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "normal",
+    "well": false,
+    "x": -1942.3,
+    "y": -1404.22,
+    "z": -12.42
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "pure",
+    "well": false,
+    "x": -1719.86,
+    "y": -1441.46,
+    "z": -20.3
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "pure",
+    "well": false,
+    "x": -1673.6,
+    "y": -1456.83,
+    "z": -19.14
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "pure",
+    "well": false,
+    "x": -904.74,
+    "y": 672.6,
+    "z": 21.45
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "pure",
+    "well": false,
+    "x": -903.7,
+    "y": 637.12,
+    "z": 21.45
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "normal",
+    "well": false,
+    "x": 349.68,
+    "y": 1184.64,
+    "z": 134.1
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "pure",
+    "well": false,
+    "x": 379.26,
+    "y": 1209.39,
+    "z": 133.7
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "impure",
+    "well": false,
+    "x": 550.42,
+    "y": -1306.41,
+    "z": 71.56
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "normal",
+    "well": false,
+    "x": 552.53,
+    "y": 2058.56,
+    "z": -57.63
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "pure",
+    "well": false,
+    "x": 616.54,
+    "y": 1964.32,
+    "z": -37.25
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "impure",
+    "well": false,
+    "x": 621.11,
+    "y": 2076.27,
+    "z": -41.97
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "impure",
+    "well": false,
+    "x": 622.9,
+    "y": -1374.24,
+    "z": 83.25
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "normal",
+    "well": false,
+    "x": 1900.98,
+    "y": -172.81,
+    "z": 94.57
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "pure",
+    "well": false,
+    "x": 1939.8,
+    "y": -54.68,
+    "z": 102.6
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "normal",
+    "well": false,
+    "x": 1966.68,
+    "y": -139.56,
+    "z": 93.98
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "normal",
+    "well": false,
+    "x": 3056.6,
+    "y": -3013.06,
+    "z": 12.33
+  },
+  {
+    "resource": "Raw Quartz",
+    "purity": "normal",
+    "well": false,
+    "x": 3085.98,
+    "y": -2960.79,
+    "z": 12.57
+  },
+  {
+    "resource": "SAM",
+    "purity": "normal",
+    "well": false,
+    "x": -1821.83,
+    "y": -1423.67,
+    "z": -17.44
+  },
+  {
+    "resource": "SAM",
+    "purity": "normal",
+    "well": false,
+    "x": -1818.14,
+    "y": 890.77,
+    "z": 170.39
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": -1436.12,
+    "y": 207.28,
+    "z": 194.58
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": -808.7,
+    "y": -324.19,
+    "z": 156.57
+  },
+  {
+    "resource": "SAM",
+    "purity": "pure",
+    "well": false,
+    "x": -483.75,
+    "y": 1289.37,
+    "z": 236.14
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": -466.45,
+    "y": -2529.47,
+    "z": 49.31
+  },
+  {
+    "resource": "SAM",
+    "purity": "normal",
+    "well": false,
+    "x": -240.66,
+    "y": 2698.58,
+    "z": -133.54
+  },
+  {
+    "resource": "SAM",
+    "purity": "normal",
+    "well": false,
+    "x": 154.6,
+    "y": -8.04,
+    "z": 146.71
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": 807.3,
+    "y": 2048.12,
+    "z": 57.22
+  },
+  {
+    "resource": "SAM",
+    "purity": "pure",
+    "well": false,
+    "x": 825.59,
+    "y": -2196.09,
+    "z": 89.29
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": 1191.49,
+    "y": 713.21,
+    "z": 186.74
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": 1329.58,
+    "y": 2408.93,
+    "z": -141.93
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": 1529.62,
+    "y": -240.54,
+    "z": 42.87
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": 1619.29,
+    "y": 1037.77,
+    "z": 56.03
+  },
+  {
+    "resource": "SAM",
+    "purity": "pure",
+    "well": false,
+    "x": 1628.99,
+    "y": 654.14,
+    "z": 97.82
+  },
+  {
+    "resource": "SAM",
+    "purity": "normal",
+    "well": false,
+    "x": 1725.59,
+    "y": -2855.17,
+    "z": 215.91
+  },
+  {
+    "resource": "SAM",
+    "purity": "normal",
+    "well": false,
+    "x": 2282.73,
+    "y": 1162.87,
+    "z": -15.82
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": 2305.42,
+    "y": -336.17,
+    "z": 21.85
+  },
+  {
+    "resource": "SAM",
+    "purity": "impure",
+    "well": false,
+    "x": 2728.32,
+    "y": -2618.66,
+    "z": 10.88
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "normal",
+    "well": false,
+    "x": -2130.23,
+    "y": -1700.21,
+    "z": -13.17
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "pure",
+    "well": false,
+    "x": -1450.44,
+    "y": 1659.65,
+    "z": 126.99
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "normal",
+    "well": false,
+    "x": -1013.82,
+    "y": 915.79,
+    "z": 86.65
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "impure",
+    "well": false,
+    "x": -411.22,
+    "y": -726.31,
+    "z": 232.12
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "impure",
+    "well": false,
+    "x": -398.9,
+    "y": -935.79,
+    "z": 3.43
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "impure",
+    "well": false,
+    "x": 346.55,
+    "y": 2843.03,
+    "z": 9.05
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "impure",
+    "well": false,
+    "x": 913.05,
+    "y": 2202.17,
+    "z": -0.79
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "normal",
+    "well": false,
+    "x": 920.73,
+    "y": 31.64,
+    "z": 160.79
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "pure",
+    "well": false,
+    "x": 948.47,
+    "y": 2245.37,
+    "z": -0.86
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "normal",
+    "well": false,
+    "x": 963.68,
+    "y": 2204.01,
+    "z": -0.84
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "impure",
+    "well": false,
+    "x": 1282.96,
+    "y": -759.42,
+    "z": 36.68
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "pure",
+    "well": false,
+    "x": 1881.83,
+    "y": -2474.68,
+    "z": 233.07
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "pure",
+    "well": false,
+    "x": 2423.1,
+    "y": 1527.79,
+    "z": 88.88
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "pure",
+    "well": false,
+    "x": 2465.02,
+    "y": -2770.0,
+    "z": 14.99
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "impure",
+    "well": false,
+    "x": 2965.0,
+    "y": 132.54,
+    "z": -8.82
+  },
+  {
+    "resource": "Sulfur",
+    "purity": "normal",
+    "well": false,
+    "x": 3803.66,
+    "y": -1094.96,
+    "z": 92.37
+  },
+  {
+    "resource": "Uranium",
+    "purity": "impure",
+    "well": false,
+    "x": -1327.72,
+    "y": -1875.79,
+    "z": 465.28
+  },
+  {
+    "resource": "Uranium",
+    "purity": "normal",
+    "well": false,
+    "x": -758.93,
+    "y": 516.37,
+    "z": 191.46
+  },
+  {
+    "resource": "Uranium",
+    "purity": "normal",
+    "well": false,
+    "x": 380.0,
+    "y": 917.36,
+    "z": -48.09
+  },
+  {
+    "resource": "Uranium",
+    "purity": "impure",
+    "well": false,
+    "x": 1687.13,
+    "y": 508.39,
+    "z": -0.09
+  },
+  {
+    "resource": "Uranium",
+    "purity": "impure",
+    "well": false,
+    "x": 1801.94,
+    "y": -1891.99,
+    "z": 235.03
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -1118.15,
+    "y": 711.21,
+    "z": 30.62
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -1118.01,
+    "y": 731.89,
+    "z": 31.2
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -1101.39,
+    "y": 753.75,
+    "z": 31.96
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -1084.78,
+    "y": 776.0,
+    "z": 37.09
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -1076.07,
+    "y": 710.69,
+    "z": 29.12
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -1046.92,
+    "y": 733.56,
+    "z": 30.96
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -1042.01,
+    "y": 709.77,
+    "z": 28.59
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -234.07,
+    "y": 1742.54,
+    "z": -4.38
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -224.51,
+    "y": 1717.14,
+    "z": -0.28
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -204.51,
+    "y": 1756.54,
+    "z": -1.0
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": -203.47,
+    "y": 1707.87,
+    "z": 0.07
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -177.01,
+    "y": 1748.77,
+    "z": -0.71
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -160.87,
+    "y": 1703.51,
+    "z": 3.51
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": -156.12,
+    "y": 1727.1,
+    "z": 2.39
+  },
+  {
+    "resource": "Water",
+    "purity": "impure",
+    "well": true,
+    "x": 35.83,
+    "y": 1870.82,
+    "z": -103.05
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 49.34,
+    "y": 1847.44,
+    "z": -104.25
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 59.73,
+    "y": 1893.94,
+    "z": -103.58
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 71.64,
+    "y": 1838.58,
+    "z": -105.25
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 91.13,
+    "y": 1848.7,
+    "z": -105.06
+  },
+  {
+    "resource": "Water",
+    "purity": "impure",
+    "well": true,
+    "x": 92.69,
+    "y": 1902.02,
+    "z": -104.41
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 103.43,
+    "y": 1875.21,
+    "z": -104.74
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 959.82,
+    "y": 852.28,
+    "z": 101.7
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 976.53,
+    "y": 820.24,
+    "z": 102.55
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 987.01,
+    "y": 862.32,
+    "z": 102.46
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 997.44,
+    "y": 1473.03,
+    "z": 64.41
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 1002.09,
+    "y": 815.08,
+    "z": 102.71
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 1007.17,
+    "y": 1497.04,
+    "z": 64.94
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 1008.3,
+    "y": 1434.46,
+    "z": 64.61
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 1011.59,
+    "y": 855.61,
+    "z": 102.5
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 1023.19,
+    "y": 829.76,
+    "z": 102.7
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 1031.8,
+    "y": 1415.25,
+    "z": 64.29
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 1046.41,
+    "y": 1493.05,
+    "z": 64.56
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 1063.55,
+    "y": 1396.79,
+    "z": 66.03
+  },
+  {
+    "resource": "Water",
+    "purity": "impure",
+    "well": true,
+    "x": 1080.81,
+    "y": 1420.57,
+    "z": 66.32
+  },
+  {
+    "resource": "Water",
+    "purity": "impure",
+    "well": true,
+    "x": 1082.62,
+    "y": 1454.18,
+    "z": 64.86
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 1828.06,
+    "y": -581.48,
+    "z": 55.36
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 1831.14,
+    "y": -555.33,
+    "z": 55.12
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 1836.1,
+    "y": -599.44,
+    "z": 55.86
+  },
+  {
+    "resource": "Water",
+    "purity": "impure",
+    "well": true,
+    "x": 1856.94,
+    "y": -610.72,
+    "z": 54.32
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 1863.18,
+    "y": -529.86,
+    "z": 54.26
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 1880.79,
+    "y": -544.24,
+    "z": 55.19
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 1888.63,
+    "y": -575.9,
+    "z": 55.66
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 2383.32,
+    "y": -692.83,
+    "z": 54.03
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 2397.63,
+    "y": -716.95,
+    "z": 52.57
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 2407.88,
+    "y": -748.85,
+    "z": 48.02
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 2408.92,
+    "y": -666.19,
+    "z": 61.83
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 2428.02,
+    "y": -713.1,
+    "z": 54.19
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 2450.34,
+    "y": -718.46,
+    "z": 46.17
+  },
+  {
+    "resource": "Water",
+    "purity": "impure",
+    "well": true,
+    "x": 3138.91,
+    "y": -2879.79,
+    "z": 12.12
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 3142.77,
+    "y": -2897.56,
+    "z": 12.68
+  },
+  {
+    "resource": "Water",
+    "purity": "normal",
+    "well": true,
+    "x": 3144.08,
+    "y": -2929.42,
+    "z": 12.53
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 3165.13,
+    "y": -2933.72,
+    "z": 12.43
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 3166.68,
+    "y": -2880.9,
+    "z": 11.74
+  },
+  {
+    "resource": "Water",
+    "purity": "pure",
+    "well": true,
+    "x": 3191.27,
+    "y": -2900.63,
+    "z": 12.28
+  },
+  {
+    "resource": "Water",
+    "purity": "impure",
+    "well": true,
+    "x": 3205.35,
+    "y": -2912.8,
+    "z": 12.3
+  }
+]

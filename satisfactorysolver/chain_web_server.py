@@ -13,6 +13,7 @@ from fractions import Fraction
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+from satisfactorysolver import resource_nodes
 from satisfactorysolver.optimal_chain_finder import InputLimit
 from satisfactorysolver.web_visualizer import capture_chain_solution, render_html
 
@@ -43,6 +44,7 @@ class ChainSession:
         self.item_names = item_names
         self.finder_class = finder_class
         self.parse_targets = parse_targets
+        self.nodes = None
         # z3's default context is not thread-safe, and that includes freeing z3
         # objects, which Python's garbage collector may do on whichever thread
         # happens to trigger it. So every solver object lives and dies on this
@@ -52,14 +54,33 @@ class ChainSession:
             max_workers=1, thread_name_prefix="chain-solver"
         )
 
-    def _solve_on_solver_thread(self, enabled, inputs, outputs):
+    def resource_limits(self, request: dict) -> dict[str, Fraction] | None:
+        """Limits from the nodes near the request's point, or None for map-wide.
+
+        :raises ValueError: On a bad point or radius, or only one of them.
+        """
+        near = str(request.get("near") or "").strip()
+        radius = str(request.get("radius") or "").strip()
+        if not near and not radius:
+            return None
+        if not (near and radius):
+            raise ValueError("enter both a point and a radius, or neither")
+        if self.nodes is None:
+            self.nodes = resource_nodes.load_resource_nodes()
+        return resource_nodes.limits_near(
+            self.nodes,
+            *resource_nodes.parse_point(near),
+            resource_nodes.parse_radius(radius),
+        )
+
+    def _solve_on_solver_thread(self, enabled, inputs, outputs, resource_limits):
         """Solve and return only plain data, so no solver object leaves this thread."""
         try:
             candidates = self.finder_class(
                 self.recipes
             ).construct_possibly_used_recipes(outputs)
             finder = self.finder_class(enabled)
-            finder.build_model(inputs, outputs)
+            finder.build_model(inputs, outputs, resource_limits)
             solution = (
                 capture_chain_solution(finder, "Chain") if finder.solve() else None
             )
@@ -79,13 +100,14 @@ class ChainSession:
             )
             if not outputs:
                 raise ValueError("enter at least one output")
+            resource_limits = self.resource_limits(request)
         except ValueError as error:
             return {"error": str(error), "solution": None, "recipes": None}
 
         enabled = {recipe for recipe in self.recipes if recipe.Name not in disabled}
         started = time.perf_counter()
         candidates, solution = self.solver_thread.submit(
-            self._solve_on_solver_thread, enabled, inputs, outputs
+            self._solve_on_solver_thread, enabled, inputs, outputs, resource_limits
         ).result()
         elapsed = time.perf_counter() - started
         solved = solution is not None
@@ -116,6 +138,12 @@ class ChainSession:
             else "No optimal production chain found (infeasible, unbounded, or solver unknown).",
             "solution": solution,
             "recipes": recipes,
+            "limits": None
+            if resource_limits is None
+            else {
+                resource: float(limit)
+                for resource, limit in sorted(resource_limits.items())
+            },
             "seconds": elapsed,
         }
 
@@ -184,6 +212,8 @@ def serve(
     host: str = "127.0.0.1",
     port: int = 8000,
     open_browser: bool = False,
+    near: tuple[float, float] | None = None,
+    radius: float | None = None,
 ) -> None:
     """Serve the live chain visualizer until interrupted."""
     page = render_html(
@@ -193,6 +223,8 @@ def serve(
             "inputs": format_rates(inputs),
             "outputs": format_rates(outputs),
             "disabled": sorted(disabled),
+            "near": f"{near[0]:g}, {near[1]:g}" if near else "",
+            "radius": f"{radius:g}" if radius else "",
         },
     )
     server = ThreadingHTTPServer((host, port), make_handler(session, page))

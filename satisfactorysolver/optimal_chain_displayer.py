@@ -10,6 +10,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.logging import RichHandler
 
+from satisfactorysolver import resource_nodes
 from satisfactorysolver.game_data import load_game_data
 from satisfactorysolver.optimal_chain_finder import InputLimit
 
@@ -26,6 +27,8 @@ class ChainArguments(argparse.Namespace):
     open: bool = False
     solver: str = "z3"
     data_dir: Path | None = None
+    near: tuple[float, float] | None = None
+    radius: float | None = None
     verbose: int = 0
 
 
@@ -46,6 +49,20 @@ def parse_rate(value: str) -> tuple[str, Fraction]:
             "rate must be a finite number or fraction"
         ) from error
     return item, InputLimit(amount) if is_limit else amount
+
+
+def parse_point(value: str) -> tuple[float, float]:
+    try:
+        return resource_nodes.parse_point(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
+def parse_radius(value: str) -> float:
+    try:
+        return resource_nodes.parse_radius(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
 
 
 def canonical_names(names) -> dict[str, str]:
@@ -180,6 +197,19 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="directory containing game_data.json and additional_data.json (default: bundled data)",
     )
+    parser.add_argument(
+        "--near",
+        type=parse_point,
+        metavar="X,Y",
+        help="only use resource nodes within --radius of these map coordinates, "
+        "in meters (game units / 100)",
+    )
+    parser.add_argument(
+        "--radius",
+        type=parse_radius,
+        metavar="METERS",
+        help="distance from --near within which resource nodes may be used",
+    )
     parser.add_argument("-v", "--verbose", action="count", default=0)
     args = parser.parse_args(argv, namespace=ChainArguments())
     errors = Console(stderr=True)
@@ -190,6 +220,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.outputs and not args.serve:
         parser.error("at least one --output is required (unless --serve)")
+    if (args.near is None) != (args.radius is None):
+        parser.error("--near and --radius must be given together")
 
     try:
         data = load_game_data(args.data_dir)
@@ -220,13 +252,41 @@ def main(argv: list[str] | None = None) -> int:
         from satisfactorysolver.chain_web_server import ChainSession, serve
 
         session = ChainSession(data.Recipes, item_names, finder_class, parse_targets)
-        serve(session, inputs, outputs, excluded, args.host, args.port, args.open)
+        serve(
+            session,
+            inputs,
+            outputs,
+            excluded,
+            args.host,
+            args.port,
+            args.open,
+            near=args.near,
+            radius=args.radius,
+        )
         return 0
 
     finder = finder_class(
         {recipe for recipe in data.Recipes if recipe.Name not in excluded}
     )
-    finder.build_model(inputs, outputs)
+    resource_limits = None
+    if args.near is not None:
+        resource_limits = resource_nodes.limits_near(
+            resource_nodes.load_resource_nodes(), *args.near, args.radius
+        )
+        errors.print(
+            f"Resource limits within {args.radius:g} m of "
+            f"({args.near[0]:g}, {args.near[1]:g}): "
+            + (
+                ", ".join(
+                    f"{limit} {resource}"
+                    for resource, limit in sorted(resource_limits.items())
+                    if limit
+                )
+                or "none"
+            ),
+            markup=False,
+        )
+    finder.build_model(inputs, outputs, resource_limits)
     if not finder.solve():
         errors.print(
             "No optimal production chain found (infeasible, unbounded, or solver unknown)."

@@ -147,7 +147,7 @@
   }
   #sidebar[hidden] { display: none; }
   #sidebar h2 { font-size: 13px; margin: 0 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-  #sidebar textarea, #sidebar input[type="search"] {
+  #sidebar textarea, #sidebar input[type="search"], #sidebar input[type="text"], #sidebar input[type="number"] {
     width: 100%;
     background: var(--panel-2);
     color: var(--text);
@@ -159,6 +159,11 @@
   }
   #sidebar .field { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
   .solve-row { display: flex; gap: 10px; align-items: center; }
+  .near-row { display: flex; gap: 8px; }
+  .near-row .field:first-child { flex: 2; }
+  .near-row .field:last-child { flex: 1; }
+  #limits { font-size: 12px; color: var(--muted); margin: -2px 0 8px; }
+  #limits:empty { display: none; }
   #solve-status { font-size: 12px; color: var(--muted); }
   #solve-status.error { color: #e0795b; }
   .recipes { flex: 1; min-height: 0; display: flex; flex-direction: column; }
@@ -289,6 +294,15 @@
     <label class="field">Supplied inputs (Item=rate; Item&lt;=rate also caps total use)
       <textarea id="inputs" rows="2" placeholder="Water=600" spellcheck="false"></textarea>
     </label>
+    <div class="near-row" title="Only use resource nodes within this distance of a point on the map. Leave empty to use the whole map.">
+      <label class="field">Near (X, Y in m)
+        <input type="text" id="near" placeholder="whole map" spellcheck="false">
+      </label>
+      <label class="field">Within (m)
+        <input type="number" id="radius" min="1" step="100" placeholder="1000">
+      </label>
+    </div>
+    <div id="limits"></div>
     <div class="solve-row"><button id="solve">Solve</button><span id="solve-status"></span></div>
   </section>
   <section class="recipes">
@@ -1274,6 +1288,9 @@
     const sidebar = document.getElementById("sidebar");
     const outputsBox = document.getElementById("outputs");
     const inputsBox = document.getElementById("inputs");
+    const nearBox = document.getElementById("near");
+    const radiusBox = document.getElementById("radius");
+    const limitsLine = document.getElementById("limits");
     const status = document.getElementById("solve-status");
     const list = document.getElementById("recipe-list");
     const filterBox = document.getElementById("recipe-filter");
@@ -1289,6 +1306,8 @@
     sidebar.hidden = false;
     outputsBox.value = live.outputs || "";
     inputsBox.value = live.inputs || "";
+    nearBox.value = live.near || "";
+    radiusBox.value = live.radius || "";
 
     function setStatus(text, isError) {
       status.textContent = text;
@@ -1304,7 +1323,13 @@
         const res = await fetch("api/solve", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ outputs: outputsBox.value, inputs: inputsBox.value, disabled: [...disabled] }),
+          body: JSON.stringify({
+            outputs: outputsBox.value,
+            inputs: inputsBox.value,
+            near: nearBox.value,
+            radius: radiusBox.value,
+            disabled: [...disabled],
+          }),
         });
         body = await res.json();
       } catch (err) {
@@ -1312,12 +1337,18 @@
         return;
       }
       if (mine !== seq) return; // a newer request superseded this one
+      if (body.limits !== undefined) {
+        const available = Object.entries(body.limits || {}).filter(([, rate]) => rate > 0);
+        limitsLine.textContent = !body.limits ? ""
+          : available.length ? "In range: " + available.map(([item, rate]) => fmt(rate) + " " + item).join(" · ") + " /min"
+          : "No resource nodes in range";
+      }
       if (body.recipes) {
         recipes = body.recipes;
         // Put what the chain uses first, but only re-rank when the targets
         // change, so the list does not jump around under the cursor while
         // recipes are being toggled.
-        const targets = outputsBox.value + "\n--\n" + inputsBox.value;
+        const targets = [outputsBox.value, inputsBox.value, nearBox.value, radiusBox.value].join("\n--\n");
         if (targets !== rankedFor && !body.error) {
           rankedFor = targets;
           usedFirst = new Set(recipes.filter((r) => r.used).flatMap((r) => [r.name, groupName(r)]));
@@ -1400,7 +1431,7 @@
       renderRecipes();
     });
     document.getElementById("solve").addEventListener("click", solve);
-    [outputsBox, inputsBox].forEach((box) =>
+    [outputsBox, inputsBox, nearBox, radiusBox].forEach((box) =>
       box.addEventListener("keydown", (ev) => {
         if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
           ev.preventDefault();
