@@ -1313,10 +1313,21 @@
     const rank = (name) => (usedFirst.has(name) ? 0 : 1);
 
     sidebar.hidden = false;
-    outputsBox.value = live.outputs || "";
-    inputsBox.value = live.inputs || "";
-    nearBox.value = live.near || "";
-    radiusBox.value = live.radius || "";
+    const boxes = { outputs: outputsBox, inputs: inputsBox, near: nearBox, radius: radiusBox };
+    // Targets given on the command line win; otherwise restore the last ones
+    // solved here. Storage may be unavailable.
+    let restored = {};
+    if (!Object.keys(boxes).some((key) => live[key])) {
+      try { restored = JSON.parse(localStorage.getItem("chain-targets")) || {}; } catch (err) { /* ignore */ }
+    }
+    for (const [key, box] of Object.entries(boxes)) {
+      const value = live[key] || restored[key];
+      box.value = typeof value === "string" ? value : "";
+    }
+    const saveTargets = () => {
+      const values = Object.fromEntries(Object.entries(boxes).map(([key, box]) => [key, box.value]));
+      try { localStorage.setItem("chain-targets", JSON.stringify(values)); } catch (err) { /* ignore */ }
+    };
 
     function setStatus(text, isError) {
       status.textContent = text;
@@ -1326,6 +1337,7 @@
     async function solve() {
       clearTimeout(timer);
       const mine = ++seq;
+      saveTargets();
       setStatus("Solving…");
       let body;
       try {
