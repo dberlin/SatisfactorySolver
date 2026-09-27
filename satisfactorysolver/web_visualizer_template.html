@@ -351,6 +351,16 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const sumRates = (rates) => Object.values(rates || {}).reduce((a, r) => a + r.value, 0);
 
+  // Whole machines at 100% and one more for the remainder, e.g. "5 @ 100%, 1 @ 93%".
+  function clockText(n) {
+    const full = Math.floor(n.count + EPS);
+    const rest = n.count - full;
+    const parts = [];
+    if (full) parts.push(full + " @ 100%");
+    if (rest >= EPS) parts.push("1 @ " + fmt(rest * 100) + "%");
+    return parts.join(", ");
+  }
+
   function machineLine(n) {
     if (n.kind === "sink") return fmt(sumRates(n.inputs)) + " / min sunk";
     if (n.count == null) {
@@ -359,8 +369,7 @@
       return (n.machine || "") + "\n" + fmt(total) + " / min" + cap;
     }
     if (n.count < EPS) return n.machine + "\nidle";
-    const clock = (n.count / n.buildings) * 100;
-    return n.buildings + "× " + n.machine + " @ " + fmt(clock) + "%";
+    return n.machine + "\n" + clockText(n);
   }
 
   function isIdle(n) {
@@ -1155,7 +1164,7 @@
         (n.groups ? "Group " + n.group + " of " + n.groups + " · " : "") + KINDS[n.kind].label + (n.machine ? " · " + esc(n.machine) : "") + "</div>";
       if (n.count != null) {
         html += "<p>Machines: <b>" + fmt(n.count) + "</b>";
-        if (n.buildings) html += " → " + n.buildings + " @ " + fmt((n.count / n.buildings) * 100) + "%";
+        if (n.buildings) html += " → " + clockText(n);
         if (n.max != null) html += '<br><span class="muted">Limit: ' + fmt(n.max) + " machines</span>";
         html += "</p>";
       } else if (n.max != null) {
@@ -1224,7 +1233,7 @@
           '</td><td class="num">' + (nodeRef(n) || (n.groups ? n.group + "/" + n.groups : "")) + "</td>" +
           '<td class="num">' + (n.count != null ? fmt(n.count) : "—") + "</td>" +
           '<td class="num">' + (n.buildings || (n.count != null ? 0 : "—")) + "</td>" +
-          '<td class="num">' + (n.buildings ? fmt((n.count / n.buildings) * 100) + "%" : "—") + "</td>" +
+          '<td class="num">' + (n.buildings ? clockText(n) : "—") + "</td>" +
           '<td class="num">' + (n.max != null ? fmt(n.max) + (n.maxIsRate ? " /min" : "") : "—") + "</td>" +
           "<td>" + (out ? esc(out[0]) + " " + fmt(out[1].value) + " / min" : "") + "</td></tr>";
       }
