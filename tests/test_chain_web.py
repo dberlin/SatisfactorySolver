@@ -166,3 +166,33 @@ def test_chain_solution_marks_fluids_for_pipe_limits(session: ChainSession) -> N
     assert "Sulfur" not in solution["fluids"]
     blender = next(n for n in solution["nodes"] if n["recipe"] == "Turbo Blend Fuel")
     assert Fraction(blender["countExact"]) == pytest.approx(blender["count"])
+
+
+def test_surplus_policy_controls_unsinkable_byproducts(session: ChainSession) -> None:
+    def surplus_outputs(surplus):
+        response = session.solve(
+            {
+                "outputs": "Aluminum Casing=400\nAlclad Aluminum Sheet=400\n"
+                "Petroleum Coke=200\nSteel Beam=135",
+                "inputs": "Bauxite=1600",
+                **({"surplus": surplus} if surplus else {}),
+            }
+        )
+        assert response["error"] is None
+        return {
+            node["part"]
+            for node in response["solution"]["nodes"]
+            if node["kind"] == "product"
+        }
+
+    # Free Bauxite tempts the chain into a fluid byproduct.
+    assert "Alumina Solution" in surplus_outputs("ignored")
+    packaged = surplus_outputs(None)
+    assert "Alumina Solution" not in packaged
+    assert "Packaged Alumina Solution" in packaged
+    forbidden = surplus_outputs("forbidden")
+    assert not forbidden & {"Alumina Solution", "Packaged Alumina Solution"}
+    assert (
+        "unknown surplus policy"
+        in session.solve({"outputs": "Iron Plate=30", "surplus": "dumped"})["error"]
+    )

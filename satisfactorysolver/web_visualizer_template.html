@@ -158,6 +158,7 @@
     resize: vertical;
   }
   #sidebar .field { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+  #sidebar .field select { display: block; width: 100%; margin-top: 2px; }
   .solve-row { display: flex; gap: 10px; align-items: center; }
   .near-row { display: flex; gap: 8px; }
   .near-row .field:first-child { flex: 2; }
@@ -303,6 +304,13 @@
       </label>
     </div>
     <div id="limits"></div>
+    <label class="field" title="What becomes of surplus the AWESOME Sink refuses, such as fluids, that is not one of the outputs. Nuclear waste may always be stored.">Unsinkable surplus
+      <select id="surplus">
+        <option value="packaged">Package it to sink (packaging counts)</option>
+        <option value="forbidden">Forbid it</option>
+        <option value="ignored">Ignore it (leaves freely)</option>
+      </select>
+    </label>
     <div class="solve-row"><button id="solve">Solve</button><span id="solve-status"></span></div>
   </section>
   <section class="recipes">
@@ -1299,6 +1307,7 @@
     const inputsBox = document.getElementById("inputs");
     const nearBox = document.getElementById("near");
     const radiusBox = document.getElementById("radius");
+    const surplusSelect = document.getElementById("surplus");
     const limitsLine = document.getElementById("limits");
     const status = document.getElementById("solve-status");
     const list = document.getElementById("recipe-list");
@@ -1313,7 +1322,7 @@
     const rank = (name) => (usedFirst.has(name) ? 0 : 1);
 
     sidebar.hidden = false;
-    const boxes = { outputs: outputsBox, inputs: inputsBox, near: nearBox, radius: radiusBox };
+    const boxes = { outputs: outputsBox, inputs: inputsBox, near: nearBox, radius: radiusBox, surplus: surplusSelect };
     // Targets given on the command line win; otherwise restore the last ones
     // solved here. Storage may be unavailable.
     let restored = {};
@@ -1324,6 +1333,7 @@
       const value = live[key] || restored[key];
       box.value = typeof value === "string" ? value : "";
     }
+    if (surplusSelect.selectedIndex < 0) surplusSelect.value = "packaged";
     const saveTargets = () => {
       const values = Object.fromEntries(Object.entries(boxes).map(([key, box]) => [key, box.value]));
       try { localStorage.setItem("chain-targets", JSON.stringify(values)); } catch (err) { /* ignore */ }
@@ -1349,6 +1359,7 @@
             inputs: inputsBox.value,
             near: nearBox.value,
             radius: radiusBox.value,
+            surplus: surplusSelect.value,
             disabled: [...disabled],
           }),
         });
@@ -1369,7 +1380,7 @@
         // Put what the chain uses first, but only re-rank when the targets
         // change, so the list does not jump around under the cursor while
         // recipes are being toggled.
-        const targets = [outputsBox.value, inputsBox.value, nearBox.value, radiusBox.value].join("\n--\n");
+        const targets = [outputsBox.value, inputsBox.value, nearBox.value, radiusBox.value, surplusSelect.value].join("\n--\n");
         if (targets !== rankedFor && !body.error) {
           rankedFor = targets;
           usedFirst = new Set(recipes.filter((r) => r.used).flatMap((r) => [r.name, groupName(r)]));
@@ -1452,6 +1463,7 @@
       renderRecipes();
     });
     document.getElementById("solve").addEventListener("click", solve);
+    surplusSelect.addEventListener("change", solve);
     [outputsBox, inputsBox, nearBox, radiusBox].forEach((box) =>
       box.addEventListener("keydown", (ev) => {
         if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {

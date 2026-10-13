@@ -11,7 +11,7 @@ from satisfactorysolver.modeler_models import (
     RecipeByName,
     RecipeModel,
 )
-from satisfactorysolver.optimal_chain_finder import InputLimit
+from satisfactorysolver.optimal_chain_finder import InputLimit, SurplusPolicy
 from satisfactorysolver.pyomo_optimal_chain_finder import PyomoOptimalChainFinder
 from satisfactorysolver.z3_optimal_chain_finder import Z3OptimalChainFinder
 
@@ -289,3 +289,113 @@ def test_small_positive_values_are_kept_in_tables(backend, recipes, capsys) -> N
     output = capsys.readouterr().out
     assert "Output Plate" in output
     assert "1/10000" in output or "0.0001" in output
+
+
+@pytest.fixture
+def sludge_recipes() -> set[RecipeModel]:
+    """A cheap widget leaving unsinkable sludge, and a dear one leaving none."""
+    MachineModel.model_validate({"Name": "Test Machine"})
+    MachineModel.model_validate({"Name": "Packager"})
+    for part in (
+        {"Name": "Iron Ore", "SinkPoints": 1},
+        {"Name": "Widget", "SinkPoints": 10},
+        {"Name": "Gadget", "SinkPoints": 10},
+        {"Name": "Canister", "SinkPoints": 5},
+        {"Name": "Packaged Sludge", "SinkPoints": 5},
+        {"Name": "Sludge", "SinkPoints": 0, "Fluid": True},
+        {"Name": "Uranium Waste", "SinkPoints": 0},
+    ):
+        PartModel.model_validate(part)
+
+    def recipe(name, parts, machine="Test Machine"):
+        return RecipeModel.model_validate(
+            {
+                "Name": name,
+                "Parts": [{"Part": part, "Amount": amount} for part, amount in parts],
+                "Machine": machine,
+                "BatchTime": "60",
+            }
+        )
+
+    return {
+        recipe("Iron Source", [("Iron Ore", "1")]),
+        recipe("Cheap Widget", [("Iron Ore", "-1"), ("Widget", "1"), ("Sludge", "1")]),
+        recipe("Dear Widget", [("Iron Ore", "-3"), ("Widget", "1")]),
+        recipe("Canister", [("Iron Ore", "-1"), ("Canister", "1")]),
+        recipe(
+            "Packaged Sludge",
+            [("Sludge", "-1"), ("Canister", "-1"), ("Packaged Sludge", "1")],
+            machine="Packager",
+        ),
+        recipe(
+            "Hot Gadget", [("Iron Ore", "-1"), ("Gadget", "1"), ("Uranium Waste", "1")]
+        ),
+    }
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+@pytest.mark.parametrize(
+    ("surplus", "cheap", "packaged", "ore"),
+    [
+        # Sludge leaves freely.
+        (SurplusPolicy.IGNORED, 10, 0, 10),
+        # Ore for each widget and canister still beats the dear widget.
+        (SurplusPolicy.PACKAGED, 10, 10, 20),
+        (SurplusPolicy.FORBIDDEN, 0, 0, 30),
+    ],
+)
+def test_unsinkable_surplus_policy(
+    backend, sludge_recipes, surplus, cheap, packaged, ore
+) -> None:
+    finder = backend(sludge_recipes)
+    finder.build_model({}, {"Widget": Fraction(10)}, surplus=surplus)
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.num_recipes["Cheap Widget"]) == pytest.approx(
+        cheap
+    )
+    # Packaging is only reachable, so only modeled, when surplus is packaged.
+    packages = finder.user_given_outputs.get("Packaged Sludge")
+    assert (solved_value(finder, packages) if packages is not None else 0) == (
+        pytest.approx(packaged)
+    )
+    assert solved_value(finder, finder.intermediates["Iron Ore"]) == pytest.approx(ore)
+    if surplus is not SurplusPolicy.IGNORED:
+        assert solved_value(
+            finder, finder.user_given_outputs["Sludge"]
+        ) == pytest.approx(0)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_requested_unsinkable_output_is_allowed(backend, sludge_recipes) -> None:
+    finder = backend(sludge_recipes)
+    finder.build_model({}, {"Sludge": Fraction(5)}, surplus=SurplusPolicy.FORBIDDEN)
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.user_given_outputs["Sludge"]) == pytest.approx(5)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_nuclear_waste_surplus_may_always_leave(backend, sludge_recipes) -> None:
+    finder = backend(sludge_recipes)
+    finder.build_model({}, {"Gadget": Fraction(4)}, surplus=SurplusPolicy.FORBIDDEN)
+
+    assert finder.solve() is True
+    assert solved_value(
+        finder, finder.user_given_outputs["Uranium Waste"]
+    ) == pytest.approx(4)
+
+
+def test_packaging_is_possible_only_when_surplus_is_packaged(sludge_recipes) -> None:
+    finder = Z3OptimalChainFinder(sludge_recipes)
+    names = {
+        surplus: {
+            recipe.Name
+            for recipe in finder.construct_possibly_used_recipes({"Widget"}, surplus)
+        }
+        for surplus in SurplusPolicy
+    }
+
+    assert {"Packaged Sludge", "Canister"} <= names[SurplusPolicy.PACKAGED]
+    assert "Packaged Sludge" not in names[SurplusPolicy.FORBIDDEN]
+    assert "Packaged Sludge" not in names[SurplusPolicy.IGNORED]

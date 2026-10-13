@@ -12,7 +12,7 @@ from rich.logging import RichHandler
 
 from satisfactorysolver import resource_nodes
 from satisfactorysolver.game_data import load_game_data
-from satisfactorysolver.optimal_chain_finder import InputLimit
+from satisfactorysolver.optimal_chain_finder import InputLimit, SurplusPolicy
 
 
 @dataclass
@@ -29,6 +29,7 @@ class ChainArguments(argparse.Namespace):
     data_dir: Path | None = None
     near: tuple[float, float] | None = None
     radius: float | None = None
+    surplus: SurplusPolicy | None = None
     verbose: int = 0
 
 
@@ -210,6 +211,14 @@ def main(argv: list[str] | None = None) -> int:
         metavar="METERS",
         help="distance from --near within which resource nodes may be used",
     )
+    parser.add_argument(
+        "--surplus",
+        type=SurplusPolicy,
+        choices=list(SurplusPolicy),
+        help="what becomes of unsinkable surplus (such as fluids) not asked for "
+        "as an output: packaged to be sunk, forbidden, or ignored as if it could "
+        "be sunk; nuclear waste is exempt (default: packaged)",
+    )
     parser.add_argument("-v", "--verbose", action="count", default=0)
     args = parser.parse_args(argv, namespace=ChainArguments())
     errors = Console(stderr=True)
@@ -262,6 +271,7 @@ def main(argv: list[str] | None = None) -> int:
             args.open,
             near=args.near,
             radius=args.radius,
+            surplus=args.surplus,
         )
         return 0
 
@@ -286,7 +296,9 @@ def main(argv: list[str] | None = None) -> int:
             ),
             markup=False,
         )
-    finder.build_model(inputs, outputs, resource_limits)
+    finder.build_model(
+        inputs, outputs, resource_limits, args.surplus or SurplusPolicy.PACKAGED
+    )
     if not finder.solve():
         errors.print(
             "No optimal production chain found (infeasible, unbounded, or solver unknown)."

@@ -2,6 +2,7 @@ import itertools
 import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict, deque
+from enum import StrEnum
 from fractions import Fraction
 from math import isclose
 
@@ -15,6 +16,35 @@ logger = logging.getLogger(__name__)
 class InputLimit(Fraction):
     """A cap on an item's total use, extracted or produced (``ITEM<=RATE``).
     Unlike a plain input rate, it supplies nothing."""
+
+
+class SurplusPolicy(StrEnum):
+    """What becomes of surplus the AWESOME Sink refuses (zero sink points, such
+    as every fluid) of an item that was not asked for as an output."""
+
+    # It leaves only packaged, to be sunk, and the packaging is paid for.
+    PACKAGED = "packaged"
+    # It never leaves, packaged or not, so every bit must be used up.
+    FORBIDDEN = "forbidden"
+    # It leaves freely, as if it could be sunk.
+    IGNORED = "ignored"
+
+
+# Stored rather than sunk, whatever the policy: reprocessing it is optional.
+NUCLEAR_WASTE = frozenset({"Uranium Waste", "Plutonium Waste"})
+
+
+def is_unsinkable(part) -> bool:
+    return part.SinkPoints == 0 and part.Name not in NUCLEAR_WASTE
+
+
+def is_packaging(recipe) -> bool:
+    """Whether the recipe packages an unsinkable fluid into something sinkable."""
+    return (
+        recipe.Machine.Name == "Packager"
+        and any(part.Fluid and is_unsinkable(part) for part, _ in recipe.Inputs)
+        and not any(is_unsinkable(part) for part, _ in recipe.Outputs)
+    )
 
 
 class OptimalChainFinder[VarType](ABC):
@@ -44,16 +74,22 @@ class OptimalChainFinder[VarType](ABC):
         self.products = set()
         self.ingredients = set()
         self.recipes = set()
+        self.parts = {}
+        self.packaged_fluids = set()
         self.resources = set()
         self.recipes_by_output = defaultdict(set)
         self.recipes_by_input = defaultdict(set)
         self._has_solution = False
 
-    def build_model(self, inputs, outputs, resource_limits=None):
+    def build_model(
+        self, inputs, outputs, resource_limits=None, surplus=SurplusPolicy.PACKAGED
+    ):
         """
         :param resource_limits: Optional per-resource extraction limits (per
             minute) replacing the map-wide ones, such as those of the nodes
             near a base. Resource weights then follow these limits too.
+        :param surplus: What becomes of unsinkable surplus; nuclear waste is
+            exempt.
         """
         self._reset_problem_state()
         self.reset_solver_model()
@@ -68,7 +104,7 @@ class OptimalChainFinder[VarType](ABC):
             (resource, Fraction(limit))
             for resource, limit in (resource_limits or {}).items()
         )
-        possibly_used_recipes = self.construct_possibly_used_recipes(outputs)
+        possibly_used_recipes = self.construct_possibly_used_recipes(outputs, surplus)
         self.construct_sets(possibly_used_recipes)
         all_items = self.resources.union(
             self.ingredients, self.products, inputs, outputs
@@ -78,7 +114,7 @@ class OptimalChainFinder[VarType](ABC):
         self.construct_intermediate_items(all_items)
         self.construct_num_recipes()
         self.fix_input_amounts(all_items, inputs)
-        self.fix_output_amounts(outputs)
+        self.fix_output_amounts(outputs, surplus)
         self.add_product_constraints(all_items)
         self.add_ingredient_constraints(all_items)
         self.add_resource_constraints()
@@ -132,8 +168,12 @@ class OptimalChainFinder[VarType](ABC):
             #     continue
             for part, amount in recipe.Inputs:
                 self.ingredients.add(part.Name)
+                self.parts[part.Name] = part
             for part, amount in recipe.Outputs:
                 self.products.add(part.Name)
+                self.parts[part.Name] = part
+            if is_packaging(recipe):
+                self.packaged_fluids.update(part.Name for part, _ in recipe.Outputs)
             self.recipes.add(recipe.Name)
 
     def fix_input_amounts(self, all_items, inputs):
@@ -153,10 +193,18 @@ class OptimalChainFinder[VarType](ABC):
                     self.intermediates[item] <= Fraction(amount)
                 )
 
-    def fix_output_amounts(self, outputs):
+    def fix_output_amounts(self, outputs, surplus):
         for item, amount in outputs.items():
             if amount != -1:
                 self.add_constraint_to_model(self.user_given_outputs[item] == amount)
+        if surplus is SurplusPolicy.IGNORED:
+            return
+        kept_in = {name for name, part in self.parts.items() if is_unsinkable(part)}
+        if surplus is SurplusPolicy.FORBIDDEN:
+            # Packaging it to sink would let it leave after all.
+            kept_in |= self.packaged_fluids
+        for item in kept_in - outputs.keys():
+            self.add_constraint_to_model(self.user_given_outputs[item] == 0)
 
     def construct_input_items(self, all_items):
         for item in all_items:
@@ -347,12 +395,15 @@ class OptimalChainFinder[VarType](ABC):
     def get_fraction_from_val(self, val):
         pass
 
-    def construct_possibly_used_recipes(self, outputs):
+    def construct_possibly_used_recipes(self, outputs, surplus=SurplusPolicy.PACKAGED):
         """
         Generate the set of recipes that could possibly be used in making our outputs.
         This is generated by walking the graph, queueing recipes that produce the current
         recipe's inputs, iteratively, until every recipe that is part of any chain
         that can lead to our outputs is added.
+
+        When unsinkable surplus must be packaged, recipes packaging the unsinkable
+        fluids these recipes make are queued too.
         """
 
         # Networkx does not have multi-source BFS or DFS, and it seems silly to convert the recipe data to a graph just
@@ -362,9 +413,13 @@ class OptimalChainFinder[VarType](ABC):
         visited = set()
         # We need the full recipes by output to start out here, and will overwrite it
         # later with the minimized set.
+        packaging_by_fluid = defaultdict(set)
         for recipe in self.recipe_data:
             for part, amount in recipe.Outputs:
                 self.recipes_by_output[part.Name].add(recipe)
+            if surplus is SurplusPolicy.PACKAGED and is_packaging(recipe):
+                for part, amount in recipe.Inputs:
+                    packaging_by_fluid[part.Name].add(recipe)
 
         # Seed the queue with recipes that can output our outputs
         for needed_output in outputs:
@@ -380,11 +435,20 @@ class OptimalChainFinder[VarType](ABC):
             # Add them to the queue
             recipe = node_queue.popleft()
             recipe_set.add(recipe)
-            for part, amount in recipe.Inputs:
-                for can_produce_input in self.recipes_by_output[part.Name]:
-                    if can_produce_input not in visited:
-                        node_queue.append(can_produce_input)
-                        visited.add(can_produce_input)
+            next_recipes = [
+                producer
+                for part, amount in recipe.Inputs
+                for producer in self.recipes_by_output[part.Name]
+            ]
+            next_recipes.extend(
+                packager
+                for part, amount in recipe.Outputs
+                for packager in packaging_by_fluid[part.Name]
+            )
+            for next_recipe in next_recipes:
+                if next_recipe not in visited:
+                    node_queue.append(next_recipe)
+                    visited.add(next_recipe)
 
         # Reconstruct the recipe input/output mapping using only the minimized recipe set
         self.recipes_by_output = defaultdict(set)
