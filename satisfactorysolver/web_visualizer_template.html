@@ -163,6 +163,8 @@
   .near-row { display: flex; gap: 8px; }
   .near-row .field:first-child { flex: 2; }
   .near-row .field:last-child { flex: 1; }
+  .pair-row { display: flex; gap: 8px; }
+  .pair-row .field { flex: 1; }
   #limits { font-size: 12px; color: var(--muted); margin: -2px 0 8px; }
   #limits:empty { display: none; }
   #solve-status { font-size: 12px; color: var(--muted); }
@@ -257,24 +259,6 @@
       </select>
     </label>
     <label>Spacing <input type="range" id="spacing" min="20" max="200" value="70"></label>
-    <label class="transport-control" title="Split nodes and routes so every solid item fits on one belt or lift of this tier">Belts/lifts
-      <select id="belt-tier">
-        <option value="">No split</option>
-        <option value="60">Mk.1 (60)</option>
-        <option value="120">Mk.2 (120)</option>
-        <option value="270">Mk.3 (270)</option>
-        <option value="480">Mk.4 (480)</option>
-        <option value="780">Mk.5 (780)</option>
-        <option value="1200">Mk.6 (1200)</option>
-      </select>
-    </label>
-    <label class="transport-control" title="Split nodes and routes so every fluid fits in one pipeline of this tier">Pipes
-      <select id="pipe-tier">
-        <option value="">No split</option>
-        <option value="300">Mk.1 (300)</option>
-        <option value="600">Mk.2 (600)</option>
-      </select>
-    </label>
     <label><input type="checkbox" id="hideZero" checked> Hide idle</label>
     <button id="fit">Fit</button>
   </div>
@@ -311,6 +295,26 @@
         <option value="ignored">Ignore it (leaves freely)</option>
       </select>
     </label>
+    <div class="pair-row" id="transport">
+      <label class="field transport-control" title="Split nodes and routes so every solid item fits on one belt or lift of this tier">Belts/lifts
+        <select id="belt-tier">
+          <option value="">No split</option>
+          <option value="60">Mk.1 (60)</option>
+          <option value="120">Mk.2 (120)</option>
+          <option value="270">Mk.3 (270)</option>
+          <option value="480">Mk.4 (480)</option>
+          <option value="780">Mk.5 (780)</option>
+          <option value="1200">Mk.6 (1200)</option>
+        </select>
+      </label>
+      <label class="field transport-control" title="Split nodes and routes so every fluid fits in one pipeline of this tier">Pipes
+        <select id="pipe-tier">
+          <option value="">No split</option>
+          <option value="300">Mk.1 (300)</option>
+          <option value="600">Mk.2 (600)</option>
+        </select>
+      </label>
+    </div>
     <div class="solve-row"><button id="solve">Solve</button><span id="solve-status"></span></div>
   </section>
   <section class="recipes">
@@ -1283,6 +1287,14 @@
   );
   syncLayoutControls();
   document.getElementById("hideZero").addEventListener("change", buildGraph);
+  // The tiers sit in the live sidebar; a static page has only the header.
+  if (!DATA.live) {
+    const hideIdle = document.getElementById("hideZero").closest("label");
+    document.querySelectorAll(".transport-control").forEach((el) => {
+      el.classList.remove("field");
+      hideIdle.before(el);
+    });
+  }
   // Remember the tiers across visits; storage may be unavailable.
   ["belt-tier", "pipe-tier"].forEach((id) => {
     const select = document.getElementById(id);

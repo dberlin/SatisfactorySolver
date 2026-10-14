@@ -76,6 +76,7 @@ class OptimalChainFinder[VarType](ABC):
         self.recipes = set()
         self.parts = {}
         self.packaged_fluids = set()
+        self.kept_in = set()
         self.resources = set()
         self.recipes_by_output = defaultdict(set)
         self.recipes_by_input = defaultdict(set)
@@ -203,7 +204,10 @@ class OptimalChainFinder[VarType](ABC):
         if surplus is SurplusPolicy.FORBIDDEN:
             # Packaging it to sink would let it leave after all.
             kept_in |= self.packaged_fluids
-        for item in kept_in - outputs.keys():
+        # Left out of the item balances too: z3 can take minutes optimizing a
+        # model whose balances carry outputs pinned to zero.
+        self.kept_in = kept_in - outputs.keys()
+        for item in self.kept_in:
             self.add_constraint_to_model(self.user_given_outputs[item] == 0)
 
     def construct_input_items(self, all_items):
@@ -222,7 +226,9 @@ class OptimalChainFinder[VarType](ABC):
         for recipe in self.recipes:
             self.num_recipes[recipe] = self.create_real_var(name=f"Recipe {recipe}")
 
-    def add_related_constraints(self, items, user_given_io, recipes_mapping, kind):
+    def add_related_constraints(
+        self, items, user_given_io, recipes_mapping, kind, without_io=frozenset()
+    ):
         """All the input/output constraints are of the same form, placing some sum relationship on the intermediate
         variables.
 
@@ -237,9 +243,11 @@ class OptimalChainFinder[VarType](ABC):
         This is because it represents a user-given input or output.
         User given inputs are added to the output value.
         User given outputs are normally added to the input value.
+
+        Items in without_io get no user given input or output at all.
         """
         for item in items:
-            exprs = [user_given_io[item]]
+            exprs = [] if item in without_io else [user_given_io[item]]
             related_recipes = recipes_mapping[item]
 
             for recipe in related_recipes:
@@ -256,7 +264,11 @@ class OptimalChainFinder[VarType](ABC):
 
     def add_ingredient_constraints(self, all_items):
         self.add_related_constraints(
-            all_items, self.user_given_outputs, self.recipes_by_input, "Inputs"
+            all_items,
+            self.user_given_outputs,
+            self.recipes_by_input,
+            "Inputs",
+            self.kept_in,
         )
 
     @staticmethod

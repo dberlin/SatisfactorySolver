@@ -2,6 +2,11 @@
 
 import argparse
 import logging
+import os
+import socket
+import sys
+import threading
+import time
 import webbrowser
 from dataclasses import dataclass, field
 from fractions import Fraction
@@ -11,6 +16,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 
 from satisfactorysolver import resource_nodes
+from satisfactorysolver.child_processes import exit_with_parent, kill_children_on_exit
 from satisfactorysolver.game_data import load_game_data
 from satisfactorysolver.optimal_chain_finder import InputLimit, SurplusPolicy
 
@@ -25,6 +31,7 @@ class ChainArguments(argparse.Namespace):
     host: str = "127.0.0.1"
     port: int = 8000
     open: bool = False
+    reload: bool = True
     solver: str = "z3"
     data_dir: Path | None = None
     near: tuple[float, float] | None = None
@@ -120,7 +127,46 @@ def parse_targets(
     return validate_targets(input_entries, output_entries, item_names)
 
 
-def main(argv: list[str] | None = None) -> int:
+def open_when_serving(host: str, port: int, timeout: float = 60) -> None:
+    """Open the served page in a browser once the server accepts connections."""
+
+    def wait_then_open():
+        connect_host = "127.0.0.1" if host in ("", "0.0.0.0") else host
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            try:
+                with socket.create_connection((connect_host, port), timeout=1):
+                    break
+            except OSError:
+                time.sleep(0.25)
+        webbrowser.open(f"http://{connect_host}:{port}/")
+
+    threading.Thread(target=wait_then_open, daemon=True).start()
+
+
+def serve_with_reload(argv: list[str], args: ChainArguments, errors: Console) -> int:
+    """Run the server in a child process restarted whenever the package changes."""
+    from watchfiles import run_process
+
+    if args.open:
+        # Only once: the child is told not to, or every restart would open a tab.
+        open_when_serving(args.host, args.port)
+    package = Path(__file__).parent
+    watched = [package] + ([args.data_dir] if args.data_dir else [])
+    errors.print(f"Restarting the server when files in {package} change.", markup=False)
+    kill_children_on_exit()
+    run_process(
+        *watched, target=main, args=(argv,), kwargs={"reloaded_by": os.getpid()}
+    )
+    return 0
+
+
+def main(argv: list[str] | None = None, *, reloaded_by: int | None = None) -> int:
+    """
+    :param reloaded_by: In the child process serve_with_reload restarts, the
+        parent's process ID. The child serves without reloading or opening a
+        browser itself, and exits with the parent.
+    """
     parser = argparse.ArgumentParser(
         prog="satisfactory-chain",
         description=(
@@ -174,6 +220,13 @@ def main(argv: list[str] | None = None) -> int:
         "--serve",
         action="store_true",
         help="serve a live visualization where recipes can be toggled and targets edited",
+    )
+    parser.add_argument(
+        "--reload",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="with --serve, restart the server whenever the package's files change "
+        "(default: on)",
     )
     parser.add_argument(
         "--host", default="127.0.0.1", help="address for --serve (default: 127.0.0.1)"
@@ -231,6 +284,11 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("at least one --output is required (unless --serve)")
     if (args.near is None) != (args.radius is None):
         parser.error("--near and --radius must be given together")
+    if reloaded_by is not None:
+        exit_with_parent(reloaded_by)
+        args.reload = args.open = False
+    elif args.reload and args.serve:
+        return serve_with_reload(sys.argv[1:] if argv is None else argv, args, errors)
 
     try:
         data = load_game_data(args.data_dir)
