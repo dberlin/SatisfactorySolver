@@ -1355,10 +1355,7 @@
     const rank = (name) => (usedFirst.has(name) ? 0 : 1);
 
     sidebar.hidden = false;
-    const boxes = {
-      outputs: outputsBox, inputs: inputsBox, near: nearBox, radius: radiusBox,
-      surplus: surplusSelect, clock: clockSelect, sloop: sloopSelect,
-    };
+    const boxes = { outputs: outputsBox, inputs: inputsBox, near: nearBox, radius: radiusBox, surplus: surplusSelect };
     // Targets given on the command line win; otherwise restore the last ones
     // solved here. Storage may be unavailable.
     let restored = {};
@@ -1370,8 +1367,19 @@
       box.value = typeof value === "string" ? value : "";
     }
     if (surplusSelect.selectedIndex < 0) surplusSelect.value = "packaged";
-    if (clockSelect.selectedIndex < 0) clockSelect.value = "100";
-    if (sloopSelect.selectedIndex < 0) sloopSelect.value = "";
+    // The clock and sloops are settings rather than targets: like the belt and
+    // pipe tiers, each is remembered on its own, so the last choice comes back
+    // even when targets are given on the command line. Command-line flags win.
+    for (const [key, select] of Object.entries({ clock: clockSelect, sloop: sloopSelect })) {
+      let value = live[key];
+      if (!value) {
+        try { value = localStorage.getItem("chain-" + key); } catch (err) { /* ignore */ }
+      }
+      if (value != null && [...select.options].some((o) => o.value === value)) select.value = value;
+      select.addEventListener("change", () => {
+        try { localStorage.setItem("chain-" + key, select.value); } catch (err) { /* ignore */ }
+      });
+    }
     const saveTargets = () => {
       const values = Object.fromEntries(Object.entries(boxes).map(([key, box]) => [key, box.value]));
       try { localStorage.setItem("chain-targets", JSON.stringify(values)); } catch (err) { /* ignore */ }
