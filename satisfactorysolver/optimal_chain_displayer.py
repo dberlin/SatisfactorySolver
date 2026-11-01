@@ -18,7 +18,11 @@ from rich.logging import RichHandler
 from satisfactorysolver import resource_nodes
 from satisfactorysolver.child_processes import exit_with_parent, kill_children_on_exit
 from satisfactorysolver.game_data import load_game_data
-from satisfactorysolver.optimal_chain_finder import InputLimit, SurplusPolicy
+from satisfactorysolver.optimal_chain_finder import (
+    CLOCK_PERCENTS,
+    InputLimit,
+    SurplusPolicy,
+)
 
 
 @dataclass
@@ -37,6 +41,8 @@ class ChainArguments(argparse.Namespace):
     near: tuple[float, float] | None = None
     radius: float | None = None
     surplus: SurplusPolicy | None = None
+    clock: int = 100
+    sloop: bool = False
     verbose: int = 0
 
 
@@ -272,6 +278,22 @@ def main(argv: list[str] | None = None, *, reloaded_by: int | None = None) -> in
         "as an output: packaged to be sunk, forbidden, or ignored as if it could "
         "be sunk; nuclear waste is exempt (default: packaged)",
     )
+    parser.add_argument(
+        "--clock",
+        type=int,
+        choices=CLOCK_PERCENTS,
+        default=100,
+        metavar="PERCENT",
+        help="run every machine at this clock speed: "
+        + ", ".join(str(clock) for clock in CLOCK_PERCENTS)
+        + " (default: 100); recipe multipliers stay in machines at 100%%",
+    )
+    parser.add_argument(
+        "--sloop",
+        action="store_true",
+        help="fill every machine that holds somersloops with them, doubling its "
+        "outputs for the same inputs",
+    )
     parser.add_argument("-v", "--verbose", action="count", default=0)
     args = parser.parse_args(argv, namespace=ChainArguments())
     errors = Console(stderr=True)
@@ -330,6 +352,8 @@ def main(argv: list[str] | None = None, *, reloaded_by: int | None = None) -> in
             near=args.near,
             radius=args.radius,
             surplus=args.surplus,
+            clock=args.clock,
+            sloop=args.sloop,
         )
         return 0
 
@@ -355,7 +379,12 @@ def main(argv: list[str] | None = None, *, reloaded_by: int | None = None) -> in
             markup=False,
         )
     finder.build_model(
-        inputs, outputs, resource_limits, args.surplus or SurplusPolicy.PACKAGED
+        inputs,
+        outputs,
+        resource_limits,
+        args.surplus or SurplusPolicy.PACKAGED,
+        clock=Fraction(args.clock, 100),
+        sloop=args.sloop,
     )
     if not finder.solve():
         errors.print(
@@ -372,6 +401,10 @@ def main(argv: list[str] | None = None, *, reloaded_by: int | None = None) -> in
         title = ", ".join(
             item if rate == -1 else f"{rate} {item}" for item, rate in outputs.items()
         )
+        if args.clock != 100:
+            title += f" at {args.clock}%"
+        if args.sloop:
+            title += ", slooped"
         write_html([capture_chain_solution(finder, "Chain")], args.html, title)
         errors.print(f"Wrote {args.html}", markup=False)
         if args.open:

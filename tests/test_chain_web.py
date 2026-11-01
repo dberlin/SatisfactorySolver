@@ -5,6 +5,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from fractions import Fraction
 from http.server import ThreadingHTTPServer
+from pathlib import Path
 
 import pytest
 
@@ -16,7 +17,7 @@ from satisfactorysolver.modeler_models import (
     PartByName,
     RecipeByName,
 )
-from satisfactorysolver.optimal_chain_displayer import parse_targets
+from satisfactorysolver.optimal_chain_displayer import main, parse_targets
 from satisfactorysolver.optimal_chain_finder import InputLimit
 from satisfactorysolver.web_visualizer import capture_chain_solution
 from satisfactorysolver.z3_optimal_chain_finder import Z3OptimalChainFinder
@@ -196,3 +197,96 @@ def test_surplus_policy_controls_unsinkable_byproducts(session: ChainSession) ->
         "unknown surplus policy"
         in session.solve({"outputs": "Iron Plate=30", "surplus": "dumped"})["error"]
     )
+
+
+def test_clock_and_sloops_reach_the_solution(session: ChainSession) -> None:
+    def machine_nodes(response):
+        assert response["error"] is None
+        return [
+            node
+            for node in response["solution"]["nodes"]
+            if node.get("recipe") and node["count"] is not None
+        ]
+
+    def ore_mined(response):
+        return sum(
+            node["outputs"]["Iron Ore"]["value"]
+            for node in response["solution"]["nodes"]
+            if node["id"] == "recipe:Iron Ore"
+        )
+
+    plain = session.solve({"outputs": "Iron Plate=30"})
+    assert plain["solution"]["clock"] == 1
+    assert plain["solution"]["sloop"] is False
+    for node in machine_nodes(plain):
+        assert node["clock"] == 1
+        assert node["sloops"] == 0
+
+    boosted = session.solve(
+        {"outputs": "Iron Plate=30", "clock": "250", "sloop": "all"}
+    )
+    assert boosted["solution"]["clock"] == 2.5
+    assert boosted["solution"]["sloop"] is True
+    nodes = machine_nodes(boosted)
+    assert nodes
+    for node in nodes:
+        recipe = RecipeByName.get(node["recipe"])
+        if not recipe.Inputs:  # a water extractor: counted, but no sloops
+            assert node["clock"] == 2.5 and node["sloops"] == 0
+            continue
+        batches = Fraction(60) / recipe.BatchTime
+        # Inputs follow the catalog; outputs are doubled by a full set of
+        # sloops; machines run at 250%, so each does 2.5 recipes' worth.
+        part, amount = recipe.Inputs[0]
+        recipes_run = Fraction(node["inputs"][part.Name]["exact"]) / (
+            abs(amount) * batches
+        )
+        assert Fraction(node["countExact"]) == recipes_run / Fraction(5, 2)
+        assert node["clock"] == 2.5
+        assert node["sloops"] == recipe.Machine.MaxProductionShards
+        assert node["sloops"] > 0
+        for part, amount in recipe.Outputs:
+            assert Fraction(node["outputs"][part.Name]["exact"]) == (
+                abs(amount) * batches * recipes_run * 2
+            )
+    # Miners hold no sloops, and doubled smelting and plating need under a
+    # quarter of the ore.
+    miner = next(
+        n for n in boosted["solution"]["nodes"] if n["id"] == "recipe:Iron Ore"
+    )
+    assert miner["sloops"] == 0 and miner["count"] is None
+    assert ore_mined(boosted) == pytest.approx(ore_mined(plain) / 4)
+    listed = {recipe["name"]: recipe for recipe in boosted["recipes"]}
+    assert all(
+        listed[node["recipe"]]["buildings"] == node["buildings"] for node in nodes
+    )
+
+    assert (
+        "clock" in session.solve({"outputs": "Iron Plate=30", "clock": "175"})["error"]
+    )
+
+
+def test_cli_passes_clock_and_sloop_to_the_html_page(
+    session: ChainSession, tmp_path: Path
+) -> None:
+    page = tmp_path / "chain.html"
+    assert (
+        main(
+            [
+                "--output",
+                "Iron Plate=30",
+                "--clock",
+                "250",
+                "--sloop",
+                "--html",
+                str(page),
+            ]
+        )
+        == 0
+    )
+    text = page.read_text(encoding="utf-8")
+    assert '"clock": 2.5' in text
+    assert '"sloop": true' in text
+    assert "250%" in text and "slooped" in text
+    with pytest.raises(SystemExit):
+        main(["--output", "Iron Plate=30", "--clock", "175"])

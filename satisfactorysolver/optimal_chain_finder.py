@@ -33,6 +33,45 @@ class SurplusPolicy(StrEnum):
 # Stored rather than sunk, whatever the policy: reprocessing it is optional.
 NUCLEAR_WASTE = frozenset({"Uranium Waste", "Plutonium Waste"})
 
+# Clock speeds a machine reaches with 0 to 3 power shards, in percent.
+CLOCK_PERCENTS = (100, 150, 200, 250)
+
+
+def parse_clock(value) -> Fraction:
+    """The clock speed multiplier for a percentage in CLOCK_PERCENTS, such as
+    "250" or "250%".
+
+    :raises ValueError: On any other value.
+    """
+    text = str(value).strip().removesuffix("%").strip()
+    try:
+        percent = int(text)
+    except ValueError:
+        percent = None
+    if percent not in CLOCK_PERCENTS:
+        raise ValueError(
+            "clock must be one of "
+            + ", ".join(f"{clock}%" for clock in CLOCK_PERCENTS)
+            + f", not {value!r}"
+        )
+    return Fraction(percent, 100)
+
+
+def sloop_count(recipe) -> int:
+    """How many somersloops the recipe's machine holds (none for extractors,
+    generators, packagers and multi-machines)."""
+    return getattr(recipe.Machine, "MaxProductionShards", None) or 0
+
+
+def sloop_factor(recipe) -> Fraction:
+    """The output multiplier of the recipe's machine with every somersloop
+    slot filled: 1 + slots * ProductionShardMultiplier, so 2 in the game's
+    data. Inputs are unchanged. 1 where no sloop fits."""
+    slots = sloop_count(recipe)
+    if not slots:
+        return Fraction(1)
+    return 1 + slots * Fraction(recipe.Machine.ProductionShardMultiplier or 0)
+
 
 def is_unsinkable(part) -> bool:
     return part.SinkPoints == 0 and part.Name not in NUCLEAR_WASTE
@@ -80,10 +119,18 @@ class OptimalChainFinder[VarType](ABC):
         self.resources = set()
         self.recipes_by_output = defaultdict(set)
         self.recipes_by_input = defaultdict(set)
+        self.clock = Fraction(1)
+        self.sloop = False
         self._has_solution = False
 
     def build_model(
-        self, inputs, outputs, resource_limits=None, surplus=SurplusPolicy.PACKAGED
+        self,
+        inputs,
+        outputs,
+        resource_limits=None,
+        surplus=SurplusPolicy.PACKAGED,
+        clock=Fraction(1),
+        sloop=False,
     ):
         """
         :param resource_limits: Optional per-resource extraction limits (per
@@ -91,9 +138,16 @@ class OptimalChainFinder[VarType](ABC):
             near a base. Resource weights then follow these limits too.
         :param surplus: What becomes of unsinkable surplus; nuclear waste is
             exempt.
+        :param clock: Clock speed of every machine as a multiplier (5/2 for
+            250%). Recipe multipliers stay in machines at 100%; only the
+            machine count changes.
+        :param sloop: Whether every machine that holds somersloops is filled
+            with them, multiplying its outputs by sloop_factor.
         """
         self._reset_problem_state()
         self.reset_solver_model()
+        self.clock = Fraction(clock)
+        self.sloop = bool(sloop)
         self.resources_scaled = self.create_real_var(name="Resources Scaled")
         self.items_used = self.create_real_var(name="Items Used")
         self.resources = set(ResourceLimits.get_resource_names())
@@ -226,6 +280,11 @@ class OptimalChainFinder[VarType](ABC):
         for recipe in self.recipes:
             self.num_recipes[recipe] = self.create_real_var(name=f"Recipe {recipe}")
 
+    def output_factor(self, recipe) -> Fraction:
+        """What the recipe's outputs are multiplied by: its sloop factor when
+        machines are slooped, else 1."""
+        return sloop_factor(recipe) if self.sloop else Fraction(1)
+
     def add_related_constraints(
         self, items, user_given_io, recipes_mapping, kind, without_io=frozenset()
     ):
@@ -253,6 +312,8 @@ class OptimalChainFinder[VarType](ABC):
             for recipe in related_recipes:
                 batch_time_factor = Fraction(60, 1) / recipe.BatchTime
                 amount = self.get_amount_for_item(getattr(recipe, kind), item)
+                if kind == "Outputs":
+                    amount *= self.output_factor(recipe)
                 exprs.append(batch_time_factor * amount * self.num_recipes[recipe.Name])
 
             self.add_constraint_to_model(sum(exprs) == self.intermediates[item])
@@ -327,6 +388,7 @@ class OptimalChainFinder[VarType](ABC):
             Fraction(60, 1)
             / recipe.BatchTime
             * abs(amount)
+            * self.output_factor(recipe)
             * self.num_recipes[recipe.Name]
             for recipe in extractors
             for part, amount in recipe.Outputs
@@ -340,11 +402,14 @@ class OptimalChainFinder[VarType](ABC):
         self.add_constraint_to_model(expr == self.items_used)
 
     def calculate_machines(self):
-        """Total machines at 100% clock. Minimized after resource use, so among
-        chains using the same resources the simplest wins, such as a blender
-        making Diluted Fuel over packaging water and unpackaging fuel."""
+        """Total machines at the chosen clock. Minimized after resource use, so
+        among chains using the same resources the simplest wins, such as a
+        blender making Diluted Fuel over packaging water and unpackaging fuel.
+        """
         self.machines = self.create_real_var(name="Machines")
-        self.add_constraint_to_model(sum(self.num_recipes.values()) == self.machines)
+        self.add_constraint_to_model(
+            sum(self.num_recipes.values()) == self.machines * self.clock
+        )
 
     @abstractmethod
     def add_optimization_constraints(self, outputs_to_maximize):

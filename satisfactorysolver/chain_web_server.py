@@ -14,7 +14,11 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from satisfactorysolver import resource_nodes
-from satisfactorysolver.optimal_chain_finder import InputLimit, SurplusPolicy
+from satisfactorysolver.optimal_chain_finder import (
+    InputLimit,
+    SurplusPolicy,
+    parse_clock,
+)
 from satisfactorysolver.web_visualizer import capture_chain_solution, render_html
 
 logger = logging.getLogger(__name__)
@@ -74,7 +78,7 @@ class ChainSession:
         )
 
     def _solve_on_solver_thread(
-        self, enabled, inputs, outputs, resource_limits, surplus
+        self, enabled, inputs, outputs, resource_limits, surplus, clock, sloop
     ):
         """Solve and return only plain data, so no solver object leaves this thread."""
         try:
@@ -82,7 +86,9 @@ class ChainSession:
                 self.recipes
             ).construct_possibly_used_recipes(outputs, surplus)
             finder = self.finder_class(enabled)
-            finder.build_model(inputs, outputs, resource_limits, surplus)
+            finder.build_model(
+                inputs, outputs, resource_limits, surplus, clock=clock, sloop=sloop
+            )
             solution = (
                 capture_chain_solution(finder, "Chain") if finder.solve() else None
             )
@@ -104,6 +110,8 @@ class ChainSession:
                 raise ValueError("enter at least one output")
             resource_limits = self.resource_limits(request)
             surplus = surplus_policy(request)
+            clock = parse_clock(request.get("clock") or 100)
+            sloop = bool(request.get("sloop"))
         except ValueError as error:
             return {"error": str(error), "solution": None, "recipes": None}
 
@@ -116,6 +124,8 @@ class ChainSession:
             outputs,
             resource_limits,
             surplus,
+            clock,
+            sloop,
         ).result()
         elapsed = time.perf_counter() - started
         solved = solution is not None
@@ -235,8 +245,14 @@ def serve(
     near: tuple[float, float] | None = None,
     radius: float | None = None,
     surplus: SurplusPolicy | None = None,
+    clock: int | None = None,
+    sloop: bool = False,
 ) -> None:
-    """Serve the live chain visualizer until interrupted."""
+    """Serve the live chain visualizer until interrupted.
+
+    :param clock: Initial clock speed in percent, or None for the page's default.
+    :param sloop: Whether every machine starts out filled with somersloops.
+    """
     page = render_html(
         [],
         "Production chain",
@@ -247,6 +263,8 @@ def serve(
             "near": f"{near[0]:g}, {near[1]:g}" if near else "",
             "radius": f"{radius:g}" if radius else "",
             "surplus": surplus or "",
+            "clock": str(clock) if clock else "",
+            "sloop": "all" if sloop else "",
         },
     )
     server = ThreadingHTTPServer((host, port), make_handler(session, page))

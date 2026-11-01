@@ -129,6 +129,19 @@ maximizes that output first, then minimizes weighted resource use without sacrif
 the maximum. With multiple `-1` targets, their total rate is maximized.
 Infeasible or unbounded problems exit with an error rather than displaying a solution.
 
+`--clock PERCENT` runs every machine at 100, 150, 200 or 250% (the **Clock** field
+in `--serve`). The chain and its recipe multipliers are unchanged; only the machine
+counts shrink, so clocks read like `2 @ 250%, 1 @ 125%`. `--sloop` (**Somersloops**
+in `--serve`) fills every machine that holds somersloops with them, doubling its
+outputs for the same inputs, as the game's `MaxProductionShards` and
+`ProductionShardMultiplier` say. Miners, extractors, packagers and generators hold
+none. Slooping halves the resources each slooped stage needs, so it can change which
+recipes win.
+
+```sh
+uv run satisfactory-chain --output "Iron Plate=30" --clock 250 --sloop
+```
+
 By default resources are limited map-wide. `--near X,Y --radius METERS` (or the
 **Near** and **Within** fields in `--serve`) instead limits extraction to the resource
 nodes within that horizontal distance of a map point, in meters (game units / 100;

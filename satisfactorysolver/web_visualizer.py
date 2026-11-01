@@ -12,6 +12,7 @@ from html import escape
 from pathlib import Path
 
 from satisfactorysolver.modeler_models import PartByName
+from satisfactorysolver.optimal_chain_finder import sloop_count
 
 AWESOME_SINK_NAME = "AWESOME Sink"
 
@@ -76,9 +77,26 @@ def _node_kind(node):
 
 
 def _node_entry(
-    node_id, name, kind, recipe, machine_name, node_max, rates_in, rates_out
+    node_id,
+    name,
+    kind,
+    recipe,
+    machine_name,
+    node_max,
+    rates_in,
+    rates_out,
+    count=None,
+    clock=Fraction(1),
+    sloops=0,
 ):
-    count = _machine_usage(recipe, rates_in, rates_out)
+    """
+    :param count: Machines running the recipe at the clock, or None to work it
+        out from the rates and the recipe's catalog rate at 100%.
+    :param clock: Clock speed multiplier every one of those machines runs at.
+    :param sloops: Somersloops in each machine.
+    """
+    if count is None:
+        count = _machine_usage(recipe, rates_in, rates_out)
     return {
         "id": node_id,
         "name": name,
@@ -90,6 +108,8 @@ def _node_entry(
         "maxIsRate": bool(recipe and recipe.Machine.ShowPpm),
         "count": float(count) if count is not None else None,
         "countExact": str(count) if count is not None else None,
+        "clock": float(clock),
+        "sloops": sloops,
         "buildings": math.ceil(count - Fraction(1, 10**6))
         if count is not None and count > 0
         else None,
@@ -181,6 +201,9 @@ def capture_chain_solution(finder, label: str) -> dict:
     each item, not which machine feeds which. As in SatisfactoryTools, every
     producer of an item feeds every consumer of it in proportion to the
     consumer's share of the total.
+
+    Machine counts are at the finder's clock speed, and outputs include its
+    somersloops, which each node reports as "clock" and "sloops".
     """
 
     def value_of(var) -> Fraction:
@@ -201,11 +224,14 @@ def capture_chain_solution(finder, label: str) -> dict:
             part.Name: abs(amount) * batches_per_minute
             for part, amount in recipe.Inputs
         }
+        output_factor = finder.output_factor(recipe)
         rates_out = {
-            part.Name: abs(amount) * batches_per_minute
+            part.Name: abs(amount) * output_factor * batches_per_minute
             for part, amount in recipe.Outputs
         }
         node_id = f"recipe:{name}"
+        # Rate-capped machines (miners) are shown as rates, never counted.
+        machines = None if recipe.Machine.ShowPpm else count / finder.clock
         nodes.append(
             _node_entry(
                 node_id,
@@ -216,6 +242,9 @@ def capture_chain_solution(finder, label: str) -> dict:
                 None,
                 rates_in,
                 rates_out,
+                count=machines,
+                clock=finder.clock,
+                sloops=sloop_count(recipe) if finder.sloop else 0,
             )
         )
         for part, rate in rates_out.items():
@@ -253,6 +282,8 @@ def capture_chain_solution(finder, label: str) -> dict:
         "nodes": nodes,
         "edges": edges,
         "chain": True,
+        "clock": float(finder.clock),
+        "sloop": finder.sloop,
         "fluids": sorted(
             part
             for part in producers.keys() | consumers.keys()

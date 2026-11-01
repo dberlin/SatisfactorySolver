@@ -11,7 +11,13 @@ from satisfactorysolver.modeler_models import (
     RecipeByName,
     RecipeModel,
 )
-from satisfactorysolver.optimal_chain_finder import InputLimit, SurplusPolicy
+from satisfactorysolver.optimal_chain_finder import (
+    InputLimit,
+    SurplusPolicy,
+    parse_clock,
+    sloop_count,
+    sloop_factor,
+)
 from satisfactorysolver.pyomo_optimal_chain_finder import PyomoOptimalChainFinder
 from satisfactorysolver.z3_optimal_chain_finder import Z3OptimalChainFinder
 
@@ -399,3 +405,83 @@ def test_packaging_is_possible_only_when_surplus_is_packaged(sludge_recipes) -> 
     assert {"Packaged Sludge", "Canister"} <= names[SurplusPolicy.PACKAGED]
     assert "Packaged Sludge" not in names[SurplusPolicy.FORBIDDEN]
     assert "Packaged Sludge" not in names[SurplusPolicy.IGNORED]
+
+
+@pytest.fixture
+def slooped_recipe() -> RecipeModel:
+    """A plate recipe in a machine with two half-strength somersloop slots."""
+    MachineModel.model_validate(
+        {
+            "Name": "Slooped Machine",
+            "MaxProductionShards": 2,
+            "ProductionShardMultiplier": "1/2",
+        }
+    )
+    return RecipeModel.model_validate(
+        {
+            "Name": "Slooped Plate",
+            "Parts": [
+                {"Part": "Iron Ore", "Amount": "-1"},
+                {"Part": "Plate", "Amount": "1"},
+            ],
+            "Machine": "Slooped Machine",
+            "BatchTime": "60",
+            "Alternate": True,
+        }
+    )
+
+
+def test_sloop_factor_follows_the_machine_shard_slots(recipes, slooped_recipe) -> None:
+    plain = next(recipe for recipe in recipes if recipe.Name == "Efficient Plate")
+    assert sloop_factor(plain) == 1
+    assert sloop_count(plain) == 0
+    assert sloop_factor(slooped_recipe) == 2
+    assert sloop_count(slooped_recipe) == 2
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_sloops_double_outputs_of_machines_that_hold_them(
+    backend, recipes, slooped_recipe
+) -> None:
+    finder = backend(recipes | {slooped_recipe})
+    finder.build_model({}, {"Plate": Fraction(10)}, sloop=True)
+
+    assert finder.solve() is True
+    # Half the ore per plate, so the slooped recipe wins outright.
+    assert solved_value(finder, finder.num_recipes["Slooped Plate"]) == pytest.approx(5)
+    assert solved_value(finder, finder.num_recipes["Efficient Plate"]) == pytest.approx(
+        0
+    )
+    assert solved_value(finder, finder.intermediates["Iron Ore"]) == pytest.approx(5)
+    assert finder.sloop is True
+
+    finder.build_model({}, {"Plate": Fraction(10)})
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.intermediates["Iron Ore"]) == pytest.approx(10)
+    assert finder.sloop is False
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_clock_divides_machines_but_not_recipe_multipliers(backend, recipes) -> None:
+    finder = backend(recipes)
+    finder.build_model({}, {"Plate": Fraction(10)}, clock=Fraction(5, 2))
+
+    assert finder.solve() is True
+    assert solved_value(finder, finder.num_recipes["Efficient Plate"]) == pytest.approx(
+        10
+    )
+    assert solved_value(finder, finder.intermediates["Iron Ore"]) == pytest.approx(10)
+    # Ten ore sources and ten plate makers, each at 250%.
+    assert solved_value(finder, finder.machines) == pytest.approx(8)
+    assert finder.clock == Fraction(5, 2)
+
+
+def test_parse_clock_accepts_only_whole_shard_counts() -> None:
+    assert parse_clock("100") == 1
+    assert parse_clock(" 150% ") == Fraction(3, 2)
+    assert parse_clock("200") == 2
+    assert parse_clock(250) == Fraction(5, 2)
+    for bad in ("175", "0", "300", "fast", ""):
+        with pytest.raises(ValueError, match="clock"):
+            parse_clock(bad)
